@@ -1,7 +1,7 @@
 {
     "asar": true,
     "appId": "com.beatsaver.ui",
-    "productName": "BeatSaverUI",
+    "productName": "BeatSaverClient",
     "files": ["dist/**/*"],
     "directories": {
         "output": "release/"
