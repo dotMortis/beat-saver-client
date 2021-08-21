@@ -1,0 +1,102 @@
+<div class="search-bar px-2 mb-4">
+    <div class="row pt-2">
+        <div class="col-12 col-md-4 col-sm-6 pb-2">
+            <span class="p-input-icon-left w-100">
+                <i class="pi pi-search"></i>
+                <input
+                    class="p-inputtext-sm w-100"
+                    type="text"
+                    placeholder="Search"
+                    (keydown.enter)="onSearch()"
+                    pInputText
+                    [(ngModel)]="apiService.q"
+                />
+            </span>
+        </div>
+        <div class="col-12 col-md-4 col-sm-6 pb-2">
+            <p-dropdown
+                [options]="orderBys"
+                [(ngModel)]="orderBySelected"
+                optionLabel="name"
+                [styleClass]="'w-100'"
+            ></p-dropdown>
+        </div>
+        <div class="col-12 col-md-4 col-sm-12 pb-2">
+            <button
+                pButton
+                pRipple
+                type="button"
+                class="w-100"
+                label="search"
+                (click)="onSearch()"
+            ></button>
+        </div>
+        <div class="col-12 col-md-4 col-sm-6 pb-2">
+            <p-multiSelect
+                [styleClass]="'w-100 bool-filter'"
+                defaultLabel="Filters"
+                [showHeader]="false"
+                [options]="filterItems"
+                [group]="true"
+                (onChange)="onBoolFilterChange($event)"
+            >
+                <ng-template pTemplate="selectedItems">
+                    <div
+                        [ngClass]="{ 'col-auto': true, 'pr-1': !last }"
+                        *ngFor="let code of activeFilterItems; let last = last"
+                    >
+                        <p-tag [value]="code"></p-tag>
+                    </div>
+                    <div *ngIf="!activeFilterItems.size" class="col-12">Filters</div>
+                </ng-template>
+                <ng-template let-group pTemplate="group">
+                    <div class="p-d-flex p-ai-center">
+                        <span>{{ group.label.label }}</span>
+                    </div>
+                </ng-template>
+                <ng-template let-filterItem pTemplate="item">
+                    <div>{{ filterItem.label }}</div>
+                </ng-template>
+            </p-multiSelect>
+        </div>
+        <div class="col-12 col-md-4 col-sm-6 pb-2">
+            <div class="row justify-content-between pt-1">
+                <h6 class="col-auto">NPS:</h6>
+                <h6 class="col-auto">
+                    {{
+                        apiService.minNps +
+                            ' - ' +
+                            (apiService.maxNps === 16 ? '\u221E' : apiService.maxNps)
+                    }}
+                </h6>
+                <p-slider
+                    [(ngModel)]="apiService.npsRange"
+                    [step]="0.01"
+                    [range]="true"
+                    [min]="0"
+                    [max]="16"
+                    class="col-12 pt-2"
+                ></p-slider>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-sm-6 pb-2">
+            <p-calendar
+                #dateRangeCal
+                [(ngModel)]="apiService.dateRange"
+                selectionMode="range"
+                [readonlyInput]="true"
+                inputId="range"
+                [maxDate]="currentDate"
+                dateFormat="dd/mm/y"
+                [styleClass]="'w-100'"
+                placeholder="Date range"
+                [yearNavigator]="true"
+                [monthNavigator]="true"
+                yearRange="2018:{{ currentYear }}"
+                [showButtonBar]="true"
+                [touchUI]="true"
+                (onSelect)="onDateRangeSelect()"
+            ></p-calendar>
+        </div>
+    </div>
+</div>

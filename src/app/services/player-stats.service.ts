@@ -1,0 +1,204 @@
+import { EventEmitter, Injectable, Input, Output } from '@angular/core';
+import { uniqueId } from 'lodash';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
+import { ipcRendererInvoke, ipcRendererSend } from '../../models/electron/electron.register';
+import {
+    TInvokeGetPlayerNames,
+    TInvokeGetPlayerSongStats,
+    TInvokeLoadPlayedSongs
+} from '../../models/electron/invoke.channels';
+import { TSendDebug } from '../../models/electron/send.channels';
+import { TSongHash } from '../../models/played-songs.model';
+import { TLevelStatsInfo } from '../../models/player-data.model';
+import { TFileLoaded } from '../../models/types';
+import { ElectronService } from './electron.service';
+import { NotifyService } from './notify.service';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PlayerStatsService {
+    private _playerNamesLoaded: boolean;
+    private _playerNamesLoading: BehaviorSubject<
+        boolean | { result: string[] | undefined; status: TFileLoaded }
+    >;
+    private _nextPlayerNames: Subject<
+        false | { result: string[] | undefined; status: TFileLoaded }
+    >;
+
+    //#region selectedPlayer
+    private _selectedPlayer: BehaviorSubject<{ name: string } | undefined>;
+    @Input()
+    set selectedPlayer(val: { name: string } | undefined) {
+        if (this._selectedPlayer.getValue()?.name !== val?.name) {
+            this._selectedPlayer.next(val);
+            this.selectedPlayerChange.next(val);
+        }
+    }
+    get selectedPlayer(): { name: string } | undefined {
+        return this._selectedPlayer.getValue();
+    }
+    get selectedPlayerSubject(): BehaviorSubject<{ name: string } | undefined> {
+        return this._selectedPlayer;
+    }
+    @Output()
+    public selectedPlayerChange: EventEmitter<{ name: string } | undefined>;
+    //#endregion
+
+    //#region playerNames
+    private _playerNames?: string[];
+    @Input()
+    get playerNames(): string[] | undefined {
+        return this._playerNames;
+    }
+    set playerNames(val: string[] | undefined) {
+        this._playerNames = val;
+        this.playerNamesChange.next(this._playerNames);
+    }
+    @Output()
+    public playerNamesChange: EventEmitter<string[] | undefined>;
+    //#endregion
+
+    @Output()
+    public playerStatsReloaded: EventEmitter<void>;
+
+    constructor(private _eleService: ElectronService, private _notify: NotifyService) {
+        this.selectedPlayerChange = new EventEmitter<{ name: string } | undefined>();
+        this.playerNamesChange = new EventEmitter<string[] | undefined>();
+        this.playerStatsReloaded = new EventEmitter<void>();
+        this._playerNamesLoaded = false;
+        this._playerNamesLoading = new BehaviorSubject<
+            boolean | { result: string[] | undefined; status: TFileLoaded }
+        >(false);
+        this._nextPlayerNames = new Subject<
+            false | { result: string[] | undefined; status: TFileLoaded }
+        >();
+        this._selectedPlayer = new BehaviorSubject<{ name: string } | undefined>(undefined);
+    }
+
+    loadPlayerSongStats(
+        songHash: TSongHash
+    ): Observable<false | { status: TFileLoaded; result: TLevelStatsInfo | undefined }> {
+        try {
+            const v = uniqueId();
+            return this.selectedPlayerSubject.pipe(
+                mergeMap(async (selectedPlayer: { name: string } | undefined) => {
+                    if (!selectedPlayer) {
+                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                            msg: `LOAD PLAYERNAMES V: ${v}`
+                        });
+                        const result = await this.loadPlayerNames().toPromise();
+                        return result === false ? false : undefined;
+                    } else {
+                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                            msg: `RETURN PLAYER V: ${v}`
+                        });
+                        const result = await ipcRendererInvoke<TInvokeGetPlayerSongStats>(
+                            this._eleService,
+                            'GET_PLAYER_SONG_STATS',
+                            { playerName: selectedPlayer.name, songHash }
+                        );
+                        this._notify.errorFileHandle(result, 'BS AppData');
+                        return result;
+                    }
+                }),
+                takeWhile(result => result == null, true),
+                reduce(
+                    (
+                        acc: false | { status: TFileLoaded; result: TLevelStatsInfo | undefined },
+                        val:
+                            | false
+                            | { status: TFileLoaded; result: TLevelStatsInfo | undefined }
+                            | undefined
+                    ) => {
+                        if (val != null) acc = val;
+                        return acc;
+                    },
+                    false
+                )
+            );
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    loadPlayerNames(): Observable<false | { result: string[] | undefined; status: TFileLoaded }> {
+        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+            msg: `loadPlayerNames INIT`
+        });
+        const v = uniqueId();
+        let loadPlayerNames = true;
+        return this._playerNamesLoading.pipe(
+            mergeMap(
+                async (result: boolean | { result: string[] | undefined; status: TFileLoaded }) => {
+                    if (result !== true) {
+                        if (!loadPlayerNames) return result;
+                        try {
+                            ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                                msg: `loadPlayerNames V: ${v}`,
+                                meta: result
+                            });
+                            this._playerNamesLoading.next(true);
+                            const ipcResult = await ipcRendererInvoke<TInvokeGetPlayerNames>(
+                                this._eleService,
+                                'GET_PLAYER_NAMES',
+                                undefined
+                            );
+                            if (ipcResult !== false && ipcResult.result instanceof Array) {
+                                this.playerNames = ipcResult.result;
+                                this.selectedPlayer = { name: this.playerNames[0] };
+                                this._playerNamesLoaded = true;
+                            } else {
+                                this._notify.errorFileHandle(ipcResult, 'BS AppData');
+                                this._playerNamesLoaded = false;
+                                this.playerNames = undefined;
+                            }
+                            this._playerNamesLoading.next(ipcResult);
+                            return ipcResult;
+                        } catch (error) {
+                            this._playerNamesLoaded = false;
+                            this._playerNamesLoading.next(false);
+                            throw error;
+                        }
+                    } else {
+                        loadPlayerNames = false;
+                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                            msg: `loadPlayerNames V: ${v}`,
+                            meta: result
+                        });
+                        return undefined;
+                    }
+                }
+            ),
+            takeWhile(result => result == null, true),
+            reduce(
+                (
+                    acc: false | { result: string[] | undefined; status: TFileLoaded },
+                    val: undefined | false | { result: string[] | undefined; status: TFileLoaded }
+                ) => {
+                    if (val != null) acc = val;
+                    return acc;
+                },
+                false
+            )
+        );
+    }
+
+    async loadPlayersStats(): Promise<false | { status: TFileLoaded }> {
+        try {
+            const result = await ipcRendererInvoke<TInvokeLoadPlayedSongs>(
+                this._eleService,
+                'LOAD_PLAYER_STATS',
+                undefined
+            );
+            this._notify.errorFileHandle(result, 'BS AppData');
+            if (this._playerNamesLoaded) {
+                await this.loadPlayerNames().toPromise();
+            }
+            return result;
+        } finally {
+            this.playerStatsReloaded.next();
+        }
+    }
+}

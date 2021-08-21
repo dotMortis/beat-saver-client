@@ -1,0 +1,13 @@
+<p-dialog
+    header="Song Preview"
+    [(visible)]="showIframe"
+    [breakpoints]="[{ '960px': '95vw' }]"
+    [style]="{ width: '75vw', height: '75vh' }"
+    styleClass="song-preview-dialog"
+    [contentStyle]="{ height: '100%', padding: '0 0.5rem 0.5rem 0.5rem' }"
+    [baseZIndex]="10000"
+    [draggable]="true"
+    [resizable]="true"
+>
+    <iframe class="modal-content h-100" [src]="url | safe"></iframe>
+</p-dialog>

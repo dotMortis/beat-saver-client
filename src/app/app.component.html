@@ -1,0 +1,14 @@
+<p-scrollPanel [style]="{ width: '100vw', height: '100vh' }" styleClass="custombar1">
+    <div class="container pb-5">
+        <div class="pb-4">
+            <app-navigation-bar class="mb-4"></app-navigation-bar>
+        </div>
+        <router-outlet #o="outlet"></router-outlet>
+    </div>
+    <p-scrollTop target="parent" class="scrolltop" [threshold]="200"></p-scrollTop>
+</p-scrollPanel>
+<p-toast position="bottom-center"></p-toast>
+<app-download-item></app-download-item>
+<app-settings></app-settings>
+<app-download-list></app-download-list>
+<app-song-preview></app-song-preview>

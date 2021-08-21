@@ -1,0 +1,26 @@
+<p-overlayPanel #difDetailInfo>
+    <ng-template pTemplate> Content </ng-template>
+</p-overlayPanel>
+<span
+    (hover)="difDetailInfo.toggle($event)"
+    [class]="'player-stats-container no-gutters row ' + difficulty || ''"
+>
+    <div class="col-auto pr-2">
+        <span pTooltip="Your play count">
+            <img [src]="iconUrl" width="22" height="22" class="dif-icon" />
+            <span class="dif-label">{{ playCount || 0 | number }}</span>
+        </span>
+    </div>
+    <div class="col-auto pr-2">
+        <span pTooltip="Your high scorstare">
+            <fa-icon [icon]="['fas', 'star']" class="dif-icon"></fa-icon>
+            <span class="dif-label">{{ highScore || 0 | number }}</span>
+        </span>
+    </div>
+    <div class="col-auto">
+        <span pTooltip="Your max combo">
+            <fa-icon [icon]="['fas', 'link']" class="dif-icon"></fa-icon>
+            <span class="dif-label">{{ maxCombo || 0 | number }}</span>
+        </span>
+    </div>
+</span>

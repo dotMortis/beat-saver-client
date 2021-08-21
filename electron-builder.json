@@ -1,0 +1,24 @@
+{
+    "asar": true,
+    "appId": "com.beatsaver.ui",
+    "productName": "BeatSaverUI",
+    "files": ["dist/**/*"],
+    "directories": {
+        "output": "release/"
+    },
+    "win": {
+        "icon": "assets/icons",
+        "target": ["portable"]
+    },
+    "portable": {
+        "splashImage": "assets/icons/electron.bmp"
+    },
+    "mac": {
+        "icon": "assets/icons",
+        "target": ["dmg"]
+    },
+    "linux": {
+        "icon": "assets/icons",
+        "target": ["AppImage"]
+    }
+}

@@ -1,0 +1,43 @@
+<div
+    [ngClass]="{
+        'song-card-container row no-gutters justify-content-start': true,
+        installed: installed === 'INSTALLED',
+        'install-error': installError,
+        downloading: download > 0 && download < 100
+    }"
+    (contextmenu)="onRemove()"
+    (dblclick)="onRemove()"
+>
+    <div class="mb-2 col-auto song-col-1">
+        <div class="song-cover-container">
+            <div
+                class="rounded float-start song-cover"
+                [style.background-image]="
+                    'url(' + lastVersion?.coverURL || 'assets/bs-default.jpeg' + ')'
+                "
+            ></div>
+            <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
+                <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2 col">
+        <a href="#" [title]="songName" (click)="onTitleClick($event)"> {{ songNameShort }}</a>
+        <br />
+        <a href="#" (click)="onTitleClick($event)">
+            {{ tMapDetail?.uploader?.name || 'N/A' }}
+        </a>
+        <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+    </div>
+    <div *ngIf="download < 100 && download > 1" class="col-12 mb-2">
+        <p-progressBar [value]="download"></p-progressBar>
+        <div class="progress-text">Downloading...</div>
+    </div>
+    <div *ngIf="installed === 'INSTALLING'" class="col-12 mb-2">
+        <p-progressBar mode="indeterminate" [style]="{ height: '1rem' }"></p-progressBar>
+        <div class="progress-text">Installing...</div>
+    </div>
+    <div *ngIf="installError" class="col-12 mb-2">
+        <p-message styleClass="w-100" severity="error" [text]="installError.message"></p-message>
+    </div>
+</div>

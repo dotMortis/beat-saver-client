@@ -1,0 +1,95 @@
+.song-card-container {
+    padding: 0.5rem !important;
+    border-radius: 0.25rem !important;
+    background-color: var(--surface-f);
+    transition-duration: 0.2s; /* delays for 1 second */
+    -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+    box-shadow: 0 0 4px -1px white;
+
+    &.installed {
+        box-shadow: 0 0 4px -1px var(--success);
+        &:hover {
+            box-shadow: 0 0 6px 1px var(--success);
+        }
+    }
+    &.install-error {
+        box-shadow: 0 0 4px -1px var(--danger);
+        &:hover {
+            box-shadow: 0 0 6px 1px var(--danger);
+        }
+    }
+    &.downloading {
+        box-shadow: 0 0 4px -1px var(--info);
+        &:hover {
+            box-shadow: 0 0 6px 1px var(--info);
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 0 6px 1px white;
+    }
+
+    .song-col-1 {
+        display: flex;
+        flex-direction: column;
+        margin-right: 0.75rem;
+        width: 50px;
+
+        .song-cover-container {
+            position: relative;
+
+            div.song-cover {
+                height: 50px;
+                border-radius: 0.25rem !important;
+                box-shadow: 0 0 8px 0 black;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
+            .song-cover-hover {
+                width: 100%;
+                height: 100%;
+                line-height: 50px;
+                font-size: 1.5rem;
+                text-align: center;
+                transition: 0.3s ease;
+                opacity: 0;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                border-radius: 0.25rem !important;
+            }
+
+            &:hover .song-cover-hover {
+                opacity: 1;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .song-upload-date {
+        font-size: 0.6rem;
+    }
+
+    .dl-remove-btn {
+        min-width: 0;
+        width: 100%;
+        padding: 0;
+        height: 100%;
+    }
+    .progress-text {
+        font-size: 0.75rem;
+    }
+}
+
+:host ::ng-deep .p-progressbar {
+    height: 1.25rem;
+
+    .p-progressbar-label {
+        top: 50%;
+    }
+}

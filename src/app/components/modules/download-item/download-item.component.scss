@@ -1,0 +1,20 @@
+.download-item-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    bottom: 0;
+    z-index: 1;
+    width: 95vw;
+
+    > .download-item-box {
+        width: 100%;
+        height: auto;
+        background-color: var(--surface-f);
+        box-shadow: 0 0 8px 1px white;
+        border-radius: 0.25rem;
+        margin: 0.25rem;
+        padding: 0.25rem;
+    }
+}

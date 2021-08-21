@@ -1,0 +1,9 @@
+<div class="download-item-container">
+    <div class="download-item-box" *ngFor="let dlItem of downloadsArr">
+        <span>Download: {{ dlItem.filename }}</span>
+        <div>
+            <span *ngIf="dlItem.progress" class="pr-2">Progress: {{ dlItem.progress }}</span>
+            <span>State: {{ dlItem.state }}</span>
+        </div>
+    </div>
+</div>

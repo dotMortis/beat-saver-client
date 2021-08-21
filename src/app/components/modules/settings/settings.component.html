@@ -1,0 +1,110 @@
+<p-sidebar [(visible)]="optService.visible" position="right">
+    <p-scrollPanel [style]="{ width: '100%', height: '100%' }" styleClass="custombar1">
+        <div class="row justify-content-between py-2">
+            <div class="col-12 pb-4">
+                <span
+                    pTooltip="BeatSaber installation folder"
+                    class="p-field p-input-icon-right w-100"
+                >
+                    <i
+                        *ngIf="!bsInstallPath"
+                        pTooltip="Should be set"
+                        class="pi pi-exclamation-triangle text-warning"
+                    ></i>
+                    <i
+                        *ngIf="optService.settings?.bsInstallPath?.error && !dirty.has('BIP')"
+                        pTooltip="{{ optService.settings?.bsInstallPath?.error }}"
+                        class="pi pi-exclamation-circle text-danger"
+                    ></i>
+                    <i
+                        *ngIf="
+                            !optService.settings?.bsInstallPath?.error &&
+                            bsInstallPath &&
+                            !dirty.has('BIP')
+                        "
+                        pTooltip="Looks good to me"
+                        class="pi pi-check text-success"
+                    ></i>
+                    <i
+                        *ngIf="bsInstallPath && dirty.has('BIP')"
+                        pTooltip="Save to set changes"
+                        class="pi pi-save text-warning"
+                    ></i>
+                    <input
+                        class="w-100 p-inputtext-sm"
+                        placeholder="Installation Folder"
+                        type="text"
+                        pInputText
+                        [(ngModel)]="bsInstallPath"
+                    />
+                </span>
+            </div>
+            <div class="col-12 pb-4">
+                <span pTooltip="BeatSaber AppData folder" class="p-input-icon-right w-100">
+                    <i
+                        *ngIf="!bsAppDataPath"
+                        pTooltip="Should be set"
+                        class="pi pi-exclamation-triangle text-warning"
+                    ></i>
+                    <i
+                        *ngIf="optService.settings?.bsAppDataPath?.error && !dirty.has('BADP')"
+                        pTooltip="{{ optService.settings?.bsAppDataPath?.error }}"
+                        class="pi pi-exclamation-circle text-danger"
+                    ></i>
+                    <i
+                        *ngIf="
+                            !optService.settings?.bsAppDataPath?.error &&
+                            bsAppDataPath &&
+                            !dirty.has('BADP')
+                        "
+                        pTooltip="Looks good to me"
+                        class="pi pi-check text-success"
+                    ></i>
+                    <i
+                        *ngIf="bsAppDataPath && dirty.has('BADP')"
+                        pTooltip="Save to set changes"
+                        class="pi pi-save text-warning"
+                    ></i>
+                    <input
+                        class="w-100 p-inputtext-sm"
+                        placeholder="AppData folder"
+                        type="text"
+                        pInputText
+                        [(ngModel)]="bsAppDataPath"
+                    />
+                </span>
+            </div>
+            <div class="col-12">
+                <p-dropdown
+                    [options]="selectablePlayerNames"
+                    [(ngModel)]="selectedPlayerName"
+                    placeholder="Select a Player"
+                    optionLabel="name"
+                    [showClear]="false"
+                    [styleClass]="'w-100'"
+                ></p-dropdown>
+            </div>
+            <hr class="col-12" />
+            <div class="col-auto">
+                <button
+                    pButton
+                    pRipple
+                    label="Save"
+                    class="col-6 p-button-success p-button-sm"
+                    (click)="onSave()"
+                    [disabled]="!dirty.size"
+                ></button>
+            </div>
+            <div class="col-auto">
+                <button
+                    pButton
+                    pRipple
+                    label="Reset"
+                    class="p-button-warning p-button-sm"
+                    (click)="onReset()"
+                    [disabled]="!dirty.size"
+                ></button>
+            </div>
+        </div>
+    </p-scrollPanel>
+</p-sidebar>

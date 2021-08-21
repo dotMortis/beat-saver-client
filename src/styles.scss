@@ -1,0 +1,37 @@
+/* Importing Bootstrap SCSS file. */
+@import "~bootstrap/scss/bootstrap";
+
+body {
+    margin: 0;
+    height: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--surface-b);
+    font-family: var(--font-family);
+    font-weight: 400;
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+}
+
+hr {
+    border-color: var(--font-family);
+}
+
+.p-scrollpanel {
+    &.custombar1 {
+        .p-scrollpanel-wrapper {
+            border-right: 9px solid var(--layer-1);
+        }
+
+        .p-scrollpanel-bar {
+            background-color: var(--primary-color);
+            opacity: 1;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #007ad9;
+            }
+        }
+    }
+}

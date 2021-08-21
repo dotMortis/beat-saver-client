@@ -1,0 +1,15 @@
+:host ::ng-deep {
+    .song-preview-dialog {
+        border-radius: 10px;
+        box-shadow: 0 0 5px 0 white;
+        overflow: hidden;
+    }
+}
+
+.p-unselectable-text {
+    :host ::ng-deep .song-preview-dialog {
+        border-radius: 10px;
+        box-shadow: 0 0 10px 0 white;
+        overflow: hidden;
+    }
+}

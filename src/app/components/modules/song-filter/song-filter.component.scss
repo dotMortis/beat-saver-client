@@ -1,0 +1,47 @@
+.search-bar {
+    border-radius: 0.25rem;
+    background-color: var(--surface-b);
+    transition-duration: 0.2s; /* delays for 1 second */
+    -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+    box-shadow: 0 0 4px -1px white;
+    &:hover {
+        box-shadow: 0 0 6px 1px white;
+    }
+}
+
+:host ::ng-deep .bool-filter {
+    .p-multiselect-label {
+        padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: 0;
+        margin-left: 0;
+
+        > div {
+            padding-right: 0;
+            padding-left: 0;
+            padding-top: 0.214rem;
+            padding-bottom: 0.214rem;
+        }
+    }
+
+    .p-multiselect-item {
+        padding: 0.25em 1rem;
+    }
+
+    .p-multiselect-item-group {
+        padding: 1rem 1rem 0 1rem;
+    }
+}
+
+:host ::ng-deep .p-calendar {
+    > .p-inputtext {
+        padding: 0.714rem 1rem;
+    }
+}
+
+:host ::ng-deep .p-dropdown {
+    > .p-dropdown-label {
+        padding: 0.714rem 1rem;
+    }
+}

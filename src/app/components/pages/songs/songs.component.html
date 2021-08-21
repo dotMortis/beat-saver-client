@@ -1,0 +1,20 @@
+<app-song-filter></app-song-filter>
+<div class="row gy-5 gx-5">
+    <app-song-card
+        *ngFor="let doc of apiService.tSearchResult?.docs"
+        class="col-12 col-lg-6 mb-4"
+        [tMapDetail]="doc"
+    ></app-song-card>
+
+    <div class="col-12">
+        <button
+            *ngIf="apiService.canLoadMore && apiService.tSearchResult?.docs?.length"
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-chevron-down"
+            class="w-100 p-button-sm"
+            (click)="onSearch(true)"
+        ></button>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+.song-stats-container {
+    margin-bottom: -0.45rem;
+    font-size: 0.75rem;
+    .voted {
+        &.upvote {
+            color: var(--success);
+        }
+        &.downvote {
+            color: var(--danger);
+        }
+    }
+}

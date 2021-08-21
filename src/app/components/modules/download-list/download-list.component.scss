@@ -1,0 +1,10 @@
+:host ::ng-deep .p-scrollpanel {
+    &.custombar1 {
+        .p-scrollpanel-bar-x {
+            background-color: var(--layer-2);
+            border-radius: 0;
+            opacity: 1;
+            transition: background-color 0.2s;
+        }
+    }
+}
