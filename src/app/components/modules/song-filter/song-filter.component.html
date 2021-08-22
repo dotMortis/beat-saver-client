@@ -85,7 +85,6 @@
                 [(ngModel)]="apiService.dateRange"
                 selectionMode="range"
                 [readonlyInput]="true"
-                inputId="range"
                 [maxDate]="currentDate"
                 dateFormat="dd/mm/y"
                 [styleClass]="'w-100'"
@@ -94,7 +93,7 @@
                 [monthNavigator]="true"
                 yearRange="2018:{{ currentYear }}"
                 [showButtonBar]="true"
-                [touchUI]="true"
+                [touchUI]="false"
                 (onSelect)="onDateRangeSelect()"
             ></p-calendar>
         </div>
