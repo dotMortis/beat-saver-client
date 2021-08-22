@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { ipcRendererInvoke, ipcRendererSend } from '../../models/electron/electron.register';
 import {
     TInvokeIsInstalled,
@@ -14,7 +14,6 @@ import { NotifyService } from './notify.service';
     providedIn: 'root'
 })
 export class InstalledSongsService {
-    @Output()
     public installedSongsReloaded: EventEmitter<void>;
 
     constructor(private _eleService: ElectronService, private _notify: NotifyService) {

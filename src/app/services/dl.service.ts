@@ -1,5 +1,5 @@
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { EventEmitter, Injectable, Input, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
 import { TMapDetail, TMapVersion } from '../../models/api.models';
@@ -21,7 +21,6 @@ export class DlService {
     private _activeDownloads: number;
     //#region visible
     private _visible: boolean;
-    @Input()
     set visible(val: boolean) {
         if (this._visible !== val) {
             this._visible = val;
@@ -31,7 +30,6 @@ export class DlService {
     get visible(): boolean {
         return this._visible;
     }
-    @Output()
     visibleChange: EventEmitter<boolean>;
     //#endregion
 

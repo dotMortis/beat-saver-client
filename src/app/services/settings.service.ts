@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Input, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { ipcRendererInvoke } from '../../models/electron/electron.register';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../models/electron/invoke.channels';
 import { TSettings } from '../../models/settings.model';
@@ -10,7 +10,6 @@ import { ElectronService } from './electron.service';
 export class SettingsService {
     //#region visible
     private _visible: boolean;
-    @Input()
     set visible(val: boolean) {
         if (this._visible !== val) {
             this._visible = val;
@@ -20,7 +19,6 @@ export class SettingsService {
     get visible(): boolean {
         return this._visible;
     }
-    @Output()
     visibleChange: EventEmitter<boolean>;
     //#endregion
 
@@ -29,7 +27,6 @@ export class SettingsService {
     get settings(): TSettings | undefined {
         return this._settings;
     }
-    @Output()
     settingsChange: EventEmitter<TSettings>;
     //#endregion
 
