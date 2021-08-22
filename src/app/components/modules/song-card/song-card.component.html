@@ -59,9 +59,9 @@
             {{ tMapDetail?.uploader?.name || 'N/A' }}
         </a>
         <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
-        <span class="row no-gutters justify-content-start">
+        <span *ngFor="let groupedDif of diffsArr" class="row no-gutters justify-content-start">
             <app-difficulty-tag
-                *ngFor="let dif of latestVersion?.diffs"
+                *ngFor="let dif of groupedDif[1]"
                 class="col-auto pr-1"
                 [tMapDifficulty]="dif"
             ></app-difficulty-tag>

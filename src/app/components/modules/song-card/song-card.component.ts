@@ -1,7 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, Input, OnInit } from '@angular/core';
 import { mergeMap } from 'rxjs/operators';
-import { TMapDetail, TMapVersion } from '../../../../models/api.models';
+import { ApiHelpers } from '../../../../models/api.helpers';
+import {
+    ECharacteristic,
+    TMapDetail,
+    TMapDifficulty,
+    TMapVersion
+} from '../../../../models/api.models';
 import { TInstalled } from '../../../../models/download.model';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
@@ -23,6 +29,14 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     @Input() tMapDetail?: TMapDetail;
     public tLevelStatsInfo?: TLevelStatsInfo;
     public isInstalledSong: { status: TInstalled };
+    public latestVersion?: TMapVersion;
+    public uploadTimeInfo?: string | Date;
+
+    private _diffs?: Map<ECharacteristic, TMapDifficulty[]>;
+
+    get diffsArr(): Array<[ECharacteristic, TMapDifficulty[]]> | undefined {
+        return this._diffs ? Array.from(this._diffs) : undefined;
+    }
 
     get songNameShort(): string {
         return this.tMapDetail?.name?.length && this.tMapDetail?.name?.length > 70
@@ -37,9 +51,6 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         if (this.latestVersion) return this.dlService.has(this.latestVersion);
         else return false;
     }
-
-    public latestVersion?: TMapVersion;
-    public uploadTimeInfo?: string | Date;
 
     constructor(
         public songPreviewService: SongPreviewService,
@@ -61,6 +72,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             )
             .pop();
         if (this.latestVersion != null) {
+            this._diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
                 .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error))
