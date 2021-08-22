@@ -96,8 +96,6 @@ export class SongFilterComponent {
     }
 
     onDateRangeSelect() {
-        console.log(this.apiService.dateRange, this.apiService.dateRange);
-
         if (
             this.apiService.dateRange &&
             this.apiService.dateRange[0] &&
