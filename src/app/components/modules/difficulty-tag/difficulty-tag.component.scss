@@ -3,10 +3,13 @@
     -webkit-border-radius: 1rem;
     border-radius: 1rem;
     background-color: black;
-    padding: 0rem 0.5rem 0.1rem 0.3rem;
+    padding: 0 0.3rem;
     white-space: -moz-nowrap; /* Firefox */
     white-space: -o-nowrap; /* Opera */
     white-space: nowrap; /* Chrome */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &.Easy {
         background-color: var(--teal);
@@ -25,7 +28,8 @@
     }
 
     > .dif-icon {
-        padding-right: 0.25rem;
+        margin-right: 0.25rem;
+        height: 14px;
     }
 
     > .dif-label {
