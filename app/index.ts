@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from 'electron';
+import { Rectangle } from 'electron/main';
 import { join, resolve } from 'path';
 import * as winston from 'winston';
+import { WindowStorage } from './models/helpers/windowStorage.model';
 import { DownloadSender } from './senders/download.sender';
 
 const logger = winston.createLogger({
@@ -8,11 +10,11 @@ const logger = winston.createLogger({
     format: winston.format.json(),
     transports: [
         new winston.transports.File({
-            filename: join(app.getPath('appData'), 'beat-saver-ui', 'logs', 'error.log'),
+            filename: join(app.getPath('appData'), app.getName(), 'logs', 'error.log'),
             level: 'error'
         }),
         new winston.transports.File({
-            filename: join(app.getPath('appData'), 'beat-saver-ui', 'logs', 'combined.log')
+            filename: join(app.getPath('appData'), app.getName(), 'logs', 'combined.log')
         }),
         new winston.transports.Console({ level: 'debug' })
     ]
@@ -21,9 +23,10 @@ class IndexElectron {
     private _app: typeof app;
     private _serve: boolean;
     private _debug: boolean;
-    private _windows?: BrowserWindow | null;
+    private _window?: BrowserWindow | null;
     private _loaders: Map<string, { path: string; loader: any }>;
     private _sender: Map<string, any>;
+    private _windowStorage: WindowStorage;
 
     constructor(eleApp: typeof app, loaderPaths: string[]) {
         logger.debug('construct app');
@@ -40,6 +43,7 @@ class IndexElectron {
             ])
         );
         this._sender = new Map<string, any>();
+        this._windowStorage = new WindowStorage();
         logger.debug('finish construct app');
     }
 
@@ -67,6 +71,7 @@ class IndexElectron {
         logger.debug('_startApp');
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
+            this._windowStorage.init();
             this._createWindow();
         });
 
@@ -84,7 +89,7 @@ class IndexElectron {
             logger.debug('_startApp activate');
             // On macOS it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open.
-            if (this._windows === null) {
+            if (this._window === null) {
                 this._createWindow();
             }
         });
@@ -94,37 +99,53 @@ class IndexElectron {
     private _createWindow(): void {
         logger.debug('_createWindow');
         // Create the browser window.
-        this._windows = new BrowserWindow({
-            width: 800,
-            height: 600,
+
+        let bounds: Rectangle;
+        if (this._windowStorage.data) {
+            bounds = this._windowStorage.data.bounds;
+        } else {
+            bounds = this._windowStorage.init().bounds;
+        }
+        this._window = new BrowserWindow({
+            width: bounds.width,
+            height: bounds.height,
+            x: bounds.x,
+            y: bounds.y,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false
-            }
+            },
+            minHeight: 450,
+            minWidth: 600
         });
 
-        this._sender.set('download', new DownloadSender(this._windows));
+        this._sender.set('download', new DownloadSender(this._window));
 
         if (this._serve) {
             logger.debug('_createWindow serve');
-            // and load the index.html of the app.
-            this._windows.loadURL('http://localhost:4200');
+            this._window.loadURL('http://localhost:4200');
         } else {
             const path = resolve(__dirname, '..', 'ui', 'index.html');
             logger.debug('_createWindow prod ' + path);
-            this._windows.loadFile(path);
+            this._window.loadFile(path);
         }
 
-        // Open the DevTools.
-        if (this._debug) this._windows.webContents.openDevTools();
+        if (this._debug) this._window.webContents.openDevTools();
+
+        this._window.on('close', (event: Electron.Event) => {
+            if (this._window) {
+                this._windowStorage.saveCurrentState(this._window);
+            }
+        });
 
         // Emitted when the window is closed.
-        this._windows.on('closed', () => {
+        this._window.on('closed', () => {
             logger.debug('_createWindow closed');
+
             // Dereference the window object, usually you would store windows
             // in an array if your app supports multi windows, this is the time
             // when you should delete the corresponding element.
-            this._windows = null;
+            this._window = null;
         });
         logger.debug('finish _createWindow');
     }

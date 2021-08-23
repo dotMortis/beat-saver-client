@@ -2,7 +2,7 @@ export type TSettings = {
     bsInstallPath: TSetting<string | undefined, 'FODLER', 'EXIST', true, undefined>;
     bsAppDataPath: TSetting<string | undefined, 'FODLER', 'EXIST', true, undefined>;
     playerName: TSetting<string | undefined, 'ANY', 'NONE', true, undefined>;
-    expandAllSongCards: TSetting<boolean, 'ANY', 'NONE', false, false>;
+    expandAllSongCards: TSetting<boolean, 'ANY', 'NONE', true, false>;
 };
 
 export type TSetting<
