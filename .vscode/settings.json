@@ -17,21 +17,13 @@
     },
     "peacock.color": "#b52e31",
     "angular.enable-strict-mode-prompt": false,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[prisma]": {
-        "editor.defaultFormatter": "Prisma.prisma"
-    },
-    "[markdown]": {
-        "editor.wordWrap": "on",
-        "editor.quickSuggestions": false,
-        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    },
-    //"editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         // For ESLint
         "source.fixAll.eslint": true,
         "source.organizeImports": true
     },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
@@ -40,5 +32,13 @@
     },
     "[scss]": {
         "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
-    }
+    },
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "on",
+        "editor.quickSuggestions": false,
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    },
 }
