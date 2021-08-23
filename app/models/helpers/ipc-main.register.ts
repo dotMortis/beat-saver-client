@@ -19,7 +19,7 @@ export class IpcHelerps {
         channel: SEND_TYPE['channel'],
         cb: (event: Electron.IpcMainInvokeEvent, args: SEND_TYPE['args']) => void
     ): SEND_TYPE['channel'] {
-        ipcMain.on('LOG_DEBUG', cb);
+        ipcMain.on(channel, cb);
         //appLogger()?.debug(`[Registered ipcMainSend]:\t${channel}`);
         return channel;
     }

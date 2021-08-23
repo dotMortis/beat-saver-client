@@ -53,3 +53,16 @@ export type TInvokeInstallSong = TInvoke<
     { result: boolean | Error }
 >;
 //#endregion
+
+//#region CACHE
+export type TInvokeWriteCache<DATA> = TInvoke<
+    'WRITE_CACHE',
+    { name: string; data: DATA },
+    void | Error
+>;
+export type TInvokeReadCache<DATA> = TInvoke<
+    'READ_CACHE',
+    { name: string },
+    { data: DATA } | Error
+>;
+//#endregion

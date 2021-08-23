@@ -2,6 +2,9 @@ import { app, BrowserWindow } from 'electron';
 import { Rectangle } from 'electron/main';
 import { join, resolve } from 'path';
 import * as winston from 'winston';
+import { TSendClose, TSendReadyClose } from '../src/models/electron/send.channels';
+import { IpcHelerps } from './models/helpers/ipc-main.register';
+import { webContentsSend } from './models/helpers/web-contents-send.register';
 import { WindowStorage } from './models/helpers/windowStorage.model';
 import { DownloadSender } from './senders/download.sender';
 
@@ -132,16 +135,32 @@ class IndexElectron {
 
         if (this._debug) this._window.webContents.openDevTools();
 
+        let isReadyToClose = false;
         this._window.on('close', (event: Electron.Event) => {
-            if (this._window) {
+            if (!isReadyToClose && this._window) {
+                IpcHelerps.ipcMainOn<TSendReadyClose>(
+                    'ON_READY_CLOSE',
+                    (event: Electron.IpcMainInvokeEvent) => {
+                        isReadyToClose = true;
+                        this._window?.close();
+                    }
+                );
+                webContentsSend<TSendClose>(this._window, 'ON_CLOSE', undefined);
+                new Promise<void>(res => {
+                    setTimeout(() => {
+                        isReadyToClose = true;
+                        this._window?.close();
+                    }, 30 * 1000);
+                });
+                return event.preventDefault();
+            } else if (this._window) {
                 this._windowStorage.saveCurrentState(this._window);
             }
         });
 
         // Emitted when the window is closed.
-        this._window.on('closed', () => {
+        this._window.on('closed', (event: Electron.Event) => {
             logger.debug('_createWindow closed');
-
             // Dereference the window object, usually you would store windows
             // in an array if your app supports multi windows, this is the time
             // when you should delete the corresponding element.
@@ -153,6 +172,7 @@ class IndexElectron {
 
 const loaderRootDir = resolve(__dirname, 'loaders');
 const electronApp = new IndexElectron(app, [
+    join(loaderRootDir, 'cache.loader'),
     join(loaderRootDir, 'logger.loader'),
     join(loaderRootDir, 'settings.loader'),
     join(loaderRootDir, 'played-songs.loader'),

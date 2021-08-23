@@ -4,9 +4,22 @@ import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
 import { TMapDetail, TMapVersion } from '../../models/api.models';
 import { TInstalled, TSongDownloadInfo } from '../../models/download.model';
-import { ipcRendererInvoke, ipcRendererSend } from '../../models/electron/electron.register';
-import { TInvokeInstallSong } from '../../models/electron/invoke.channels';
-import { TSendDebug, TSendError } from '../../models/electron/send.channels';
+import {
+    ipcRendererInvoke,
+    ipcRendererOn,
+    ipcRendererSend
+} from '../../models/electron/electron.register';
+import {
+    TInvokeInstallSong,
+    TInvokeReadCache,
+    TInvokeWriteCache
+} from '../../models/electron/invoke.channels';
+import {
+    TSendClose,
+    TSendDebug,
+    TSendError,
+    TSendReadyClose
+} from '../../models/electron/send.channels';
 import { TSongHash } from '../../models/played-songs.model';
 import { ApiService } from './api.service';
 import { ElectronService } from './electron.service';
@@ -72,6 +85,7 @@ export class DlService {
         this._visible = false;
         this.visibleChange = new EventEmitter<boolean>();
         this._activeInstallations = this._activeDownloads = 0;
+        this._handleQueueCache();
     }
 
     add(
@@ -270,5 +284,52 @@ export class DlService {
                 item.installed.status = false;
             }
         }
+    }
+
+    private _handleQueueCache(): void {
+        ipcRendererOn<TSendClose>(
+            this._eleService,
+            'ON_CLOSE',
+            (event: Electron.IpcRendererEvent) => {
+                try {
+                    this.clearInstalled();
+                    ipcRendererInvoke<TInvokeWriteCache<Array<[TSongHash, TSongDownloadInfo]>>>(
+                        this._eleService,
+                        'WRITE_CACHE',
+                        {
+                            name: 'dl_queue',
+                            data: Array.from(this._dlList)
+                        }
+                    )
+                        .catch(error =>
+                            ipcRendererSend<TSendError>(this._eleService, 'ERROR', error)
+                        )
+                        .finally(() =>
+                            ipcRendererSend<TSendReadyClose>(
+                                this._eleService,
+                                'ON_READY_CLOSE',
+                                undefined
+                            )
+                        );
+                } catch {
+                    ipcRendererSend<TSendReadyClose>(this._eleService, 'ON_READY_CLOSE', undefined);
+                }
+            }
+        );
+        ipcRendererInvoke<TInvokeReadCache<Array<[TSongHash, TSongDownloadInfo]>>>(
+            this._eleService,
+            'READ_CACHE',
+            { name: 'dl_queue' }
+        )
+            .then((result: false | Error | { data: Array<[TSongHash, TSongDownloadInfo]> }) => {
+                if (result && !(result instanceof Error)) {
+                    for (const info of result.data || []) {
+                        this._dlList.set(info[0], info[1]);
+                    }
+                } else if (result instanceof Error) {
+                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', result);
+                }
+            })
+            .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error));
     }
 }
