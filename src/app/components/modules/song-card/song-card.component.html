@@ -59,7 +59,7 @@
             {{ tMapDetail?.uploader?.name || 'N/A' }}
         </a>
         <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
-        <span *ngFor="let groupedDif of diffsArr" class="row no-gutters justify-content-start">
+        <span *ngFor="let groupedDif of diffsArr; let last = last" [ngClass]="{'row no-gutters justify-content-start': true, 'pb-1': !last}">
             <app-difficulty-tag
                 *ngFor="let dif of groupedDif[1]"
                 class="col-auto pr-1"
@@ -85,11 +85,17 @@
             ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
         ></a>
     </div>
-    <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
-        <app-player-stats
-            *ngIf="statInfo.playCount > 0"
-            [ngClass]="{ 'col-12': true, 'pb-2': !last }"
-            [stats]="statInfo"
-        ></app-player-stats>
-    </ng-container>
+    <div class="mb-2 col-12">
+        <app-difficulty-card [groupedDifs]="diffs"></app-difficulty-card>
+    </div>
+    <div *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0" class="col-12 row no-gutters player-stats">
+        <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
+            <app-player-stats
+                *ngIf="statInfo.playCount > 0"
+                [ngClass]="{ 'col-12': true, 'player-stats-item-border': !last }"
+                [stats]="statInfo"
+            ></app-player-stats>
+        </ng-container>
+    </div>
+    
 </div>

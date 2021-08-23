@@ -35,7 +35,8 @@
         background-size: contain;
         background-repeat: no-repeat;
         background-color: rgba(255, 193, 7, 0.1);
-        &.song-installed {
+        &.song-installed,
+        &.song-installed-fav {
             background-color: rgba(28, 255, 7, 0.1);
         }
     }
@@ -98,5 +99,15 @@
     }
     .song-qiali-icon {
         color: var(--cyan-500);
+    }
+
+    .player-stats {
+        border-radius: 0.25rem;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        .player-stats-item-border {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
     }
 }

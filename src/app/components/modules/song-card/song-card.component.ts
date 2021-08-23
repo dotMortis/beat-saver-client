@@ -33,15 +33,27 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     public uploadTimeInfo?: string | Date;
 
     private _diffs?: Map<ECharacteristic, TMapDifficulty[]>;
-
+    get diffs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
+        return this._diffs;
+    }
+    set diffs(value: Map<ECharacteristic, TMapDifficulty[]> | undefined) {
+        this._diffs = value;
+        this._diffsArr = this._diffs ? Array.from(this._diffs) : undefined;
+    }
+    private _diffsArr?: Array<[ECharacteristic, TMapDifficulty[]]>;
     get diffsArr(): Array<[ECharacteristic, TMapDifficulty[]]> | undefined {
-        return this._diffs ? Array.from(this._diffs) : undefined;
+        return this._diffsArr;
     }
 
+    private _songNameShort: string;
     get songNameShort(): string {
-        return this.tMapDetail?.name?.length && this.tMapDetail?.name?.length > 70
-            ? `${this.tMapDetail?.name.slice(0, 70)}...`
-            : this.tMapDetail?.name || 'N/A';
+        if (this._songNameShort === 'N/A' && this.tMapDetail?.name) {
+            this._songNameShort =
+                this.tMapDetail.name.length > 70
+                    ? `${this.tMapDetail?.name.slice(0, 70)}...`
+                    : this.tMapDetail?.name || 'N/A';
+        }
+        return this._songNameShort;
     }
     get songName(): string {
         return this.tMapDetail?.name || 'N/A';
@@ -63,6 +75,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     ) {
         super();
         this.isInstalledSong = { status: false };
+        this._songNameShort = 'N/A';
     }
 
     ngOnInit(): void {
@@ -72,7 +85,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             )
             .pop();
         if (this.latestVersion != null) {
-            this._diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
+            this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
                 .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error))
