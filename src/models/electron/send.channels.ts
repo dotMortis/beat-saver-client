@@ -26,3 +26,8 @@ export type TDownloadActionInfo = {
     id: string;
 };
 //#endregion
+
+//#region CLOSE
+export type TSendClose = TSend<'ON_CLOSE', void>;
+export type TSendReadyClose = TSend<'ON_READY_CLOSE', void>;
+//#endregion
