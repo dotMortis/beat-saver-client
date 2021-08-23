@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { mergeMap } from 'rxjs/operators';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { mergeMap, tap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../../models/api.helpers';
 import {
     ECharacteristic,
@@ -19,6 +19,7 @@ import { InstalledSongsService } from '../../../services/installed-songs.service
 import { NotifyService } from '../../../services/notify.service';
 import { PlayerStatsService } from '../../../services/player-stats.service';
 import { SongPreviewService } from '../song-preview/song-preview.service';
+import { SongCardService } from './song-card.service';
 
 @Component({
     selector: 'app-song-card',
@@ -26,6 +27,10 @@ import { SongPreviewService } from '../song-preview/song-preview.service';
     styleUrls: ['./song-card.component.scss']
 })
 export class SongCardComponent extends UnsubscribeComponent implements OnInit {
+    @HostListener('window:resize', ['$event'])
+    onResize(event: Event) {
+        this.isMobile = window.innerWidth < 992;
+    }
     @Input() tMapDetail?: TMapDetail;
     public tLevelStatsInfo?: TLevelStatsInfo;
     public isInstalledSong: { status: TInstalled };
@@ -40,6 +45,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     set expanded(value: boolean) {
         if (value !== this._expanded) this._expanded = value;
     }
+
     @Output()
     public expandedChange: EventEmitter<boolean>;
 
@@ -70,6 +76,14 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         return this.tMapDetail?.name || 'N/A';
     }
 
+    private _isMobile: boolean;
+    get isMobile(): boolean {
+        return this._isMobile;
+    }
+    set isMobile(val: boolean) {
+        if (val !== this._isMobile) this._isMobile = val;
+    }
+
     get inQueue(): boolean {
         if (this.latestVersion) return this.dlService.has(this.latestVersion);
         else return false;
@@ -82,16 +96,25 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         public dlService: DlService,
         private _eleService: ElectronService,
         private _notify: NotifyService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
+        private _songCardService: SongCardService
     ) {
         super();
         this.isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
         this.expandedChange = new EventEmitter<boolean>();
-        this._expanded = false;
+        this._expanded = this._songCardService.expandAll;
+        this._isMobile = window.innerWidth < 992;
     }
 
     ngOnInit(): void {
+        this.addSub(
+            this._songCardService.expandAllChange.pipe(
+                tap((val: boolean) => {
+                    if (this.expanded !== val) this.expanded = val;
+                })
+            )
+        );
         this.latestVersion = this.tMapDetail?.versions
             .sort((a: TMapVersion, b: TMapVersion) =>
                 a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1

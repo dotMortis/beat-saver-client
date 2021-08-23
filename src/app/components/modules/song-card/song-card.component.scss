@@ -1,42 +1,72 @@
 .song-card-container {
-    padding: 0.5rem !important;
     border-radius: 0.25rem !important;
-    background-color: var(--surface-f);
-    transition-duration: 0.2s; /* delays for 1 second */
-    -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+    background-color: transparent;
 
-    box-shadow: 0 0 4px -1px white;
-    &:hover {
-        box-shadow: 0 0 6px 1px white;
+    .main-frame {
+        border-radius: 0.25rem;
+        background-color: var(--surface-f);
+        box-shadow: 0 0 4px -1px white;
+        transition-duration: 0.2s; /* delays for 1 second */
+        -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+        transition-timing-function: ease-in-out;
+        -webkit-transition-timing-function: ease-in-out; /* for Safari & Chrome */
+        transition-property: background, box-shadow;
+        -webkit-transition-property: background, box-shadow; /* for Safari & Chrome */
+        &:hover {
+            box-shadow: 0 0 6px 1px white;
+        }
+    }
+
+    .expand-frame {
+        transition-duration: 0.2s; /* delays for 1 second */
+        -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+        transition-timing-function: ease-in-out;
+        -webkit-transition-timing-function: ease-in-out; /* for Safari & Chrome */
+        transition-property: box-shadow;
+        -webkit-transition-property: box-shadow; /* for Safari & Chrome */
+        background-color: var(--surface-c);
+        border-radius: 0.25rem;
+        overflow: hidden;
+        box-shadow: 0 0 4px -1px white;
+        &:hover {
+            box-shadow: 0 0 6px 1px white;
+        }
+    }
+
+    .in-queue {
+        background-image: url("../../../../assets/in-queue.png");
+        background-color: rgba(255, 193, 7, 0.1);
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
     }
 
     &.song-installed {
-        box-shadow: 1px 1px 3px -1px white, -1px -1px 3px -1px #28a745;
-        &:hover {
-            box-shadow: 2px 2px 6px 1px white, -2px -2px 6px 1px #28a745;
+        .main-frame {
+            box-shadow: 1px 1px 3px -1px white, -1px -1px 3px -1px #28a745;
+            &:hover {
+                box-shadow: 2px 2px 6px 1px white, -2px -2px 6px 1px #28a745;
+            }
+        }
+
+        .in-queue {
+            background-color: rgba(28, 255, 7, 0.1);
         }
     }
-    &.song-fav {
+    &.song-fav .main-frame {
         box-shadow: 1px 1px 3px -1px #fccc55, -1px -1px 3px -1px white;
         &:hover {
             box-shadow: 2px 2px 6px 1px #fccc55, -2px -2px 6px 1px white;
         }
     }
     &.song-installed-fav {
-        box-shadow: 1px 1px 3px -1px #fccc55, -1px -1px 3px -1px #28a745;
-        &:hover {
-            box-shadow: 2px 2px 6px 1px #fccc55, -2px -2px 6px 1px #28a745;
+        .main-frame {
+            box-shadow: 1px 1px 3px -1px #fccc55, -1px -1px 3px -1px #28a745;
+            &:hover {
+                box-shadow: 2px 2px 6px 1px #fccc55, -2px -2px 6px 1px #28a745;
+            }
         }
-    }
-
-    &.in-queue {
-        background-image: url("../../../../assets/in-queue.png");
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-color: rgba(255, 193, 7, 0.1);
-        &.song-installed,
-        &.song-installed-fav {
+        .in-queue {
             background-color: rgba(28, 255, 7, 0.1);
         }
     }
@@ -46,7 +76,6 @@
     }
 
     .song-installed-icon {
-        padding-right: 0.25rem;
         color: var(--success);
     }
 
@@ -108,6 +137,16 @@
 
         .player-stats-item-border {
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    .expand-btn {
+        box-shadow: 0 0 2px 0 var(--primary);
+        border-radius: 0.25rem;
+        transition-duration: 0.2s; /* delays for 1 second */
+        -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+        &:hover {
+            box-shadow: 0 0 4px 0 var(--primary);
         }
     }
 }

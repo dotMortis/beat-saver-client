@@ -67,6 +67,19 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         else if (this.dirty.has('BADP')) this.dirty.delete('BADP');
     }
 
+    private _expandAllSongCards: boolean | undefined;
+    get expandAllSongCards(): boolean | undefined {
+        return this._expandAllSongCards;
+    }
+    set expandAllSongCards(val: boolean | undefined) {
+        if (this._expandAllSongCards !== val) {
+            this._expandAllSongCards = val;
+        }
+        if (this._isInit && val !== this.optService.settings?.expandAllSongCards.value)
+            this.dirty.add('EXPSC');
+        else if (this.dirty.has('EXPSC')) this.dirty.delete('EXPSC');
+    }
+
     constructor(
         public optService: SettingsService,
         public installedSongsService: InstalledSongsService,
@@ -106,7 +119,8 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
             this.optService.setOptUnsaved({
                 bsAppDataPath: this.bsAppDataPath,
                 bsInstallPath: this.bsInstallPath,
-                playerName: this.selectedPlayerName?.name
+                playerName: this.selectedPlayerName?.name,
+                expandAllSongCards: this.expandAllSongCards || false
             });
             const saveResult = await this.optService.saveSettings().catch(error => {
                 ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
@@ -156,13 +170,22 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
     }
 
     private _setValues(settings: TSettings): void {
-        const { bsAppDataPath, bsInstallPath, playerName } = settings;
-        this.bsAppDataPath = bsAppDataPath.value;
-        this.bsInstallPath = bsInstallPath.value;
-        if (playerName.value) {
-            this.selectedPlayerName = { name: playerName.value };
+        const { bsAppDataPath, bsInstallPath, playerName, expandAllSongCards } = settings;
+        this.bsAppDataPath =
+            bsAppDataPath.value != null ? bsAppDataPath.value : bsAppDataPath.default;
+        this.bsInstallPath =
+            bsInstallPath.value != null ? bsInstallPath.value : bsInstallPath.default;
+        this.expandAllSongCards =
+            expandAllSongCards.value != null
+                ? expandAllSongCards.value
+                : expandAllSongCards.default;
+        const tempPlayerName = playerName.value || playerName.default;
+        if (tempPlayerName) {
+            this.selectedPlayerName = {
+                name: tempPlayerName
+            };
             this.playerStatsService.selectedPlayer = {
-                name: playerName.value
+                name: tempPlayerName
             };
         }
     }

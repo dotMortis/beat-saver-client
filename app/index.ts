@@ -144,7 +144,5 @@ electronApp
         logger.debug('Electron started');
     })
     .catch(error => {
-        console.log('ERROR', error);
-
         logger.error(error);
     });

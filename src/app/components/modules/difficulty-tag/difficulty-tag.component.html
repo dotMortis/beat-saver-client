@@ -1,7 +1,7 @@
-<span pTooltip="{{ tMapDifficulty?.characteristic }} / {{label}}" [class]="'dif-tag-container ' + tMapDifficulty?.difficulty">
-    <img
-        [src]="iconUrl"
-        class="dif-icon"
-    />
+<span
+    pTooltip="{{ tMapDifficulty?.characteristic }} / {{ label }}"
+    [class]="'dif-tag-container ' + tMapDifficulty?.difficulty"
+>
+    <img [src]="iconUrl" class="dif-icon" />
     <span class="dif-label">{{ label }}</span>
 </span>

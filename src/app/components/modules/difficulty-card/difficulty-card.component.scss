@@ -37,7 +37,7 @@
             }
 
             .diff-stat-group {
-                min-width: 65px;
+                min-width: 60px;
 
                 .diff-stat-item {
                     display: flex;
@@ -61,6 +61,15 @@
                 .char-label {
                     font-size: 1rem;
                 }
+            }
+
+            .ranked-item {
+                white-space: -moz-nowrap; /* Firefox */
+                white-space: -o-nowrap; /* Opera */
+                white-space: nowrap; /* Chrome */
+                display: flex;
+                align-items: center;
+                font-size: 12px;
             }
         }
     }

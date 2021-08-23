@@ -1,8 +1,10 @@
 <app-song-filter></app-song-filter>
 <div class="row gy-5 gx-5">
     <app-song-card
+        #card
         *ngFor="let doc of apiService.tSearchResult?.docs"
-        class="col-12 col-lg-6 mb-4"
+        class="col-12 mb-4"
+        [class.col-lg-6]="!card.expanded"
         [tMapDetail]="doc"
     ></app-song-card>
 

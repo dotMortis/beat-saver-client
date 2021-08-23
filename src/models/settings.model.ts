@@ -1,19 +1,22 @@
 export type TSettings = {
-    bsInstallPath: TSetting<string | undefined, 'FODLER', 'EXIST', true>;
-    bsAppDataPath: TSetting<string | undefined, 'FODLER', 'EXIST', true>;
-    playerName: TSetting<string | undefined, 'ANY', 'NONE', true>;
+    bsInstallPath: TSetting<string | undefined, 'FODLER', 'EXIST', true, undefined>;
+    bsAppDataPath: TSetting<string | undefined, 'FODLER', 'EXIST', true, undefined>;
+    playerName: TSetting<string | undefined, 'ANY', 'NONE', true, undefined>;
+    expandAllSongCards: TSetting<boolean, 'ANY', 'NONE', false, false>;
 };
 
 export type TSetting<
     T,
     TYPE extends TSettingType,
     CHECK extends TSettingCheck,
-    NULLABLE extends boolean
+    NULLABLE extends boolean,
+    DEFAULT extends T
 > = {
     value: T;
     type: TYPE extends TSettingType ? TYPE : never;
     check: CHECK extends TSettingCheck ? CHECK : never;
     nullable: NULLABLE extends boolean ? NULLABLE : never;
+    default: DEFAULT;
     error?: string;
 };
 

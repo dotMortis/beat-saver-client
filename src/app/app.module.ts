@@ -6,6 +6,10 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faTwitch } from '@fortawesome/free-brands-svg-icons';
 import {
     faCheckCircle,
+    faChevronDown,
+    faChevronLeft,
+    faChevronRight,
+    faChevronUp,
     faCloudDownloadAlt,
     faDownload,
     faFileArchive,
@@ -64,7 +68,11 @@ export class AppModule {
             faLink,
             faCheckCircle,
             faTrophy,
-            faGraduationCap
+            faGraduationCap,
+            faChevronUp,
+            faChevronDown,
+            faChevronLeft,
+            faChevronRight
         );
     }
 }

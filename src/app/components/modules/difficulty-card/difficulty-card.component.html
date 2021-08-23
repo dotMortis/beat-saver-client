@@ -1,13 +1,17 @@
 <span class="diff-card-container">
-    <p-dropdown [options]="characteristics" [(ngModel)]="selectedCharacteristic" optionLabel="label">
+    <p-dropdown
+        [options]="characteristics"
+        [(ngModel)]="selectedCharacteristic"
+        optionLabel="label"
+    >
         <ng-template pTemplate="selectedItem">
-            <div class="characteristic-item"  *ngIf="selectedCharacteristic">
+            <div class="characteristic-item" *ngIf="selectedCharacteristic">
                 <img
                     [src]="selectedCharacteristic.icon"
                     pTooltip="{{ selectedCharacteristic.label }}"
                     class="char-icon mr-2"
                 />
-                <span>{{selectedCharacteristic.label}}</span>
+                <span>{{ selectedCharacteristic.label }}</span>
             </div>
         </ng-template>
         <ng-template let-characteristic pTemplate="item">
@@ -17,66 +21,83 @@
                     pTooltip="{{ characteristic.label }}"
                     class="char-icon mr-2"
                 />
-                <span>{{characteristic.label}}</span>
+                <span>{{ characteristic.label }}</span>
             </div>
         </ng-template>
     </p-dropdown>
 
     <div class="w-100 diffs-container mt-2">
-        <div *ngFor="let diff of selectedCharacteristic?.diffs; let last = last" 
+        <div
+            *ngFor="let diff of selectedCharacteristic?.diffs; let last = last"
             [className]="diff.difficulty"
-            [ngClass]="{'row diff-item px-2 py-1': true, 'diff-item-border': !last }">
+            [ngClass]="{ 'row diff-item px-2 py-1': true, 'diff-item-border': !last }"
+        >
             <div class="col characteristic-item">
-                <img
-                    [src]="selectedCharacteristic?.icon"
-                    class="char-icon mr-2"
-                />
+                <img [src]="selectedCharacteristic?.icon" class="char-icon mr-2" />
                 <span class="char-label">{{ getLabel(diff) }}</span>
+            </div>
+            <div *ngIf="diff.stars" class="col ranked-item" pTooltip="Ranked stars">
+                <fa-icon [icon]="['fas', 'star']" class="mr-1"></fa-icon>
+                <span class="char-label">{{ diff.stars }}</span>
             </div>
             <div class="col-auto row no-gutters">
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Parity errors">
-                        <img alt="Parity errors" src="assets/icons/error.png" class="diff-stat-img" >
+                        <img
+                            alt="Parity errors"
+                            src="assets/icons/error.png"
+                            class="diff-stat-img"
+                        />
                         <span>{{ diff.paritySummary.errors }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Parity warnings">
-                        <img alt="Parity warnings" src="assets/icons/warn.png" class="diff-stat-img" >
+                        <img
+                            alt="Parity warnings"
+                            src="assets/icons/warn.png"
+                            class="diff-stat-img"
+                        />
                         <span>{{ diff.paritySummary.warns }}</span>
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Notes">
-                        <img alt="Notes" src="assets/icons/notes.png" class="diff-stat-img" >
+                        <img alt="Notes" src="assets/icons/notes.png" class="diff-stat-img" />
                         <span>{{ diff.notes }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Note jump speed">
-                        <img alt="Note jump speed" src="assets/icons/njs.png" class="diff-stat-img" >
+                        <img
+                            alt="Note jump speed"
+                            src="assets/icons/njs.png"
+                            class="diff-stat-img"
+                        />
                         <span>{{ diff.njs }}</span>
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Bombs">
-                        <img alt="Bombs" src="assets/icons/bombs.png" class="diff-stat-img" >
+                        <img alt="Bombs" src="assets/icons/bombs.png" class="diff-stat-img" />
                         <span>{{ diff.bombs }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Notes per second">
-                        <img alt="Notes per second" src="assets/icons/nps.png" class="diff-stat-img" >
+                        <img
+                            alt="Notes per second"
+                            src="assets/icons/nps.png"
+                            class="diff-stat-img"
+                        />
                         <span>{{ diff.nps }}</span>
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Walls">
-                        <img alt="Walls" src="assets/icons/walls.png" class="diff-stat-img" >
+                        <img alt="Walls" src="assets/icons/walls.png" class="diff-stat-img" />
                         <span>{{ diff.obstacles }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Lights">
-                        <img alt="Lights" src="assets/icons/lights.png" class="diff-stat-img" >
+                        <img alt="Lights" src="assets/icons/lights.png" class="diff-stat-img" />
                         <span>{{ diff.events }}</span>
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
-    
 </span>
