@@ -31,27 +31,11 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
     ngOnInit(): void {
         this.addSub(
             this._settingsService.settingsChange.pipe(
-                tap((settings: TSettings) => {
-                    const { value, default: defaultValue } = settings.expandAllSongCards;
-                    if (
-                        (value != null && this._songCardService.expandAll !== value) ||
-                        (value == null && defaultValue !== this._songCardService.expandAll)
-                    ) {
-                        this._songCardService.expandAll = value != null ? value : defaultValue;
-                    }
-                })
+                tap((settings: TSettings) => this._setCardSettings(settings))
             )
         );
-        if (this._settingsService.settings) {
-            const { value, default: defaultValue } =
-                this._settingsService.settings.expandAllSongCards;
-            if (
-                (value != null && this._songCardService.expandAll !== value) ||
-                (value == null && defaultValue !== this._songCardService.expandAll)
-            ) {
-                this._songCardService.expandAll = value != null ? value : defaultValue;
-            }
-        }
+        this._setCardSettings(this._settingsService.settings);
+        this.onSearch();
     }
 
     onSearch(more: boolean = false): void {
@@ -64,5 +48,17 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
                 })
             )
             .subscribe();
+    }
+
+    private _setCardSettings(settings: TSettings | undefined) {
+        if (settings) {
+            const { value, default: defaultValue } = settings.expandAllSongCards;
+            if (
+                (value != null && this._songCardService.expandAll !== value) ||
+                (value == null && defaultValue !== this._songCardService.expandAll)
+            ) {
+                this._songCardService.expandAll = value != null ? value : defaultValue;
+            }
+        }
     }
 }
