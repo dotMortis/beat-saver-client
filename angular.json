@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "beat-saver-ui": {
+        "beat-saver-client": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -95,24 +95,24 @@
                 "serve": {
                     "builder": "@angular-builders/custom-webpack:dev-server",
                     "options": {
-                        "browserTarget": "beat-saver-ui:build"
+                        "browserTarget": "beat-saver-client:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "beat-saver-ui:build:production"
+                            "browserTarget": "beat-saver-client:build:production"
                         },
                         "development": {
-                            "browserTarget": "beat-saver-ui:build:development"
+                            "browserTarget": "beat-saver-client:build:development"
                         },
                         "web": {
-                            "browserTarget": "beat-saver-ui:build:web"
+                            "browserTarget": "beat-saver-client:build:web"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "beat-saver-ui:build"
+                        "browserTarget": "beat-saver-client:build"
                     }
                 },
                 "test": {
@@ -136,7 +136,7 @@
             }
         }
     },
-    "defaultProject": "beat-saver-ui",
+    "defaultProject": "beat-saver-client",
     "cli": {
         "defaultCollection": "@angular-eslint/schematics"
     }

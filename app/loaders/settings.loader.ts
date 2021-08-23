@@ -8,6 +8,7 @@ import {
     utimesSync,
     writeFileSync
 } from 'fs';
+import { cloneDeep } from 'lodash';
 import * as path from 'path';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../src/models/electron/invoke.channels';
 import { TSettingCheck, TSettings, TSettingType } from '../../src/models/settings.model';
@@ -33,7 +34,7 @@ class Settings {
     private _folderPath: string;
 
     constructor() {
-        this._folderPath = path.join(app.getPath('appData'), 'beat-saver-ui');
+        this._folderPath = path.join(app.getPath('appData'), app.getName());
         this._fullPath = path.join(this._folderPath, 'settings.json');
         this._settings = {
             bsAppDataPath: {
@@ -67,20 +68,11 @@ class Settings {
                 value: false,
                 check: 'NONE',
                 type: 'ANY',
-                nullable: false,
+                nullable: true,
                 default: false
             }
         };
-        try {
-            const fileBuffer = readFileSync(this._fullPath);
-            const savedSettings = JSON.parse(fileBuffer.toString());
-            Object.assign(this._settings, savedSettings);
-            this.validateOpts();
-        } catch {
-            mkdirSync(this._folderPath, { recursive: true });
-            writeFileSync(this._fullPath, JSON.stringify(this._settings), { flag: 'w' });
-            this.validateOpts();
-        }
+        this._settings = this._loadSettings(this._settings);
     }
 
     setOpts(value: TSettings): TSettings {
@@ -88,7 +80,7 @@ class Settings {
         this._settings.bsAppDataPath.value = this._settings.bsAppDataPath?.value?.trim();
         this._settings.bsInstallPath.value = this._settings.bsInstallPath?.value?.trim();
         if (!this.validateOpts()) return this._settings;
-        writeFileSync(this._fullPath, JSON.stringify(this._settings), { flag: 'w' });
+        this._writeSettings(this._settings);
         return this._settings;
     }
 
@@ -106,6 +98,36 @@ class Settings {
             if (opts.error) result = false;
         }
         return result;
+    }
+
+    private _loadSettings(settings: TSettings): TSettings {
+        const settingsClone = cloneDeep(settings);
+        try {
+            const fileBuffer = readFileSync(this._fullPath);
+            const savedSettings = JSON.parse(fileBuffer.toString());
+            for (const key of Object.keys(savedSettings)) {
+                const typedKey = <keyof TSettings>key;
+                if (settingsClone[typedKey]) {
+                    settingsClone[typedKey].value = savedSettings[typedKey].value;
+                }
+            }
+            return this.validateOpts() ? settingsClone : settings;
+        } catch {
+            this._writeSettings(settings);
+            return settings;
+        }
+    }
+
+    private _writeSettings(settings: TSettings): void {
+        const saveData: any = {};
+        for (const key of Object.keys(settings)) {
+            const typedKey = <keyof TSettings>key;
+            saveData[typedKey] = {
+                value: settings[typedKey].value
+            };
+        }
+        mkdirSync(this._folderPath, { recursive: true });
+        writeFileSync(this._fullPath, JSON.stringify(saveData), { flag: 'w' });
     }
 
     private _check(
