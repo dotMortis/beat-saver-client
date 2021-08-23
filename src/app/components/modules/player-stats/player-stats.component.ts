@@ -11,8 +11,12 @@ import { LevelStatsData } from '../../../../models/player-data.model';
 export class PlayerStatsComponent {
     @Input() stats?: LevelStatsData;
 
+    private _iconUrl: string;
     get iconUrl(): string {
-        return ApiHelpers.getCharacteristicIcon(this.stats?.beatmapCharacteristicName) || '';
+        if (!this._iconUrl)
+            this._iconUrl =
+                ApiHelpers.getCharacteristicIcon(this.stats?.beatmapCharacteristicName) || '';
+        return this._iconUrl;
     }
 
     get playCount(): number | undefined {
@@ -31,9 +35,14 @@ export class PlayerStatsComponent {
         return this.stats?.fullCombo;
     }
 
+    private _difficulty?: EDifficulty;
     get difficulty(): EDifficulty | undefined {
-        return ApiHelpers.getDifficulyFromIndex(this.stats?.difficulty);
+        if (!this._difficulty)
+            this._difficulty = ApiHelpers.getDifficulyFromIndex(this.stats?.difficulty);
+        return this._difficulty;
     }
 
-    constructor() {}
+    constructor() {
+        this._iconUrl = '';
+    }
 }

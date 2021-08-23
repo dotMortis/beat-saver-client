@@ -16,10 +16,15 @@ export class DlSongCardComponent extends UnsubscribeComponent implements OnInit 
     @Input() download: number;
     @Input() installError?: Error;
 
+    private _songNameShort: string;
     get songNameShort(): string {
-        return this.tMapDetail?.name?.length && this.tMapDetail?.name?.length > 15
-            ? `${this.tMapDetail?.name.slice(0, 15)}...`
-            : this.tMapDetail?.name || 'N/A';
+        if (this._songNameShort === 'N/A' && this.tMapDetail?.name) {
+            this._songNameShort =
+                this.tMapDetail.name.length > 15
+                    ? `${this.tMapDetail?.name.slice(0, 15)}...`
+                    : this.tMapDetail?.name || 'N/A';
+        }
+        return this._songNameShort;
     }
     get songName(): string {
         return this.tMapDetail?.name || 'N/A';
@@ -31,6 +36,7 @@ export class DlSongCardComponent extends UnsubscribeComponent implements OnInit 
         super();
         this.installed = false;
         this.download = 0;
+        this._songNameShort = 'N/A';
     }
 
     ngOnInit(): void {

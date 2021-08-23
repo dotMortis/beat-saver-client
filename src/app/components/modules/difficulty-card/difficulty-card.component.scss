@@ -1,0 +1,82 @@
+.diff-card-container {
+    .characteristic-item {
+        white-space: -moz-nowrap; /* Firefox */
+        white-space: -o-nowrap; /* Opera */
+        white-space: nowrap; /* Chrome */
+        display: flex;
+        align-items: center;
+    }
+    .char-icon {
+        height: 1rem;
+    }
+
+    .diffs-container {
+        border-radius: 0.25rem;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        .diff-item-border {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .diff-item {
+            &.Easy {
+                background-color: rgba(#20c997, 0.25);
+            }
+            &.Normal {
+                background-color: rgba(#17a2b8, 0.25);
+            }
+            &.Hard {
+                background-color: rgba(#fd7e14, 0.25);
+            }
+            &.Expert {
+                background-color: rgba(#dc3545, 0.25);
+            }
+            &.ExpertPlus {
+                background-color: rgba(#6610f2, 0.25);
+            }
+
+            .diff-stat-group {
+                min-width: 60px;
+
+                .diff-stat-item {
+                    display: flex;
+                    align-items: center;
+
+                    .diff-stat-img {
+                        height: 16px;
+                        width: 16px;
+                        margin-right: 0.25rem;
+                    }
+                    > span {
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            .characteristic-item {
+                .char-icon {
+                    height: 1rem;
+                }
+                .char-label {
+                    font-size: 1rem;
+                }
+            }
+
+            .ranked-item {
+                white-space: -moz-nowrap; /* Firefox */
+                white-space: -o-nowrap; /* Opera */
+                white-space: nowrap; /* Chrome */
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+            }
+        }
+    }
+}
+
+:host ::ng-deep .p-dropdown {
+    > .p-dropdown-label {
+        padding: 0.25rem;
+    }
+}

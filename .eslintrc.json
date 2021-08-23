@@ -1,8 +1,16 @@
 {
     "parser": "@typescript-eslint/parser",
     "root": true,
-    "ignorePatterns": ["dist/**/*"],
+    "ignorePatterns": ["dist/**/*", "release/**/*"],
     "overrides": [
+        {
+            "files": ["*.html"],
+            "extends": [
+                "plugin:@angular-eslint/template/recommended",
+                "plugin:prettier/recommended"
+            ],
+            "rules": {}
+        },
         {
             "files": ["*.ts"],
             "parserOptions": {
@@ -32,11 +40,6 @@
                     }
                 ]
             }
-        },
-        {
-            "files": ["*.html"],
-            "extends": ["plugin:@angular-eslint/template/recommended"],
-            "rules": {}
         }
     ]
 }

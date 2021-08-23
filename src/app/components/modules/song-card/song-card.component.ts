@@ -1,7 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, Input, OnInit } from '@angular/core';
-import { mergeMap } from 'rxjs/operators';
-import { TMapDetail, TMapVersion } from '../../../../models/api.models';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { mergeMap, tap } from 'rxjs/operators';
+import { ApiHelpers } from '../../../../models/api.helpers';
+import {
+    ECharacteristic,
+    TMapDetail,
+    TMapDifficulty,
+    TMapVersion
+} from '../../../../models/api.models';
 import { TInstalled } from '../../../../models/download.model';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
@@ -13,6 +19,7 @@ import { InstalledSongsService } from '../../../services/installed-songs.service
 import { NotifyService } from '../../../services/notify.service';
 import { PlayerStatsService } from '../../../services/player-stats.service';
 import { SongPreviewService } from '../song-preview/song-preview.service';
+import { SongCardService } from './song-card.service';
 
 @Component({
     selector: 'app-song-card',
@@ -20,26 +27,67 @@ import { SongPreviewService } from '../song-preview/song-preview.service';
     styleUrls: ['./song-card.component.scss']
 })
 export class SongCardComponent extends UnsubscribeComponent implements OnInit {
+    @HostListener('window:resize', ['$event'])
+    onResize(event: Event) {
+        this.isMobile = window.innerWidth < 992;
+    }
     @Input() tMapDetail?: TMapDetail;
     public tLevelStatsInfo?: TLevelStatsInfo;
     public isInstalledSong: { status: TInstalled };
+    public latestVersion?: TMapVersion;
+    public uploadTimeInfo?: string | Date;
 
+    private _expanded: boolean;
+    @Input()
+    get expanded(): boolean {
+        return this._expanded;
+    }
+    set expanded(value: boolean) {
+        if (value !== this._expanded) this._expanded = value;
+    }
+
+    @Output()
+    public expandedChange: EventEmitter<boolean>;
+
+    private _diffs?: Map<ECharacteristic, TMapDifficulty[]>;
+    get diffs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
+        return this._diffs;
+    }
+    set diffs(value: Map<ECharacteristic, TMapDifficulty[]> | undefined) {
+        this._diffs = value;
+        this._diffsArr = this._diffs ? Array.from(this._diffs) : undefined;
+    }
+    private _diffsArr?: Array<[ECharacteristic, TMapDifficulty[]]>;
+    get diffsArr(): Array<[ECharacteristic, TMapDifficulty[]]> | undefined {
+        return this._diffsArr;
+    }
+
+    private _songNameShort: string;
     get songNameShort(): string {
-        return this.tMapDetail?.name?.length && this.tMapDetail?.name?.length > 70
-            ? `${this.tMapDetail?.name.slice(0, 70)}...`
-            : this.tMapDetail?.name || 'N/A';
+        if (this._songNameShort === 'N/A' && this.tMapDetail?.name) {
+            this._songNameShort =
+                this.tMapDetail.name.length > 70
+                    ? `${this.tMapDetail?.name.slice(0, 70)}...`
+                    : this.tMapDetail?.name || 'N/A';
+        }
+        return this._songNameShort;
     }
     get songName(): string {
         return this.tMapDetail?.name || 'N/A';
+    }
+
+    private _isMobile: boolean;
+    get isMobile(): boolean {
+        return this._isMobile;
+    }
+    set isMobile(val: boolean) {
+        if (val !== this._isMobile) this._isMobile = val;
     }
 
     get inQueue(): boolean {
         if (this.latestVersion) return this.dlService.has(this.latestVersion);
         else return false;
     }
-
-    public latestVersion?: TMapVersion;
-    public uploadTimeInfo?: string | Date;
 
     constructor(
         public songPreviewService: SongPreviewService,
@@ -48,19 +96,32 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         public dlService: DlService,
         private _eleService: ElectronService,
         private _notify: NotifyService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
+        private _songCardService: SongCardService
     ) {
         super();
         this.isInstalledSong = { status: false };
+        this._songNameShort = 'N/A';
+        this.expandedChange = new EventEmitter<boolean>();
+        this._expanded = this._songCardService.expandAll;
+        this._isMobile = window.innerWidth < 992;
     }
 
     ngOnInit(): void {
+        this.addSub(
+            this._songCardService.expandAllChange.pipe(
+                tap((val: boolean) => {
+                    if (this.expanded !== val) this.expanded = val;
+                })
+            )
+        );
         this.latestVersion = this.tMapDetail?.versions
             .sort((a: TMapVersion, b: TMapVersion) =>
                 a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
             )
             .pop();
         if (this.latestVersion != null) {
+            this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
                 .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error))

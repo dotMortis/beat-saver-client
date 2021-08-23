@@ -1,14 +1,14 @@
 <div class="row no-gutters justify-content-between song-stats-container">
     <span class="col-auto" pTooltip="Upvotes">
         <i class="pi pi-thumbs-up px-1"></i
-        ><span [ngClass]="{ voted: upvotes > 0, upvote: true }">{{
-            tMapStats?.upvotes || 0 | shortNumber
-        }}</span>
+        ><span [ngClass]="{ voted: upvotes > 0, upvote: true }"
+            >{{ tMapStats?.upvotes || 0 | shortNumber }}</span
+        >
     </span>
     <span class="col-auto" pTooltip="Downvotes">
         <i class="pi pi-thumbs-down pr-1"></i
-        ><span [ngClass]="{ voted: downvotes > 0, downvote: true }">{{
-            tMapStats?.downvotes || 0 | shortNumber
-        }}</span>
+        ><span [ngClass]="{ voted: downvotes > 0, downvote: true }"
+            >{{ tMapStats?.downvotes || 0 | shortNumber }}</span
+        >
     </span>
 </div>

@@ -1,10 +1,4 @@
-<p-overlayPanel #difDetailInfo>
-    <ng-template pTemplate> Content </ng-template>
-</p-overlayPanel>
-<span
-    (hover)="difDetailInfo.toggle($event)"
-    [class]="'player-stats-container no-gutters row ' + difficulty || ''"
->
+<span [class]="'player-stats-container no-gutters row ' + difficulty || ''">
     <div class="col-auto pr-2">
         <span pTooltip="Your play count">
             <img [src]="iconUrl" width="22" height="22" class="dif-icon" />

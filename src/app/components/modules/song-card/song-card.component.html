@@ -1,95 +1,147 @@
 <div
     (contextmenu)="onCardClick()"
-    (dblclick)="onCardClick()"
     [ngClass]="{
-        'song-card-container row no-gutters justify-content-start': true,
+        'song-card-container row no-gutters': true,
         'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav,
         'song-fav': tLevelStatsInfo?.isFav && !isInstalledSong.status,
-        'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status,
-        'in-queue': inQueue
+        'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status
     }"
 >
-    <div *ngIf="tLevelStatsInfo?.isFav || isInstalledSong.status" class="col-12 pb-1">
-        <fa-icon
-            *ngIf="isInstalledSong.status"
-            [icon]="['fas', 'check-circle']"
-            class="song-installed-icon"
-            pTooltip="Installed"
-        ></fa-icon>
-        <fa-icon
-            *ngIf="tLevelStatsInfo?.isFav"
-            [icon]="['fas', 'star']"
-            class="song-fav-icon"
-            pTooltip="In your favorites"
-        ></fa-icon>
-    </div>
-    <div class="mb-2 col-auto song-col-1">
-        <div class="song-cover-container">
-            <img
-                [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
-                [ngClass]="{
-                    'rounded float-start song-cover': true
-                }"
-                alt="{{ songName }}"
-            />
-            <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
-                <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
+    <div
+        [ngClass]="{ 'col-12 p-2 main-frame': true, 'col-lg-6': expanded,
+        'in-queue': inQueue }"
+    >
+        <div class="row no-gutters">
+            <div class="col-12 pb-1">
+                <div class="d-flex">
+                    <div class="row py-1 w-100">
+                        <div class="col-auto">
+                            <fa-icon
+                                *ngIf="isInstalledSong.status"
+                                [icon]="['fas', 'check-circle']"
+                                class="mr-2 song-installed-icon"
+                                pTooltip="Installed"
+                            >
+                            </fa-icon>
+                            <fa-icon
+                                *ngIf="tLevelStatsInfo?.isFav"
+                                [icon]="['fas', 'star']"
+                                class="song-fav-icon"
+                                pTooltip="In your favorites"
+                            ></fa-icon>
+                        </div>
+                        <div class="col-auto ml-auto">
+                            <a
+                                class="mr-3"
+                                href="{{ latestVersion?.downloadURL }}"
+                                pTooltip="Download as zip file"
+                                ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
+                            ></a>
+                            <a
+                                class="mr-3"
+                                (click)="onDownloadSingle()"
+                                href="#"
+                                pTooltip="Install song directly"
+                                ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
+                            ></a>
+                            <a (click)="onCopySRM()" href="#" pTooltip="Copy song request command"
+                                ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
+                            ></a>
+                        </div>
+                    </div>
+                    <div class="row pl-2">
+                        <div class="col-auto d-flex align-items-stretch">
+                            <a
+                                href="#"
+                                class="d-flex align-items-center expand-btn"
+                                pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
+                                (click)="expanded = !expanded"
+                                ><fa-icon
+                                    *ngIf="!expanded && !isMobile"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-right']"
+                                ></fa-icon>
+                                <fa-icon
+                                    *ngIf="expanded && !isMobile"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-left']"
+                                ></fa-icon>
+                                <fa-icon
+                                    *ngIf="!expanded && isMobile"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-down']"
+                                ></fa-icon>
+                                <fa-icon
+                                    *ngIf="expanded && isMobile"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-up']"
+                                ></fa-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-2 col-auto song-col-1">
+                <div class="song-cover-container">
+                    <img
+                        [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
+                        [ngClass]="{
+                        'rounded float-start song-cover': true
+                    }"
+                        alt="{{ songName }}"
+                    />
+                    <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
+                        <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
+                    </div>
+                </div>
+                <app-song-stats [tMapStats]="tMapDetail?.stats" class="pt-2 pb-1"></app-song-stats>
+            </div>
+            <div class="mb-2 col">
+                <a href="#" [title]="songName" (click)="onTitleClick($event)">
+                    <fa-icon
+                        *ngIf="tMapDetail?.ranked"
+                        [icon]="['fas', 'trophy']"
+                        class="song-ranked-icon"
+                        pTooltip="Ranked"
+                    ></fa-icon>
+                    <fa-icon
+                        *ngIf="tMapDetail?.qualified"
+                        [icon]="['fas', 'graduation-cap']"
+                        class="song-qiali-icon"
+                        pTooltip="Qualified"
+                    ></fa-icon>
+                    {{ songNameShort }}</a
+                >
+                <br />
+                <a href="#" (click)="onTitleClick($event)">
+                    {{ tMapDetail?.uploader?.name || 'N/A' }}
+                </a>
+                <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                <span
+                    *ngFor="let groupedDif of diffsArr; let last = last"
+                    [ngClass]="{ 'row no-gutters justify-content-start': true, 'pb-1': !last }"
+                >
+                    <app-difficulty-tag
+                        *ngFor="let dif of groupedDif[1]"
+                        class="col-auto pr-1"
+                        [tMapDifficulty]="dif"
+                    ></app-difficulty-tag>
+                </span>
+            </div>
+            <div
+                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
+                class="col-12 row no-gutters player-stats"
+            >
+                <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
+                    <app-player-stats
+                        [ngClass]="{ 'col-12': true, 'player-stats-item-border': !last }"
+                        [stats]="statInfo"
+                    ></app-player-stats>
+                </ng-container>
             </div>
         </div>
-        <app-song-stats [tMapStats]="tMapDetail?.stats" class="pt-2 pb-1"></app-song-stats>
     </div>
-    <div class="mb-2 col">
-        <a href="#" [title]="songName" (click)="onTitleClick($event)">
-            <fa-icon
-                *ngIf="tMapDetail?.ranked"
-                [icon]="['fas', 'trophy']"
-                class="song-ranked-icon"
-                pTooltip="Ranked"
-            ></fa-icon>
-            <fa-icon
-                *ngIf="tMapDetail?.qualified"
-                [icon]="['fas', 'graduation-cap']"
-                class="song-qiali-icon"
-                pTooltip="Qualified"
-            ></fa-icon>
-            {{ songNameShort }}</a
-        >
-        <br />
-        <a href="#" (click)="onTitleClick($event)">
-            {{ tMapDetail?.uploader?.name || 'N/A' }}
-        </a>
-        <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
-        <span class="row no-gutters justify-content-start">
-            <app-difficulty-tag
-                *ngFor="let dif of latestVersion?.diffs"
-                class="col-auto pr-1"
-                [tMapDifficulty]="dif"
-            ></app-difficulty-tag>
-        </span>
+    <div *ngIf="expanded" class="col-12 expand-frame col-lg-6 p-2 row no-gutters">
+        <app-difficulty-card class="w-100" [groupedDifs]="diffs"></app-difficulty-card>
     </div>
-    <div class="mb-2 col-auto d-flex flex-column text-center">
-        <a
-            class="col-auto px-0 mb-2"
-            href="{{ latestVersion?.downloadURL }}"
-            pTooltip="Download as zip file"
-            ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
-        ></a>
-        <a
-            class="col-auto px-0 mb-2"
-            (click)="onDownloadSingle()"
-            href="#"
-            pTooltip="Install song directly"
-            ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
-        ></a>
-        <a class="col-auto px-0" (click)="onCopySRM()" href="#" pTooltip="Copy song request command"
-            ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
-        ></a>
-    </div>
-    <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
-        <app-player-stats
-            *ngIf="statInfo.playCount > 0"
-            [ngClass]="{ 'col-12': true, 'pb-2': !last }"
-            [stats]="statInfo"
-        ></app-player-stats>
-    </ng-container>
 </div>

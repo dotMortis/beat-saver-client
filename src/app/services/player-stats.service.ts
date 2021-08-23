@@ -1,6 +1,6 @@
-import { EventEmitter, Injectable, Input, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { uniqueId } from 'lodash';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
 import { ipcRendererInvoke, ipcRendererSend } from '../../models/electron/electron.register';
 import {
@@ -23,13 +23,9 @@ export class PlayerStatsService {
     private _playerNamesLoading: BehaviorSubject<
         boolean | { result: string[] | undefined; status: TFileLoaded }
     >;
-    private _nextPlayerNames: Subject<
-        false | { result: string[] | undefined; status: TFileLoaded }
-    >;
 
     //#region selectedPlayer
     private _selectedPlayer: BehaviorSubject<{ name: string } | undefined>;
-    @Input()
     set selectedPlayer(val: { name: string } | undefined) {
         if (this._selectedPlayer.getValue()?.name !== val?.name) {
             this._selectedPlayer.next(val);
@@ -42,13 +38,11 @@ export class PlayerStatsService {
     get selectedPlayerSubject(): BehaviorSubject<{ name: string } | undefined> {
         return this._selectedPlayer;
     }
-    @Output()
     public selectedPlayerChange: EventEmitter<{ name: string } | undefined>;
     //#endregion
 
     //#region playerNames
     private _playerNames?: string[];
-    @Input()
     get playerNames(): string[] | undefined {
         return this._playerNames;
     }
@@ -56,11 +50,9 @@ export class PlayerStatsService {
         this._playerNames = val;
         this.playerNamesChange.next(this._playerNames);
     }
-    @Output()
     public playerNamesChange: EventEmitter<string[] | undefined>;
     //#endregion
 
-    @Output()
     public playerStatsReloaded: EventEmitter<void>;
 
     constructor(private _eleService: ElectronService, private _notify: NotifyService) {
@@ -71,9 +63,6 @@ export class PlayerStatsService {
         this._playerNamesLoading = new BehaviorSubject<
             boolean | { result: string[] | undefined; status: TFileLoaded }
         >(false);
-        this._nextPlayerNames = new Subject<
-            false | { result: string[] | undefined; status: TFileLoaded }
-        >();
         this._selectedPlayer = new BehaviorSubject<{ name: string } | undefined>(undefined);
     }
 

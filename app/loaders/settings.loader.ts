@@ -35,37 +35,48 @@ class Settings {
     constructor() {
         this._folderPath = path.join(app.getPath('appData'), 'beat-saver-ui');
         this._fullPath = path.join(this._folderPath, 'settings.json');
+        this._settings = {
+            bsAppDataPath: {
+                value: path.join(
+                    process.env.USERPROFILE || '',
+                    'AppData',
+                    'LocalLow',
+                    'Hyperbolic Magnetism',
+                    'Beat Saber'
+                ),
+                check: 'EXIST',
+                type: 'FODLER',
+                nullable: true,
+                default: undefined
+            },
+            bsInstallPath: {
+                value: undefined,
+                check: 'EXIST',
+                type: 'FODLER',
+                nullable: true,
+                default: undefined
+            },
+            playerName: {
+                value: undefined,
+                check: 'NONE',
+                type: 'ANY',
+                nullable: true,
+                default: undefined
+            },
+            expandAllSongCards: {
+                value: false,
+                check: 'NONE',
+                type: 'ANY',
+                nullable: false,
+                default: false
+            }
+        };
         try {
             const fileBuffer = readFileSync(this._fullPath);
-            this._settings = JSON.parse(fileBuffer.toString());
+            const savedSettings = JSON.parse(fileBuffer.toString());
+            Object.assign(this._settings, savedSettings);
             this.validateOpts();
         } catch {
-            this._settings = {
-                bsAppDataPath: {
-                    value: path.join(
-                        process.env.USERPROFILE || '',
-                        'AppData',
-                        'LocalLow',
-                        'Hyperbolic Magnetism',
-                        'Beat Saber'
-                    ),
-                    check: 'EXIST',
-                    type: 'FODLER',
-                    nullable: true
-                },
-                bsInstallPath: {
-                    value: undefined,
-                    check: 'EXIST',
-                    type: 'FODLER',
-                    nullable: true
-                },
-                playerName: {
-                    value: undefined,
-                    check: 'NONE',
-                    type: 'ANY',
-                    nullable: true
-                }
-            };
             mkdirSync(this._folderPath, { recursive: true });
             writeFileSync(this._fullPath, JSON.stringify(this._settings), { flag: 'w' });
             this.validateOpts();
@@ -91,7 +102,6 @@ class Settings {
             const opts = this._settings[<keyof TSettings>key];
             const check = <TSettingCheck>opts.check;
             const type = <TSettingType>opts.type;
-
             opts.error = this._check(check, type, opts.nullable, opts.value);
             if (opts.error) result = false;
         }

@@ -8,6 +8,14 @@
     "bracketSpacing": true,
     "jsxBracketSameLine": true,
     "jsxSingleQuote": true,
-    "endOfLine": "auto"
+    "endOfLine": "auto",
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "html"
+        }
+      }
+    ]
   }
   

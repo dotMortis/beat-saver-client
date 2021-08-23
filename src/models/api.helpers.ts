@@ -1,4 +1,4 @@
-import { ECharacteristic, EDifficulty } from './api.models';
+import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from './api.models';
 import { TDifficultyIndex } from './player-data.model';
 
 export class ApiHelpers {
@@ -45,5 +45,19 @@ export class ApiHelpers {
                 return undefined;
             }
         }
+    }
+
+    public static getDifficultyGroupedByChar(
+        mapVersion: TMapVersion
+    ): Map<ECharacteristic, TMapDifficulty[]> {
+        const groupedDifs = new Map<ECharacteristic, TMapDifficulty[]>();
+        for (const dif of mapVersion.diffs) {
+            if (groupedDifs.has(dif.characteristic)) {
+                groupedDifs.get(dif.characteristic)?.push(dif);
+            } else {
+                groupedDifs.set(dif.characteristic, [dif]);
+            }
+        }
+        return groupedDifs;
     }
 }

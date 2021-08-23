@@ -1,11 +1,7 @@
-<span [class]="'dif-tag-container ' + tMapDifficulty?.difficulty">
-    <img
-        [src]="iconUrl"
-        pTooltip="{{ tMapDifficulty?.characteristic }}"
-        width="18"
-        height="18"
-        class="dif-icon"
-    />
+<span
+    pTooltip="{{ tMapDifficulty?.characteristic }} / {{ label }}"
+    [class]="'dif-tag-container ' + tMapDifficulty?.difficulty"
+>
+    <img [src]="iconUrl" class="dif-icon" />
     <span class="dif-label">{{ label }}</span>
-    <span *ngIf="tMapDifficulty?.stars" class="dif-label"> ({{ tMapDifficulty?.stars }})</span>
 </span>
