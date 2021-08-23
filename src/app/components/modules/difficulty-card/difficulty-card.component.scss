@@ -65,3 +65,9 @@
         }
     }
 }
+
+:host ::ng-deep .p-dropdown {
+    > .p-dropdown-label {
+        padding: 0.25rem;
+    }
+}

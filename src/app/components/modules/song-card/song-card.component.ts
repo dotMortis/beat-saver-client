@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { mergeMap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../../models/api.helpers';
 import {
@@ -31,6 +31,17 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     public isInstalledSong: { status: TInstalled };
     public latestVersion?: TMapVersion;
     public uploadTimeInfo?: string | Date;
+
+    private _expanded: boolean;
+    @Input()
+    get expanded(): boolean {
+        return this._expanded;
+    }
+    set expanded(value: boolean) {
+        if (value !== this._expanded) this._expanded = value;
+    }
+    @Output()
+    public expandedChange: EventEmitter<boolean>;
 
     private _diffs?: Map<ECharacteristic, TMapDifficulty[]>;
     get diffs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
@@ -76,6 +87,8 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         super();
         this.isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
+        this.expandedChange = new EventEmitter<boolean>();
+        this._expanded = false;
     }
 
     ngOnInit(): void {
