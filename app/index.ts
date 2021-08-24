@@ -1,12 +1,7 @@
 import { app, BrowserWindow } from 'electron';
-import { Rectangle } from 'electron/main';
 import { join, resolve } from 'path';
 import * as winston from 'winston';
-import { TSendClose, TSendReadyClose } from '../src/models/electron/send.channels';
-import { IpcHelerps } from './models/helpers/ipc-main.register';
-import { webContentsSend } from './models/helpers/web-contents-send.register';
-import { WindowStorage } from './models/helpers/windowStorage.model';
-import { DownloadSender } from './senders/download.sender';
+import { MainWindow } from './models/helpers/main.window';
 
 const logger = winston.createLogger({
     level: 'debug',
@@ -24,29 +19,19 @@ const logger = winston.createLogger({
 });
 class IndexElectron {
     private _app: typeof app;
-    private _serve: boolean;
-    private _debug: boolean;
     private _window?: BrowserWindow | null;
     private _loaders: Map<string, { path: string; loader: any }>;
-    private _sender: Map<string, any>;
-    private _windowStorage: WindowStorage;
+    private _mainWindow?: MainWindow;
 
     constructor(eleApp: typeof app, loaderPaths: string[]) {
         logger.debug('construct app');
         this._app = eleApp;
-        this._serve = this._debug = false;
-        for (const arg of process.argv) {
-            if (arg === '--serve') this._serve = true;
-            if (arg === '--debug') this._debug = true;
-        }
         this._loaders = new Map<string, any>(
             loaderPaths.map((loaderPath: string) => [
                 loaderPath,
                 { loader: undefined, path: loaderPath }
             ])
         );
-        this._sender = new Map<string, any>();
-        this._windowStorage = new WindowStorage();
         logger.debug('finish construct app');
     }
 
@@ -74,15 +59,11 @@ class IndexElectron {
         logger.debug('_startApp');
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
-            this._windowStorage.init();
-            this._createWindow();
+            this._mainWindow = new MainWindow(logger);
         });
 
-        // Quit when all windows are closed.
         this._app.on('window-all-closed', () => {
             logger.debug('_startApp window-all-closed');
-            // On macOS it is common for applications and their menu bar
-            // to stay active until the user quits explicitly with Cmd + Q
             if (process.platform !== 'darwin') {
                 app.quit();
             }
@@ -90,83 +71,10 @@ class IndexElectron {
 
         this._app.on('activate', () => {
             logger.debug('_startApp activate');
-            // On macOS it's common to re-create a window in the app when the
-            // dock icon is clicked and there are no other windows open.
             if (this._window === null) {
-                this._createWindow();
+                this._mainWindow = new MainWindow(logger);
             }
         });
-        logger.debug('finish _startApp');
-    }
-
-    private _createWindow(): void {
-        logger.debug('_createWindow');
-        // Create the browser window.
-
-        let bounds: Rectangle;
-        if (this._windowStorage.data) {
-            bounds = this._windowStorage.data.bounds;
-        } else {
-            bounds = this._windowStorage.init().bounds;
-        }
-        this._window = new BrowserWindow({
-            width: bounds.width,
-            height: bounds.height,
-            x: bounds.x,
-            y: bounds.y,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false
-            },
-            minHeight: 450,
-            minWidth: 600
-        });
-
-        this._sender.set('download', new DownloadSender(this._window));
-
-        if (this._serve) {
-            logger.debug('_createWindow serve');
-            this._window.loadURL('http://localhost:4200');
-        } else {
-            const path = resolve(__dirname, '..', 'ui', 'index.html');
-            logger.debug('_createWindow prod ' + path);
-            this._window.loadFile(path);
-        }
-
-        if (this._debug) this._window.webContents.openDevTools();
-
-        let isReadyToClose = false;
-        this._window.on('close', (event: Electron.Event) => {
-            if (!isReadyToClose && this._window) {
-                IpcHelerps.ipcMainOn<TSendReadyClose>(
-                    'ON_READY_CLOSE',
-                    (event: Electron.IpcMainInvokeEvent) => {
-                        isReadyToClose = true;
-                        this._window?.close();
-                    }
-                );
-                webContentsSend<TSendClose>(this._window, 'ON_CLOSE', undefined);
-                new Promise<void>(res => {
-                    setTimeout(() => {
-                        isReadyToClose = true;
-                        this._window?.close();
-                    }, 30 * 1000);
-                });
-                return event.preventDefault();
-            } else if (this._window) {
-                this._windowStorage.saveCurrentState(this._window);
-            }
-        });
-
-        // Emitted when the window is closed.
-        this._window.on('closed', (event: Electron.Event) => {
-            logger.debug('_createWindow closed');
-            // Dereference the window object, usually you would store windows
-            // in an array if your app supports multi windows, this is the time
-            // when you should delete the corresponding element.
-            this._window = null;
-        });
-        logger.debug('finish _createWindow');
     }
 }
 

@@ -4,22 +4,13 @@ import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
 import { TMapDetail, TMapVersion } from '../../../models/api.models';
 import { TInstalled, TSongDownloadInfo } from '../../../models/download.model';
-import {
-    ipcRendererInvoke,
-    ipcRendererOn,
-    ipcRendererSend
-} from '../../../models/electron/electron.register';
+import { ipcRendererInvoke, ipcRendererSend } from '../../../models/electron/electron.register';
 import {
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
 } from '../../../models/electron/invoke.channels';
-import {
-    TSendClose,
-    TSendDebug,
-    TSendError,
-    TSendReadyClose
-} from '../../../models/electron/send.channels';
+import { TSendDebug, TSendError } from '../../../models/electron/send.channels';
 import { TSongHash } from '../../../models/played-songs.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
@@ -285,35 +276,17 @@ export class DlService {
     }
 
     private _handleQueueCache(): void {
-        ipcRendererOn<TSendClose>(
-            this._eleService,
-            'ON_CLOSE',
-            (event: Electron.IpcRendererEvent) => {
-                try {
-                    this.clearInstalled();
-                    ipcRendererInvoke<TInvokeWriteCache<Array<[TSongHash, TSongDownloadInfo]>>>(
-                        this._eleService,
-                        'WRITE_CACHE',
-                        {
-                            name: 'dl_queue',
-                            data: Array.from(this._dlList)
-                        }
-                    )
-                        .catch(error =>
-                            ipcRendererSend<TSendError>(this._eleService, 'ERROR', error)
-                        )
-                        .finally(() =>
-                            ipcRendererSend<TSendReadyClose>(
-                                this._eleService,
-                                'ON_READY_CLOSE',
-                                undefined
-                            )
-                        );
-                } catch {
-                    ipcRendererSend<TSendReadyClose>(this._eleService, 'ON_READY_CLOSE', undefined);
+        this._eleService.addOnClose(async () => {
+            this.clearInstalled();
+            await ipcRendererInvoke<TInvokeWriteCache<Array<[TSongHash, TSongDownloadInfo]>>>(
+                this._eleService,
+                'WRITE_CACHE',
+                {
+                    name: 'dl_queue',
+                    data: Array.from(this._dlList)
                 }
-            }
-        );
+            );
+        });
         ipcRendererInvoke<TInvokeReadCache<Array<[TSongHash, TSongDownloadInfo]>>>(
             this._eleService,
             'READ_CACHE',
