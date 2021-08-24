@@ -15,7 +15,7 @@ class Sanitize {
             .replace(this.reservedRe, replacement)
             .replace(this.windowsReservedRe, replacement)
             .replace(this.windowsTrailingRe, replacement);
-        return sanitized;
+        return sanitized.split('').splice(0, 255).join('');
     }
 
     public sanitize(input: string, options?: { replacement: string }) {

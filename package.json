@@ -2,6 +2,11 @@
     "name": "beat-saver-client",
     "version": "0.2.0",
     "main": "dist/app/index.js",
+    "description": "A BeatSaver desktop client",
+    "author": {
+        "name": "Nick K.",
+        "email": "n.koellhofer@googlemail.com"
+    },
     "cli": {
         "packageManager": "yarn"
     },
@@ -20,7 +25,7 @@
         "lint": "ng lint --fix",
         "e2e": "ng e2e",
         "prerelease": "yarn build:prod",
-        "release": "electron-builder build",
+        "release": "electron-builder build -p never",
         "clean": "rimraf dist && rimraf release"
     },
     "private": true,

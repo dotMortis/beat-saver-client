@@ -1,17 +1,27 @@
 {
     "asar": true,
-    "appId": "com.beatsaver.ui",
-    "productName": "BeatSaverClient",
+    "appId": "com.beatsaver.client",
+    "productName": "BeatSaver",
     "files": ["dist/**/*"],
     "directories": {
         "output": "release/"
     },
     "win": {
         "icon": "assets/icons",
-        "target": ["portable"]
+        "target": ["portable", "nsis"],
+        "executableName": "BeatSaver",
+        "artifactName": "BeatSaverClient v${version} Installer.exe",
+        "publisherName": "dotMortis"
+    },
+    "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "allowElevation": false,
+        "perMachine": true
     },
     "portable": {
-        "splashImage": "assets/icons/electron.bmp"
+        "splashImage": "assets/icons/splash.bmp",
+        "artifactName": "BeatSaverClient v${version} Portable.exe"
     },
     "mac": {
         "icon": "assets/icons",
