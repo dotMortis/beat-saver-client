@@ -13,11 +13,11 @@ import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
 import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player-data.model';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { DlService } from '../../../services/dl.service';
-import { ElectronService } from '../../../services/electron.service';
-import { InstalledSongsService } from '../../../services/installed-songs.service';
-import { NotifyService } from '../../../services/notify.service';
-import { PlayerStatsService } from '../../../services/player-stats.service';
+import { DlService } from '../../../services/null.provided/dl.service';
+import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
+import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 import { SongPreviewService } from '../song-preview/song-preview.service';
 import { SongCardService } from './song-card.service';
 

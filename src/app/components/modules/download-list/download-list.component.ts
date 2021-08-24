@@ -3,10 +3,10 @@ import { TSongDownloadInfo } from '../../../../models/download.model';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { ApiService } from '../../../services/api.service';
-import { DlService } from '../../../services/dl.service';
-import { ElectronService } from '../../../services/electron.service';
-import { NotifyService } from '../../../services/notify.service';
+import { ApiService } from '../../../services/null.provided/api.service';
+import { DlService } from '../../../services/null.provided/dl.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 
 @Component({
     selector: 'app-download-list',

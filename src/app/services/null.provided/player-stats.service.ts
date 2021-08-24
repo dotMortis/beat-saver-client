@@ -2,21 +2,21 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { uniqueId } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
-import { ipcRendererInvoke, ipcRendererSend } from '../../models/electron/electron.register';
+import { ipcRendererInvoke, ipcRendererSend } from '../../../models/electron/electron.register';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
     TInvokeLoadPlayedSongs
-} from '../../models/electron/invoke.channels';
-import { TSendDebug } from '../../models/electron/send.channels';
-import { TSongHash } from '../../models/played-songs.model';
-import { TLevelStatsInfo } from '../../models/player-data.model';
-import { TFileLoaded } from '../../models/types';
-import { ElectronService } from './electron.service';
-import { NotifyService } from './notify.service';
+} from '../../../models/electron/invoke.channels';
+import { TSendDebug } from '../../../models/electron/send.channels';
+import { TSongHash } from '../../../models/played-songs.model';
+import { TLevelStatsInfo } from '../../../models/player-data.model';
+import { TFileLoaded } from '../../../models/types';
+import { ElectronService } from '../root.provided/electron.service';
+import { NotifyService } from '../root.provided/notify.service';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: null
 })
 export class PlayerStatsService {
     private _playerNamesLoaded: boolean;

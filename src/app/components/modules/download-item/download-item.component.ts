@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ipcRendererOn } from '../../../../models/electron/electron.register';
 import { TDownloadItemInfo, TSendBrowserDownload } from '../../../../models/electron/send.channels';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { ElectronService } from '../../../services/electron.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
 
 @Component({
     selector: 'app-download-item',

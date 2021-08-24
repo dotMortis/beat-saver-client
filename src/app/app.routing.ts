@@ -1,10 +1,9 @@
 import { RouterModule, Routes } from '@angular/router';
-import { SongsComponent } from './components/pages/songs/songs.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: SongsComponent
+        loadChildren: () => import('./components/pages/songs/songs.module').then(m => m.SongsModule)
     },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

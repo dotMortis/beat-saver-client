@@ -4,12 +4,11 @@ import { DialogModule } from 'primeng/dialog';
 import { SafePipe } from '../../../pipes/safe.pipe';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { SongPreviewComponent } from './song-preview.component';
-import { SongPreviewService } from './song-preview.service';
 
 @NgModule({
     declarations: [SongPreviewComponent, SafePipe],
     imports: [CommonModule, SharedAppModule, DialogModule],
     exports: [SongPreviewComponent],
-    providers: [SongPreviewService]
+    providers: []
 })
 export class SongPreviewModule {}

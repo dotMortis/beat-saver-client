@@ -2,32 +2,31 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
-import { TMapDetail, TMapVersion } from '../../models/api.models';
-import { TInstalled, TSongDownloadInfo } from '../../models/download.model';
+import { TMapDetail, TMapVersion } from '../../../models/api.models';
+import { TInstalled, TSongDownloadInfo } from '../../../models/download.model';
 import {
     ipcRendererInvoke,
     ipcRendererOn,
     ipcRendererSend
-} from '../../models/electron/electron.register';
+} from '../../../models/electron/electron.register';
 import {
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
-} from '../../models/electron/invoke.channels';
+} from '../../../models/electron/invoke.channels';
 import {
     TSendClose,
     TSendDebug,
     TSendError,
     TSendReadyClose
-} from '../../models/electron/send.channels';
-import { TSongHash } from '../../models/played-songs.model';
+} from '../../../models/electron/send.channels';
+import { TSongHash } from '../../../models/played-songs.model';
+import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
-import { ElectronService } from './electron.service';
 import { InstalledSongsService } from './installed-songs.service';
-import { PlayerStatsService } from './player-stats.service';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: null
 })
 export class DlService {
     private _activeInstallations: number;
@@ -73,7 +72,6 @@ export class DlService {
     constructor(
         private _apiService: ApiService,
         private _eleService: ElectronService,
-        private _playerStatsService: PlayerStatsService,
         private _installedSongsService: InstalledSongsService
     ) {
         this._downloadFinished = new Subject<{
