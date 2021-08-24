@@ -24,15 +24,17 @@ import { MessageService } from 'primeng/api';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ScrollTopModule } from 'primeng/scrolltop';
 import { ToastModule } from 'primeng/toast';
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app.routing';
 import { DownloadItemModule } from './components/modules/download-item/download-item.module';
 import { DownloadListModule } from './components/modules/download-list/download-list.module';
 import { NavigationBarModule } from './components/modules/navigation-bar/navigation-bar.module';
 import { SettingsModule } from './components/modules/settings/settings.module';
 import { SongPreviewModule } from './components/modules/song-preview/song-preview.module';
 import { SongPreviewService } from './components/modules/song-preview/song-preview.service';
-import { SongsModule } from './components/pages/songs/songs.module';
+import { ApiService } from './services/null.provided/api.service';
+import { DlService } from './services/null.provided/dl.service';
+import { InstalledSongsService } from './services/null.provided/installed-songs.service';
 import { PlayerStatsService } from './services/null.provided/player-stats.service';
 import { SharedAppModule } from './shared/shared-app-module';
 
@@ -47,7 +49,6 @@ import { SharedAppModule } from './shared/shared-app-module';
         SharedAppModule,
         SongPreviewModule,
         DownloadItemModule,
-        SongsModule,
         NavigationBarModule,
         SettingsModule,
         ScrollPanelModule,
@@ -55,7 +56,14 @@ import { SharedAppModule } from './shared/shared-app-module';
         ToastModule,
         DownloadListModule
     ],
-    providers: [MessageService, SongPreviewService, PlayerStatsService],
+    providers: [
+        MessageService,
+        ApiService,
+        SongPreviewService,
+        PlayerStatsService,
+        InstalledSongsService,
+        DlService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {
