@@ -1,4 +1,4 @@
-import { ElectronService } from '../../app/services/electron.service';
+import { ElectronService } from '../../app/services/root.provided/electron.service';
 import { TInvoke } from './invoke.channels';
 import { TSend } from './send.channels';
 

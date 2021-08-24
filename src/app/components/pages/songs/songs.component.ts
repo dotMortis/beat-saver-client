@@ -6,10 +6,10 @@ import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { TSettings } from '../../../../models/settings.model';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { ApiService } from '../../../services/api.service';
-import { DlService } from '../../../services/dl.service';
-import { ElectronService } from '../../../services/electron.service';
-import { SettingsService } from '../../../services/settings.service';
+import { ApiService } from '../../../services/null.provided/api.service';
+import { DlService } from '../../../services/null.provided/dl.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
+import { SettingsService } from '../../../services/root.provided/settings.service';
 import { SongCardService } from '../../modules/song-card/song-card.service';
 
 @Component({

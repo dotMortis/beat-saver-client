@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ipcRendererInvoke } from '../../models/electron/electron.register';
-import { TInvokeGetSettings, TInvokeSetSettings } from '../../models/electron/invoke.channels';
-import { TSettings } from '../../models/settings.model';
+import { ipcRendererInvoke } from '../../../models/electron/electron.register';
+import { TInvokeGetSettings, TInvokeSetSettings } from '../../../models/electron/invoke.channels';
+import { TSettings } from '../../../models/settings.model';
 import { ElectronService } from './electron.service';
 
 @Injectable({

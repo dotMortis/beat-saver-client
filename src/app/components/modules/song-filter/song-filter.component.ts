@@ -6,8 +6,8 @@ import { catchError } from 'rxjs/operators';
 import { EListSortOrder, IListOptions } from '../../../../models/api.models';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
-import { ApiService } from '../../../services/api.service';
-import { ElectronService } from '../../../services/electron.service';
+import { ApiService } from '../../../services/null.provided/api.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
 
 @Component({
     selector: 'app-song-filter',

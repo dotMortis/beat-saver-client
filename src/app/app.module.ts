@@ -31,7 +31,9 @@ import { DownloadListModule } from './components/modules/download-list/download-
 import { NavigationBarModule } from './components/modules/navigation-bar/navigation-bar.module';
 import { SettingsModule } from './components/modules/settings/settings.module';
 import { SongPreviewModule } from './components/modules/song-preview/song-preview.module';
+import { SongPreviewService } from './components/modules/song-preview/song-preview.service';
 import { SongsModule } from './components/pages/songs/songs.module';
+import { PlayerStatsService } from './services/null.provided/player-stats.service';
 import { SharedAppModule } from './shared/shared-app-module';
 
 @NgModule({
@@ -53,7 +55,7 @@ import { SharedAppModule } from './shared/shared-app-module';
         ToastModule,
         DownloadListModule
     ],
-    providers: [MessageService],
+    providers: [MessageService, SongPreviewService, PlayerStatsService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

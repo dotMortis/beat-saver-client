@@ -2,10 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { EListSortOrder, IListOptions, ListOptions, TSearchResult } from '../../models/api.models';
+import {
+    EListSortOrder,
+    IListOptions,
+    ListOptions,
+    TSearchResult
+} from '../../../models/api.models';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: null
 })
 export class ApiService {
     private readonly _basePath: string;

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
-import { DlService } from '../../../services/dl.service';
-import { ElectronService } from '../../../services/electron.service';
-import { InstalledSongsService } from '../../../services/installed-songs.service';
-import { PlayerStatsService } from '../../../services/player-stats.service';
-import { SettingsService } from '../../../services/settings.service';
+import { DlService } from '../../../services/null.provided/dl.service';
+import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
+import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
+import { SettingsService } from '../../../services/root.provided/settings.service';
 
 @Component({
     selector: 'app-navigation-bar',
