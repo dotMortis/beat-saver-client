@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as JSZip from 'jszip';
 import * as path from 'path';
+import { sep } from 'path';
 import { TInvokeInstallSong } from '../../src/models/electron/invoke.channels';
 import { TSongId } from '../../src/models/played-songs.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.register';
@@ -38,8 +39,12 @@ class Install {
             const subFolder = sanitize(`${info.songId} (${info.songName})`);
             for (const filename of Object.keys(zip.files)) {
                 const file = zip.files[filename];
-                const content = await file.async('nodebuffer');
-                this._saveFile(subFolder, file.name, content);
+                if (file.name.endsWith(sep)) {
+                    this._createFolder(subFolder, file.name);
+                } else {
+                    const content = await file.async('nodebuffer');
+                    this._saveFile(subFolder, file.name, content);
+                }
             }
             return { result: true };
         } catch (error) {
@@ -47,12 +52,21 @@ class Install {
         }
     }
 
-    private _saveFile(folderName: string, filename: string, buffer: Buffer) {
-        const folderPath = path.join(this._filePath, folderName);
+    private _saveFile(folderName: string, filename: string, buffer: Buffer): void {
+        const folderPath = this._getFolderPath(folderName);
+        this._createFolder(folderName);
+        writeFileSync(path.join(folderPath, filename), buffer, { flag: 'w' });
+    }
+
+    private _createFolder(...folderNames: string[]): void {
+        const folderPath = this._getFolderPath(...folderNames);
         if (!existsSync(folderPath)) {
             mkdirSync(folderPath, { recursive: true });
         }
-        writeFileSync(path.join(folderPath, filename), buffer, { flag: 'w' });
+    }
+
+    private _getFolderPath(...folderNames: string[]): string {
+        return path.join(this._filePath, ...folderNames);
     }
 }
 
