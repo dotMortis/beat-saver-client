@@ -42,7 +42,8 @@ export class LocalPlayer implements ILocalPlayer {
         );
 
         this.levelsStatsData = new Map<TSongHash, TLevelStatsInfo>();
-        localPlayer.levelsStatsData?.forEach((levelStatsData: TLevelStatsData) => {
+        for (const levelStatsData of localPlayer.levelsStatsData || []) {
+            if (levelStatsData.playCount < 1) continue;
             const levelHash = toLevelHash(levelStatsData.levelId);
             if (this.levelsStatsData.has(levelHash)) {
                 this.levelsStatsData
@@ -54,7 +55,7 @@ export class LocalPlayer implements ILocalPlayer {
                     levelStats: new Array<LevelStatsData>(new LevelStatsData(levelStatsData))
                 });
             }
-        });
+        }
     }
 }
 
