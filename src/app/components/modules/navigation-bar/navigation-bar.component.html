@@ -1,5 +1,4 @@
 <div class="row navigation-bar no-gutters">
-    <div class="col-auto nav-item-l"></div>
     <div *ngIf="electronService.isElectron" class="col-auto ml-auto nav-item-r">
         <button
             pButton
@@ -21,6 +20,9 @@
         ></button>
     </div>
     <button
+        joyrideStep="dlQueue1"
+        text="Open the download queue"
+        stepPosition="right"
         pButton
         pRipple
         pBadge

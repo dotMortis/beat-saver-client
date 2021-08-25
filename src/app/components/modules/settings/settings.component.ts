@@ -80,6 +80,21 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         else if (this.dirty.has('EXPSC')) this.dirty.delete('EXPSC');
     }
 
+    private _showTour: boolean;
+    get showTour(): boolean {
+        return this._showTour;
+    }
+    set showTour(val: boolean) {
+        if (this._showTour !== val) {
+            this._showTour = val;
+            if (!val) {
+                window.localStorage.setItem('tour', 'shown');
+            } else {
+                window.localStorage.removeItem('tour');
+            }
+        }
+    }
+
     constructor(
         public optService: SettingsService,
         public installedSongsService: InstalledSongsService,
@@ -87,6 +102,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         private _eleService: ElectronService
     ) {
         super();
+        this._showTour = window.localStorage.getItem('tour') == null;
         this._selectablePlayerNames = new Array<{ name: string }>();
         this._isInit = false;
         this.dirty = new Set<string>();
@@ -99,6 +115,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                 mergeMap(async (result: boolean) => {
                     try {
                         if (result) {
+                            this._showTour = window.localStorage.getItem('tour') == null;
                             if (this.optService.settings) {
                                 this._setValues(this.optService.settings);
                             }

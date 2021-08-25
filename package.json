@@ -50,6 +50,7 @@
         "bootstrap": "^4.5.0",
         "jszip": "^3.7.1",
         "lodash": "^4.17.21",
+        "ngx-joyride": "^2.4.0",
         "primeicons": "^4.1.0",
         "primeng": "^11.0.0",
         "rxjs": "~6.6.0",

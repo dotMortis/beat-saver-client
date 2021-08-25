@@ -20,6 +20,7 @@ import {
     faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { JoyrideModule } from 'ngx-joyride';
 import { MessageService } from 'primeng/api';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ScrollTopModule } from 'primeng/scrolltop';
@@ -47,6 +48,7 @@ import { SharedAppModule } from './shared/shared-app-module';
         HttpClientModule,
         NgbModule,
         SharedAppModule,
+        JoyrideModule.forRoot(),
         SongPreviewModule,
         DownloadItemModule,
         NavigationBarModule,

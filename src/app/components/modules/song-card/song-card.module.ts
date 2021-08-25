@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { JoyrideModule } from 'ngx-joyride';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { DifficultyCardModule } from '../difficulty-card/difficulty-card.module';
 import { DifficultyTagModule } from '../difficulty-tag/difficulty-tag.module';
@@ -11,6 +12,7 @@ import { SongCardComponent } from './song-card.component';
     declarations: [SongCardComponent],
     imports: [
         CommonModule,
+        JoyrideModule.forChild(),
         SharedAppModule,
         SongStatsModule,
         DifficultyTagModule,
