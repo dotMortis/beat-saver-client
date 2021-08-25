@@ -14,84 +14,86 @@
         'in-queue': inQueue }"
     >
         <div class="row no-gutters">
-            <div class="col-12 pb-1">
-                <div class="d-flex">
-                    <div class="row py-1 w-100">
-                        <div class="col-auto">
-                            <fa-icon
-                                *ngIf="isInstalledSong.status"
-                                [icon]="['fas', 'check-circle']"
-                                class="mr-2 song-installed-icon"
-                                pTooltip="Installed"
-                            >
-                            </fa-icon>
-                            <fa-icon
-                                *ngIf="tLevelStatsInfo?.isFav"
-                                [icon]="['fas', 'star']"
-                                class="song-fav-icon"
-                                pTooltip="In your favorites"
-                            ></fa-icon>
-                        </div>
-                        <div class="col-auto ml-auto">
-                            <a
-                                joyrideStep="{{tour.index}}2"
-                                text="Download the song as zip file"
-                                class="mr-3"
-                                href="{{ latestVersion?.downloadURL }}"
-                                pTooltip="Download as zip file"
-                                ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
-                            ></a>
-                            <a
-                                joyrideStep="{{tour.index}}3"
-                                text="Download and install the sond directly to your custom songs folder"
-                                class="mr-3"
-                                (click)="onDownloadSingle()"
-                                href="#"
-                                pTooltip="Install song directly"
-                                ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
-                            ></a>
-                            <a
-                                joyrideStep="{{tour.index}}4"
-                                text="Copy the command for the song request manager for twitch"
-                                (click)="onCopySRM()"
-                                href="#"
-                                pTooltip="Copy song request command"
-                                ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
-                            ></a>
-                        </div>
+            <div class="col-12 pb-1 d-flex">
+                <div class="row py-1 w-100">
+                    <div class="col-auto">
+                        <fa-icon
+                            *ngIf="isInstalledSong.status"
+                            [icon]="['fas', 'check-circle']"
+                            class="mr-2 song-installed-icon"
+                            pTooltip="Installed"
+                        >
+                        </fa-icon>
+                        <fa-icon
+                            *ngIf="tLevelStatsInfo?.isFav"
+                            [icon]="['fas', 'star']"
+                            class="song-fav-icon"
+                            pTooltip="In your favorites"
+                        ></fa-icon>
                     </div>
-                    <div class="row pl-2">
-                        <div class="col-auto d-flex align-items-stretch">
-                            <a
-                                joyrideStep="{{tour.index}}5"
-                                text="Expand the card and display detailed map details"
-                                pRipple
-                                href="#"
-                                class="d-flex align-items-center expand-btn"
-                                pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
-                                (click)="expanded = !expanded"
-                                ><fa-icon
-                                    *ngIf="!expanded && !isMobile"
-                                    class="p-1"
-                                    [icon]="['fas', 'chevron-right']"
-                                ></fa-icon>
-                                <fa-icon
-                                    *ngIf="expanded && !isMobile"
-                                    class="p-1"
-                                    [icon]="['fas', 'chevron-left']"
-                                ></fa-icon>
-                                <fa-icon
-                                    *ngIf="!expanded && isMobile"
-                                    class="p-1"
-                                    [icon]="['fas', 'chevron-down']"
-                                ></fa-icon>
-                                <fa-icon
-                                    *ngIf="expanded && isMobile"
-                                    class="p-1"
-                                    [icon]="['fas', 'chevron-up']"
-                                ></fa-icon>
-                            </a>
-                        </div>
+                    <div class="col-auto ml-auto d-flex flex-wrap">
+                        <a
+                            pRipple
+                            joyrideStep="{{tour.index}}2"
+                            text="Download the song as zip file"
+                            class="mr-3 card-btn"
+                            href="{{ latestVersion?.downloadURL }}"
+                            pTooltip="Download as zip file"
+                            ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
+                        ></a>
+                        <a
+                            pRipple
+                            joyrideStep="{{tour.index}}3"
+                            text="Download and install the sond directly to your custom songs folder"
+                            class="mr-3 card-btn"
+                            (click)="onDownloadSingle()"
+                            href="#"
+                            pTooltip="Install song directly"
+                            ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
+                        ></a>
+                        <a
+                            pRipple
+                            joyrideStep="{{tour.index}}4"
+                            class="card-btn"
+                            text="Copy the command for the song request manager for twitch"
+                            (click)="onCopySRM()"
+                            href="#"
+                            pTooltip="Copy song request command"
+                            ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
+                        ></a>
+                    </div>
+                </div>
+                <div class="row ml-0">
+                    <div class="col-auto d-flex align-items-stretch">
+                        <a
+                            joyrideStep="{{tour.index}}5"
+                            text="Expand the card and display detailed map details"
+                            pRipple
+                            href="#"
+                            class="d-flex align-items-center expand-btn"
+                            pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
+                            (click)="expanded = !expanded"
+                            ><fa-icon
+                                *ngIf="!expanded && !isMobile"
+                                class="p-1"
+                                [icon]="['fas', 'chevron-right']"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="expanded && !isMobile"
+                                class="p-1"
+                                [icon]="['fas', 'chevron-left']"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="!expanded && isMobile"
+                                class="p-1"
+                                [icon]="['fas', 'chevron-down']"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="expanded && isMobile"
+                                class="p-1"
+                                [icon]="['fas', 'chevron-up']"
+                            ></fa-icon>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -99,7 +101,7 @@
                 <div class="song-cover-container">
                     <img
                         joyrideStep="{{tour.index}}6"
-                        text="Click to preview the map as video"
+                        text="Click the cover to preview the map as video"
                         [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
                         [ngClass]="{
                         'rounded float-start song-cover': true
