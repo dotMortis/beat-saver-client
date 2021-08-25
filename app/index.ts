@@ -1,7 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import { join, resolve } from 'path';
 import * as winston from 'winston';
-import { MainWindow } from './models/helpers/main.window';
+import { MainWindow } from './models/main.window';
+import { SplashWindow } from './models/splash.window';
 
 const logger = winston.createLogger({
     level: 'debug',
@@ -22,6 +23,7 @@ class IndexElectron {
     private _window?: BrowserWindow | null;
     private _loaders: Map<string, { path: string; loader: any }>;
     private _mainWindow?: MainWindow;
+    private _splashWindow?: SplashWindow;
 
     constructor(eleApp: typeof app, loaderPaths: string[]) {
         logger.debug('construct app');
@@ -59,7 +61,12 @@ class IndexElectron {
         logger.debug('_startApp');
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
+            this._splashWindow = new SplashWindow();
             this._mainWindow = new MainWindow(logger);
+            this._mainWindow?.onReady(() => {
+                if (this._mainWindow) this._mainWindow.show();
+                if (this._splashWindow) this._splashWindow.close();
+            });
         });
 
         this._app.on('window-all-closed', () => {

@@ -1,7 +1,7 @@
 import { app, Rectangle, screen } from 'electron';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { appLogger } from '../../loaders/logger.loader';
+import { appLogger } from '../loaders/logger.loader';
 
 export class WindowStorage {
     public readonly path: string;

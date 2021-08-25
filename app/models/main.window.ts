@@ -1,14 +1,15 @@
 import { BrowserWindow } from 'electron';
 import { Rectangle } from 'electron/main';
 import { resolve } from 'path';
+import { EventEmitter } from 'stream';
 import { Logger } from 'winston';
-import { TSendClose, TSendReadyClose } from '../../../src/models/electron/send.channels';
-import { DownloadSender } from '../../senders/download.sender';
-import { IpcHelerps } from './ipc-main.register';
-import { webContentsSend } from './web-contents-send.register';
+import { TSendClose, TSendReady, TSendReadyClose } from '../../src/models/electron/send.channels';
+import { DownloadSender } from '../senders/download.sender';
+import { IpcHelerps } from './helpers/ipc-main.register';
+import { webContentsSend } from './helpers/web-contents-send.register';
 import { WindowStorage } from './windowStorage.model';
 
-export class MainWindow {
+export class MainWindow extends EventEmitter {
     private _window: BrowserWindow | null;
     private _windowStorage: WindowStorage;
     private _serve: boolean;
@@ -17,6 +18,7 @@ export class MainWindow {
     private _isReadyToClose: boolean;
 
     constructor(public logger: Logger) {
+        super();
         this._isReadyToClose = this._serve = this._debug = false;
         for (const arg of process.argv) {
             if (arg === '--serve') this._serve = true;
@@ -28,9 +30,22 @@ export class MainWindow {
         this._init();
     }
 
+    onReady(cb: () => void): this {
+        return super.on('ready', cb);
+    }
+
+    show(): void {
+        this._window?.show();
+    }
+
+    private _emitReady(): boolean {
+        return super.emit('ready');
+    }
+
     private _init(): void {
         this._window = this._generateWindow();
         this._downloadSender = new DownloadSender(this._window);
+        this._initOnReady(this._window);
         this._loadContent(this._window);
         this._initOnClose(this._window);
         this._initOnClosed(this._window);
@@ -48,7 +63,9 @@ export class MainWindow {
                 contextIsolation: false
             },
             minHeight: 450,
-            minWidth: 600
+            minWidth: 600,
+            autoHideMenuBar: true,
+            show: false
         });
     }
 
@@ -77,12 +94,16 @@ export class MainWindow {
         });
     }
 
+    private _initOnReady(window: BrowserWindow): void {
+        IpcHelerps.ipcMainOn<TSendReady>('READY', () => this._emitReady());
+    }
+
     private _loadContent(window: BrowserWindow): void {
         if (this._serve) {
             this.logger.debug('_createWindow serve');
             window.loadURL('http://localhost:4200');
         } else {
-            const path = resolve(__dirname, '..', 'ui', 'index.html');
+            const path = resolve(__dirname, '..', '..', 'ui', 'index.html');
             this.logger.debug('_createWindow prod ' + path);
             window.loadFile(path);
         }
