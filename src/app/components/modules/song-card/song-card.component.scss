@@ -1,11 +1,8 @@
 .song-card-container {
-    border-radius: 0.25rem !important;
     background-color: transparent;
-
     .main-frame {
         border-radius: 0.25rem;
         background-color: var(--surface-f);
-        box-shadow: 0 0 4px -1px white;
         transition-duration: 0.2s; /* delays for 1 second */
         -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
         transition-timing-function: ease-in-out;

@@ -36,6 +36,9 @@ export class MainWindow extends EventEmitter {
 
     show(): void {
         this._window?.show();
+        setTimeout(() => {
+            this._window?.moveTop();
+        }, 500);
     }
 
     private _emitReady(): boolean {
