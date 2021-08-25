@@ -12,8 +12,8 @@ import { SongCardComponent } from './song-card.component';
     declarations: [SongCardComponent],
     imports: [
         CommonModule,
-        JoyrideModule.forChild(),
         SharedAppModule,
+        JoyrideModule.forChild(),
         SongStatsModule,
         DifficultyTagModule,
         PlayerStatsModule,

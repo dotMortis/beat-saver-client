@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
     EListSortOrder,
@@ -24,7 +24,9 @@ export class ApiService {
     }
     set tSearchResult(val: TSearchResult | undefined) {
         this._tSearchResult = val;
+        this.tSearchResultChange.next(this._tSearchResult);
     }
+    tSearchResultChange: Subject<TSearchResult | undefined>;
 
     private _canLoadMore: boolean;
     get canLoadMore(): boolean {
@@ -75,6 +77,7 @@ export class ApiService {
         this._filter = new ListOptions({});
         this._page = 0;
         this._canLoadMore = true;
+        this.tSearchResultChange = new Subject<TSearchResult | undefined>();
     }
 
     public setboolFilter(key: keyof IListOptions, value: boolean | undefined): boolean | undefined {

@@ -9,6 +9,7 @@ import { InstalledSongsService } from '../../../services/null.provided/installed
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
+import { TourService } from '../../../services/root.provided/tour.service';
 
 @Component({
     selector: 'app-settings',
@@ -87,11 +88,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
     set showTour(val: boolean) {
         if (this._showTour !== val) {
             this._showTour = val;
-            if (!val) {
-                window.localStorage.setItem('tour', 'shown');
-            } else {
-                window.localStorage.removeItem('tour');
-            }
+            this._tourService.shown(!val);
         }
     }
 
@@ -99,10 +96,11 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         public optService: SettingsService,
         public installedSongsService: InstalledSongsService,
         public playerStatsService: PlayerStatsService,
-        private _eleService: ElectronService
+        private _eleService: ElectronService,
+        private _tourService: TourService
     ) {
         super();
-        this._showTour = window.localStorage.getItem('tour') == null;
+        this._showTour = !this._tourService.isShown;
         this._selectablePlayerNames = new Array<{ name: string }>();
         this._isInit = false;
         this.dirty = new Set<string>();
@@ -115,7 +113,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                 mergeMap(async (result: boolean) => {
                     try {
                         if (result) {
-                            this._showTour = window.localStorage.getItem('tour') == null;
+                            this._showTour = !this._tourService.isShown;
                             if (this.optService.settings) {
                                 this._setValues(this.optService.settings);
                             }

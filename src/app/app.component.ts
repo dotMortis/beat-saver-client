@@ -9,6 +9,7 @@ import { UnsubscribeComponent } from '../models/unsubscribe.model';
 import { ElectronService } from './services/root.provided/electron.service';
 import { ScrollService } from './services/root.provided/scroll.service';
 import { SettingsService } from './services/root.provided/settings.service';
+import { TourService } from './services/root.provided/tour.service';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -21,7 +22,8 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
         private _primengConfig: PrimeNGConfig,
         private _optService: SettingsService,
         private _eleService: ElectronService,
-        private _scrollService: ScrollService
+        private _scrollService: ScrollService,
+        private _tourService: TourService
     ) {
         super();
     }
@@ -31,15 +33,15 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
     }
 
     ngOnInit() {
+        this._primengConfig.ripple = true;
         this.addSub(
             this._scrollService.onScrollTop.pipe(tap(() => this.scrollPanel?.scrollTop(0)))
         );
         const version = window.localStorage.getItem('version');
         if (version !== environment.version) {
             window.localStorage.setItem('version', environment.version);
-            window.localStorage.removeItem('tour');
+            this._tourService.shown(false);
         }
-        this._primengConfig.ripple = true;
         this._optService
             .loadSettings()
             .then(() => {

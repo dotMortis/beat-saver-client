@@ -1,8 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
-import { JoyrideService } from 'ngx-joyride';
-import { EMPTY } from 'rxjs';
-import { catchError, finalize, mergeMap, tap } from 'rxjs/operators';
+import { mergeMap, tap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../../models/api.helpers';
 import {
     ECharacteristic,
@@ -20,7 +18,6 @@ import { InstalledSongsService } from '../../../services/null.provided/installed
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { NotifyService } from '../../../services/root.provided/notify.service';
-import { ScrollService } from '../../../services/root.provided/scroll.service';
 import { SongPreviewService } from '../song-preview/song-preview.service';
 import { SongCardService } from './song-card.service';
 
@@ -51,15 +48,6 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
 
     @Output()
     public expandedChange: EventEmitter<boolean>;
-
-    private _tour: { show: boolean; index: number };
-    @Input()
-    set tour(val: { show: boolean; index: number }) {
-        this._tour = val;
-    }
-    get tour(): { show: boolean; index: number } {
-        return this._tour;
-    }
 
     private _diffs?: Map<ECharacteristic, TMapDifficulty[]>;
     get diffs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
@@ -109,12 +97,9 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         private _eleService: ElectronService,
         private _notify: NotifyService,
         private _clipboard: Clipboard,
-        private _songCardService: SongCardService,
-        private _joyService: JoyrideService,
-        private _scrollService: ScrollService
+        private _songCardService: SongCardService
     ) {
         super();
-        this._tour = { show: false, index: 0 };
         this.isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
         this.expandedChange = new EventEmitter<boolean>();
@@ -182,9 +167,6 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                         )
                     );
                 });
-        }
-        if (this._tour) {
-            this._startTour();
         }
     }
 
@@ -270,30 +252,5 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         } else {
             this.uploadTimeInfo = uploadDate.toLocaleDateString();
         }
-    }
-
-    private _startTour(): void {
-        if (window.localStorage.getItem('tour')) return;
-        const stepCount = 6;
-        const steps = new Array<string>();
-        for (let z = 1; z <= stepCount; z++) {
-            steps.push(`${this.tour.index}${z}`);
-        }
-        steps.push('dlQueue1');
-        this._joyService
-            .startTour({
-                steps
-            })
-            .pipe(
-                catchError(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
-                    return EMPTY;
-                }),
-                finalize(() => {
-                    window.localStorage.setItem('tour', 'shown');
-                    this._scrollService.scrollTop();
-                })
-            )
-            .subscribe();
     }
 }

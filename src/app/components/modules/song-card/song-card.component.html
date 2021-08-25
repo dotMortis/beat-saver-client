@@ -1,5 +1,5 @@
 <div
-    joyrideStep="{{tour.index}}1"
+    joyrideStep="{{tMapDetail?.id}}1"
     text="Right click a song card to add the map to the download queue"
     (contextmenu)="onCardClick()"
     [ngClass]="{
@@ -34,7 +34,7 @@
                     <div class="col-auto ml-auto d-flex flex-wrap">
                         <a
                             pRipple
-                            joyrideStep="{{tour.index}}2"
+                            joyrideStep="{{tMapDetail?.id}}2"
                             text="Download the song as zip file"
                             class="mr-3 card-btn"
                             href="{{ latestVersion?.downloadURL }}"
@@ -43,7 +43,7 @@
                         ></a>
                         <a
                             pRipple
-                            joyrideStep="{{tour.index}}3"
+                            joyrideStep="{{tMapDetail?.id}}3"
                             text="Download and install the sond directly to your custom songs folder"
                             class="mr-3 card-btn"
                             (click)="onDownloadSingle()"
@@ -53,7 +53,7 @@
                         ></a>
                         <a
                             pRipple
-                            joyrideStep="{{tour.index}}4"
+                            joyrideStep="{{tMapDetail?.id}}4"
                             class="card-btn"
                             text="Copy the command for the song request manager for twitch"
                             (click)="onCopySRM()"
@@ -66,7 +66,7 @@
                 <div class="row ml-0">
                     <div class="col-auto d-flex align-items-stretch">
                         <a
-                            joyrideStep="{{tour.index}}5"
+                            joyrideStep="{{tMapDetail?.id}}5"
                             text="Expand the card and display detailed map details"
                             pRipple
                             href="#"
@@ -100,7 +100,7 @@
             <div class="mb-2 col-auto song-col-1">
                 <div class="song-cover-container">
                     <img
-                        joyrideStep="{{tour.index}}6"
+                        joyrideStep="{{tMapDetail?.id}}6"
                         text="Click the cover to preview the map as video"
                         [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
                         [ngClass]="{
