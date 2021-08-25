@@ -31,3 +31,7 @@ export type TDownloadActionInfo = {
 export type TSendClose = TSend<'ON_CLOSE', void>;
 export type TSendReadyClose = TSend<'ON_READY_CLOSE', void>;
 //#endregion
+
+//#region LOADING
+export type TSendReady = TSend<'READY', void>;
+//#endregion

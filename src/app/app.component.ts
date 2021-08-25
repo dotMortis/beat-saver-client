@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { ipcRendererSend } from '../models/electron/electron.register';
-import { TSendError } from '../models/electron/send.channels';
+import { TSendError, TSendReady } from '../models/electron/send.channels';
 import { ElectronService } from './services/root.provided/electron.service';
 import { SettingsService } from './services/root.provided/settings.service';
 @Component({
@@ -9,12 +9,16 @@ import { SettingsService } from './services/root.provided/settings.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
     constructor(
         private _primengConfig: PrimeNGConfig,
         private _optService: SettingsService,
         private _eleService: ElectronService
     ) {}
+
+    ngAfterViewInit(): void {
+        ipcRendererSend<TSendReady>(this._eleService, 'READY', undefined);
+    }
 
     ngOnInit() {
         this._primengConfig.ripple = true;

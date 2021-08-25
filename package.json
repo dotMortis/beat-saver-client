@@ -17,8 +17,8 @@
         "ng:serve:web": "ng serve --port 4201 -c web",
         "ng:serve:dev": "ng serve -c development",
         "electron:tsc": "tsc -p tsconfig.electron.json",
-        "electron:serve": "yarn clean && wait-on tcp:4200 && yarn electron:tsc && npx electron . --serve --debug",
-        "prebuild": "yarn clean",
+        "electron:serve": "yarn clean && yarn copy && wait-on tcp:4200 && yarn electron:tsc && npx electron . --serve --debug",
+        "prebuild": "yarn clean && yarn copy",
         "build": "yarn electron:tsc && ng build --prod",
         "build:prod": "yarn build -- -c production",
         "test": "ng test",
@@ -26,7 +26,8 @@
         "e2e": "ng e2e",
         "prerelease": "yarn build:prod",
         "release": "electron-builder build -p never",
-        "clean": "rimraf dist && rimraf release"
+        "clean": "rimraf dist && rimraf release",
+        "copy": "copyfiles src/assets/splash.png app/html/**/*.html dist/"
     },
     "private": true,
     "dependencies": {
@@ -75,6 +76,7 @@
         "@typescript-eslint/eslint-plugin": "^4.29.0",
         "@typescript-eslint/parser": "^4.29.0",
         "concurrently": "^6.2.1",
+        "copyfiles": "^2.4.1",
         "electron": "^13.1.8",
         "electron-builder": "^22.11.7",
         "eslint": "^7.32.0",
