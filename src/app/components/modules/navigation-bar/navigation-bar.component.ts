@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { JoyrideService } from 'ngx-joyride';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { DlService } from '../../../services/null.provided/dl.service';
@@ -18,7 +19,8 @@ export class NavigationBarComponent {
         public optService: SettingsService,
         public dlService: DlService,
         public installedSongsService: InstalledSongsService,
-        public playerStatsService: PlayerStatsService
+        public playerStatsService: PlayerStatsService,
+        private _joyService: JoyrideService
     ) {}
 
     async onReload(): Promise<void> {

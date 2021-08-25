@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
+import { environment } from '../environments/environment';
 import { ipcRendererSend } from '../models/electron/electron.register';
 import { TSendError, TSendReady } from '../models/electron/send.channels';
 import { ElectronService } from './services/root.provided/electron.service';
@@ -21,6 +22,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        const version = window.localStorage.getItem('version');
+        if (version !== environment.version) {
+            window.localStorage.setItem('version', environment.version);
+            window.localStorage.removeItem('tour');
+        }
         this._primengConfig.ripple = true;
         this._optService
             .loadSettings()
