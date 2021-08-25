@@ -1,5 +1,5 @@
 # BeatSaverClient
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://ko-fi.com/dotmortis)
+[!["Become a Patreon"](assets/become_a_patreon.png)](https://www.patreon.com/dotmortis)&nbsp;&nbsp;&nbsp;&nbsp;[!["Buy Me A Coffee"](assets/coffee.png)](https://ko-fi.com/dotmortis)
 
 ### Development server
 
