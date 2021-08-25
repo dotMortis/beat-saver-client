@@ -1,5 +1,5 @@
 {
-    "asar": false,
+    "asar": true,
     "appId": "com.beatsaver.client",
     "productName": "BeatSaver",
     "files": ["dist/**/*"],
