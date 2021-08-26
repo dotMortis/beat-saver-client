@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-coffee',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
     styleUrls: ['./coffee.component.scss']
 })
 export class CoffeeComponent {
-    constructor() {}
+    constructor(private _ref: DynamicDialogRef) {}
+
+    onChangelog() {
+        console.log('CLOSE');
+
+        this._ref.close('CHANGELOG');
+    }
 }

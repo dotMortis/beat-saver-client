@@ -6,6 +6,7 @@ import { environment } from '../environments/environment';
 import { ipcRendererSend } from '../models/electron/electron.register';
 import { TSendError, TSendReady } from '../models/electron/send.channels';
 import { UnsubscribeComponent } from '../models/unsubscribe.model';
+import { NavigationBarComponent } from './components/modules/navigation-bar/navigation-bar.component';
 import { ElectronService } from './services/root.provided/electron.service';
 import { ScrollService } from './services/root.provided/scroll.service';
 import { SettingsService } from './services/root.provided/settings.service';
@@ -17,6 +18,7 @@ import { TourService } from './services/root.provided/tour.service';
 })
 export class AppComponent extends UnsubscribeComponent implements OnInit, AfterViewInit {
     @ViewChild('mainScroll') scrollPanel?: ScrollPanel;
+    @ViewChild('nav') navBar?: NavigationBarComponent;
 
     constructor(
         private _primengConfig: PrimeNGConfig,
@@ -30,6 +32,12 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
 
     ngAfterViewInit(): void {
         ipcRendererSend<TSendReady>(this._eleService, 'READY', undefined);
+        const version = window.localStorage.getItem('version');
+        if (version !== environment.version) {
+            window.localStorage.setItem('version', environment.version);
+            this._tourService.shown(false);
+            this.navBar?.showChangelog();
+        }
     }
 
     ngOnInit() {
@@ -37,11 +45,6 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
         this.addSub(
             this._scrollService.onScrollTop.pipe(tap(() => this.scrollPanel?.scrollTop(0)))
         );
-        const version = window.localStorage.getItem('version');
-        if (version !== environment.version) {
-            window.localStorage.setItem('version', environment.version);
-            this._tourService.shown(false);
-        }
         this._optService
             .loadSettings()
             .then(() => {

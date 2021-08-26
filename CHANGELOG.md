@@ -1,5 +1,4 @@
 # Changelog
-
 ## [0.4.0] - soon
 ### Added
 - Changelog panel
@@ -20,6 +19,7 @@
 - BeatSaber installtion folder reader
 - BeatSaber player stats reader
 - BeatSaver map search functionality
+
 ### Fixed
 - Filter player stats with 0 counters
 - Error on unzip maps with subfolders
