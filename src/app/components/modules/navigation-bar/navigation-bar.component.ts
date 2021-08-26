@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { DlService } from '../../../services/null.provided/dl.service';
@@ -6,29 +7,44 @@ import { InstalledSongsService } from '../../../services/null.provided/installed
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
+import { CoffeeComponent } from './coffee/coffee.component';
 
 @Component({
     selector: 'app-navigation-bar',
     templateUrl: './navigation-bar.component.html',
-    styleUrls: ['./navigation-bar.component.scss']
+    styleUrls: ['./navigation-bar.component.scss'],
+    providers: [DialogService]
 })
 export class NavigationBarComponent {
+    ref?: DynamicDialogRef;
+
     constructor(
         public electronService: ElectronService,
         public optService: SettingsService,
         public dlService: DlService,
-        public installedSongsService: InstalledSongsService,
-        public playerStatsService: PlayerStatsService
+        private _installedSongsService: InstalledSongsService,
+        private _playerStatsService: PlayerStatsService,
+        private _dialogService: DialogService
     ) {}
 
     async onReload(): Promise<void> {
         await Promise.all([
-            this.playerStatsService
+            this._playerStatsService
                 .loadPlayersStats()
                 .catch(e => ipcRendererSend<TSendError>(this.electronService, 'ERROR', e)),
-            this.installedSongsService
+            this._installedSongsService
                 .loadInstalledSongs()
                 .catch(e => ipcRendererSend<TSendError>(this.electronService, 'ERROR', e))
         ]);
+    }
+
+    showCoffee() {
+        this.ref = this._dialogService.open(CoffeeComponent, {
+            width: '70%',
+            style: { 'max-width': '720px' },
+            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            header: 'About BeatSaver Client',
+            baseZIndex: 10000
+        });
     }
 }
