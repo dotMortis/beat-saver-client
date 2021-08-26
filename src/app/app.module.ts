@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,6 +21,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { JoyrideModule } from 'ngx-joyride';
+import { MarkdownModule } from 'ngx-markdown';
 import { MessageService } from 'primeng/api';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ScrollTopModule } from 'primeng/scrolltop';
@@ -48,6 +49,7 @@ import { SharedAppModule } from './shared/shared-app-module';
         HttpClientModule,
         NgbModule,
         SharedAppModule,
+        MarkdownModule.forRoot({ loader: HttpClient }),
         JoyrideModule.forRoot(),
         SongPreviewModule,
         DownloadItemModule,

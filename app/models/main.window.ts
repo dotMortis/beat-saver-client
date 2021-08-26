@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell } from 'electron';
 import { Rectangle } from 'electron/main';
 import { resolve } from 'path';
 import { EventEmitter } from 'stream';
@@ -48,6 +48,7 @@ export class MainWindow extends EventEmitter {
     private _init(): void {
         this._window = this._generateWindow();
         this._downloadSender = new DownloadSender(this._window);
+        this._initOnNewWindow(this._window);
         this._initOnReady(this._window);
         this._loadContent(this._window);
         this._initOnClose(this._window);
@@ -99,6 +100,13 @@ export class MainWindow extends EventEmitter {
 
     private _initOnReady(window: BrowserWindow): void {
         IpcHelerps.ipcMainOn<TSendReady>('READY', () => this._emitReady());
+    }
+
+    private _initOnNewWindow(window: BrowserWindow): void {
+        window.webContents.on('new-window', (event: Electron.Event, url: string) => {
+            event.preventDefault();
+            shell.openExternal(url);
+        });
     }
 
     private _loadContent(window: BrowserWindow): void {

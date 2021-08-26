@@ -19,6 +19,16 @@
             (click)="optService.visible = !optService.visible"
         ></button>
     </div>
+    <div class="col-auto nav-item-r">
+        <button
+            pButton
+            pRipple
+            pTooltip="About"
+            class="p-button-sm coffee-btn"
+            icon="pi pi-heart"
+            (click)="showCoffee()"
+        ></button>
+    </div>
     <button
         joyrideStep="dlQueue1"
         text="Open the download queue"

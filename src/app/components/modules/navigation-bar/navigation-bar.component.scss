@@ -24,4 +24,15 @@
             left: 0;
         }
     }
+
+    .coffee-btn {
+        color: white;
+        background-color: #dc3545;
+        &:hover {
+            background-color: darken(#dc3545, 5);
+            &:active {
+                background-color: darken(#dc3545, 10);
+            }
+        }
+    }
 }
