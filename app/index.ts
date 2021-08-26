@@ -1,23 +1,10 @@
 import { app, BrowserWindow } from 'electron';
 import { join, resolve } from 'path';
-import * as winston from 'winston';
+import { args } from './models/args.model';
 import { MainWindow } from './models/main.window';
 import { SplashWindow } from './models/splash.window';
+import { logger } from './models/winston.logger';
 
-const logger = winston.createLogger({
-    level: 'debug',
-    format: winston.format.json(),
-    transports: [
-        new winston.transports.File({
-            filename: join(app.getPath('appData'), app.getName(), 'logs', 'error.log'),
-            level: 'error'
-        }),
-        new winston.transports.File({
-            filename: join(app.getPath('appData'), app.getName(), 'logs', 'combined.log')
-        }),
-        new winston.transports.Console({ level: 'debug' })
-    ]
-});
 class IndexElectron {
     private _app: typeof app;
     private _window?: BrowserWindow | null;
@@ -62,7 +49,7 @@ class IndexElectron {
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
             this._splashWindow = new SplashWindow();
-            this._mainWindow = new MainWindow(logger);
+            this._mainWindow = new MainWindow(logger, { debug: args.debug });
             this._mainWindow?.onReady(() => {
                 if (this._mainWindow) this._mainWindow.show();
                 if (this._splashWindow) this._splashWindow.close();
@@ -79,7 +66,7 @@ class IndexElectron {
         this._app.on('activate', () => {
             logger.debug('_startApp activate');
             if (this._window === null) {
-                this._mainWindow = new MainWindow(logger);
+                this._mainWindow = new MainWindow(logger, { debug: args.debug });
             }
         });
     }

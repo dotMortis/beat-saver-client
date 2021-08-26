@@ -29,11 +29,11 @@ class Logger {
     }
 
     debug(message: string, meta?: any): void {
-        this._logger.debug(message, meta);
+        this._logger.debug(message, { data: meta });
     }
 
     info(message: string, meta?: any): void {
-        this._logger.info(message, meta);
+        this._logger.info(message, { data: meta });
     }
 
     error(error: Error | string): void {

@@ -17,12 +17,12 @@ export class MainWindow extends EventEmitter {
     private _downloadSender?: DownloadSender;
     private _isReadyToClose: boolean;
 
-    constructor(public logger: Logger) {
+    constructor(public logger: Logger, options?: { debug: boolean }) {
         super();
-        this._isReadyToClose = this._serve = this._debug = false;
+        this._debug = options?.debug || false;
+        this._isReadyToClose = this._serve = false;
         for (const arg of process.argv) {
             if (arg === '--serve') this._serve = true;
-            if (arg === '--debug') this._debug = true;
         }
         this._windowStorage = new WindowStorage();
         this._windowStorage.init();
