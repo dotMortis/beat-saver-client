@@ -6,7 +6,5 @@ import { Component } from '@angular/core';
     styleUrls: ['./changelog.component.scss']
 })
 export class ChangelogComponent {
-    constructor() {
-        console.log('SHOW CHANGELOG');
-    }
+    constructor() {}
 }

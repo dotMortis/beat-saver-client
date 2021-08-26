@@ -10,8 +10,6 @@ export class CoffeeComponent {
     constructor(private _ref: DynamicDialogRef) {}
 
     onChangelog() {
-        console.log('CLOSE');
-
         this._ref.close('CHANGELOG');
     }
 }

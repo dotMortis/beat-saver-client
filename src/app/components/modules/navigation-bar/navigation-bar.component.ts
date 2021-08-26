@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { ipcRendererSend } from '../../../../models/electron/electron.register';
-import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
+import { TSendError } from '../../../../models/electron/send.channels';
+import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
@@ -17,8 +18,8 @@ import { CoffeeComponent } from './coffee/coffee.component';
     styleUrls: ['./navigation-bar.component.scss'],
     providers: [DialogService]
 })
-export class NavigationBarComponent {
-    ref?: DynamicDialogRef;
+export class NavigationBarComponent extends UnsubscribeComponent {
+    private _ref?: DynamicDialogRef;
 
     constructor(
         public electronService: ElectronService,
@@ -28,7 +29,9 @@ export class NavigationBarComponent {
         private _playerStatsService: PlayerStatsService,
         private _dialogService: DialogService,
         private _eleService: ElectronService
-    ) {}
+    ) {
+        super();
+    }
 
     async onReload(): Promise<void> {
         await Promise.all([
@@ -42,34 +45,28 @@ export class NavigationBarComponent {
     }
 
     showCoffee() {
-        this.ref = this._dialogService.open(CoffeeComponent, {
+        this._ref = this._dialogService.open(CoffeeComponent, {
             width: '70%',
             style: { 'max-width': '720px' },
             contentStyle: { 'max-height': '500px', overflow: 'auto' },
             header: 'About BeatSaver Client',
             baseZIndex: 10000
         });
-        this.ref.onClose
-            .pipe(
+        this.addSub(
+            this._ref.onClose.pipe(
+                take(1),
                 tap((msg: 'CHANGELOG' | undefined) => {
                     if (msg === 'CHANGELOG') {
                         this.showChangelog();
                     }
                 })
             )
-            .subscribe()
-            .add(() => {
-                ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
-                    msg: 'Unsubscribed coffee onClose'
-                });
-            });
+        );
     }
 
     showChangelog(): void {
-        console.log('showChangelog');
-
-        this.ref?.close();
-        this.ref = this._dialogService.open(ChangelogComponent, {
+        this._ref?.close();
+        this._ref = this._dialogService.open(ChangelogComponent, {
             width: '70%',
             style: { 'max-width': '720px' },
             contentStyle: { 'max-height': '500px', overflow: 'auto' },
