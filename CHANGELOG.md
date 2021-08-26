@@ -1,6 +1,7 @@
 # Changelog
 ## [0.4.0] - soon
 ### Added
+- daily rotate logs
 - Changelog panel
 - About panel
 
