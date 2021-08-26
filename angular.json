@@ -38,7 +38,8 @@
                         ],
                         "customWebpackConfig": {
                             "path": "webpack/ele.webpack.js"
-                        }
+                        },
+                        "allowedCommonJsDependencies": ["lodash"]
                     },
                     "configurations": {
                         "production": {
