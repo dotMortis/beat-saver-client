@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { resolve } from 'path';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
@@ -7,7 +8,38 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
     styleUrls: ['./coffee.component.scss']
 })
 export class CoffeeComponent {
-    constructor(private _ref: DynamicDialogRef) {}
+    private _coffeeImgUrl: string;
+    get coffeeImgUrl(): string {
+        return this._coffeeImgUrl;
+    }
+
+    private _patreonImgUrl: string;
+    get patreonImgUrl(): string {
+        return this._patreonImgUrl;
+    }
+
+    constructor(private _ref: DynamicDialogRef) {
+        this._coffeeImgUrl = resolve(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'assets',
+            'coffee.png'
+        );
+        this._patreonImgUrl = resolve(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'assets',
+            'become_a_patreon.png'
+        );
+    }
 
     onChangelog() {
         this._ref.close('CHANGELOG');
