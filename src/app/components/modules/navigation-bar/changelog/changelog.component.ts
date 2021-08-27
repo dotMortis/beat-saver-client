@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { resolve } from 'path';
 
 @Component({
     selector: 'app-changelog',
@@ -12,6 +11,6 @@ export class ChangelogComponent {
         return this._mdUrl;
     }
     constructor() {
-        this._mdUrl = resolve(__dirname, '..', '..', '..', '..', '..', 'assets', 'CHANGELOG.md');
+        this._mdUrl = 'assets/CHANGELOG.md';
     }
 }
