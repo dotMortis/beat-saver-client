@@ -6,6 +6,13 @@
     "directories": {
         "output": "release/"
     },
+    "publish": [
+        {
+            "provider": "github",
+            "owner": "dotMortis",
+            "repo": "beat-saver-client"
+        }
+    ],
     "win": {
         "icon": "assets/icons",
         "target": ["portable", "nsis"],

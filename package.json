@@ -7,6 +7,9 @@
         "name": "Nick K.",
         "email": "n.koellhofer@googlemail.com"
     },
+    "repository": {
+        "url": "https://github.com/dotMortis/beat-saver-client"
+    },
     "cli": {
         "packageManager": "yarn"
     },
@@ -25,7 +28,7 @@
         "lint": "ng lint --fix",
         "e2e": "ng e2e",
         "prerelease": "yarn build:prod",
-        "release": "electron-builder build -p never",
+        "release": "electron-builder build -p onTagOrDraft",
         "clean": "rimraf dist && rimraf release",
         "copy": "copyfiles src/assets/splash.png app/html/**/*.html dist/"
     },
@@ -48,6 +51,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.3",
         "@ng-bootstrap/ng-bootstrap": "^9.1.3",
         "bootstrap": "^4.5.0",
+        "electron-updater": "^4.3.9",
         "jszip": "^3.7.1",
         "lodash": "^4.17.21",
         "ngx-joyride": "^2.4.0",

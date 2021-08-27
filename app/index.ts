@@ -1,10 +1,10 @@
 import { app, BrowserWindow } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import { join, resolve } from 'path';
 import { args } from './models/args.model';
 import { MainWindow } from './models/main.window';
 import { SplashWindow } from './models/splash.window';
 import { logger } from './models/winston.logger';
-
 class IndexElectron {
     private _app: typeof app;
     private _window?: BrowserWindow | null;
@@ -46,8 +46,14 @@ class IndexElectron {
 
     private _startApp(): void {
         logger.debug('_startApp');
+        const updater = () => {
+            autoUpdater.logger = logger;
+            autoUpdater.allowPrerelease = true;
+            autoUpdater.checkForUpdatesAndNotify();
+        };
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
+            updater();
             this._splashWindow = new SplashWindow();
             this._mainWindow = new MainWindow(logger, { debug: args.debug });
             this._mainWindow?.onReady(() => {
@@ -81,6 +87,7 @@ const electronApp = new IndexElectron(app, [
     join(loaderRootDir, 'installed-songs.loader'),
     join(loaderRootDir, 'install.loader')
 ]);
+
 electronApp
     .init()
     .then(() => {
