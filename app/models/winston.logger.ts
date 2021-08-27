@@ -10,9 +10,18 @@ const consoleLogFormat = winston.format.printf(info => {
     }]`;
 });
 
+const defaultFormat = winston.format.printf(info =>
+    JSON.stringify({
+        timestamp: info.timestamp,
+        level: info.level,
+        message: info.message,
+        data: info.data
+    })
+);
+
 export const logger = winston.createLogger({
     level: args.debug ? 'debug' : 'info',
-    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+    format: winston.format.combine(winston.format.timestamp(), defaultFormat),
     transports: [
         new winston.transports.Console({
             level: 'debug',
