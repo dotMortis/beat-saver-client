@@ -15,7 +15,7 @@
     ],
     "win": {
         "icon": "assets/icons",
-        "target": ["portable", "nsis"],
+        "target": ["nsis"],
         "executableName": "BeatSaver",
         "artifactName": "BeatSaverClient v${version} Installer.exe",
         "publisherName": "dotMortis"
