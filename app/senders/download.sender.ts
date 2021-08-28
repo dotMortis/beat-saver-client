@@ -4,8 +4,7 @@ import {
     TSendBrowserDownload,
     TSendBrowserDownloadAction
 } from '../../src/models/electron/send.channels';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
-import { webContentsSend } from '../models/helpers/web-contents-send.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 
 export class DownloadSender {
     private _window: BrowserWindow;
@@ -55,7 +54,7 @@ export class DownloadSender {
                 const id = v4();
                 this._downloads.set(id, item);
                 item.on('updated', (event, state) => {
-                    webContentsSend<TSendBrowserDownload>(this._window, 'DOWNLOAD', {
+                    IpcHelerps.webContentsSend<TSendBrowserDownload>(this._window, 'DOWNLOAD', {
                         event: 'update',
                         filename: item.getFilename(),
                         state,
@@ -65,7 +64,7 @@ export class DownloadSender {
                     });
                 });
                 item.once('done', (event, state) => {
-                    webContentsSend<TSendBrowserDownload>(this._window, 'DOWNLOAD', {
+                    IpcHelerps.webContentsSend<TSendBrowserDownload>(this._window, 'DOWNLOAD', {
                         event: 'done',
                         filename: item.getFilename(),
                         state,

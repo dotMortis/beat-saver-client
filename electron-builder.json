@@ -23,18 +23,11 @@
         "oneClick": false,
         "allowToChangeInstallationDirectory": true,
         "allowElevation": false,
-        "perMachine": true
+        "perMachine": true,
+        "differentialPackage": false
     },
     "portable": {
         "splashImage": "assets/icons/splash.bmp",
-        "artifactName": "BeatSaverClient v${version} Portable.exe"
-    },
-    "mac": {
-        "icon": "assets/icons",
-        "target": ["dmg"]
-    },
-    "linux": {
-        "icon": "assets/icons",
-        "target": ["AppImage"]
+        "artifactName": "BeatSaverClient-v${version}-Portable.exe"
     }
 }

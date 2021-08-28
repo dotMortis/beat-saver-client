@@ -8,7 +8,7 @@ import {
 } from '../../src/models/electron/invoke.channels';
 import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { appLogger } from './logger.loader';
 import { settings } from './settings.loader';
 

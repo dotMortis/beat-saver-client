@@ -5,8 +5,7 @@ import { EventEmitter } from 'stream';
 import { Logger } from 'winston';
 import { TSendClose, TSendReady, TSendReadyClose } from '../../src/models/electron/send.channels';
 import { DownloadSender } from '../senders/download.sender';
-import { IpcHelerps } from './helpers/ipc-main.register';
-import { webContentsSend } from './helpers/web-contents-send.register';
+import { IpcHelerps } from './helpers/ipc-main.helpers';
 import { WindowStorage } from './windowStorage.model';
 
 export class MainWindow extends EventEmitter {
@@ -16,6 +15,10 @@ export class MainWindow extends EventEmitter {
     private _debug: boolean;
     private _downloadSender?: DownloadSender;
     private _isReadyToClose: boolean;
+
+    get window(): BrowserWindow | null {
+        return this._window;
+    }
 
     constructor(public logger: Logger, options?: { debug: boolean }) {
         super();
@@ -83,7 +86,7 @@ export class MainWindow extends EventEmitter {
                         this._window?.close();
                     }
                 );
-                webContentsSend<TSendClose>(this._window, 'ON_CLOSE', undefined);
+                IpcHelerps.webContentsSend<TSendClose>(this._window, 'ON_CLOSE', undefined);
                 return event.preventDefault();
             } else if (this._window) {
                 this._windowStorage.saveCurrentState(this._window);

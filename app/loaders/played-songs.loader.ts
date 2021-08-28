@@ -10,7 +10,7 @@ import {
 import { TSongHash } from '../../src/models/played-songs.model';
 import { PlayerData, TLevelStatsInfo } from '../../src/models/player-data.model';
 import { TFileLoaded } from '../../src/models/types';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { appLogger } from './logger.loader';
 import { settings } from './settings.loader';
 

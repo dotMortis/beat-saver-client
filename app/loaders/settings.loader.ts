@@ -12,7 +12,7 @@ import { cloneDeep } from 'lodash';
 import * as path from 'path';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../src/models/electron/invoke.channels';
 import { TSettingCheck, TSettings, TSettingType } from '../../src/models/settings.model';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 
 export const getSettingsHandle = IpcHelerps.ipcMainHandle<TInvokeGetSettings>(
     'GET_SETTINGS',

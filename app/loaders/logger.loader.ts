@@ -1,6 +1,6 @@
 import * as winston from 'winston';
 import { TSendDebug, TSendError, TSendInfo } from '../../src/models/electron/send.channels';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 
 export const loadDebugSender = IpcHelerps.ipcMainOn<TSendDebug>(
     'DEBUG',

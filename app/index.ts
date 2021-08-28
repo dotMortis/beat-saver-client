@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import { join, resolve } from 'path';
 import { args } from './models/args.model';
 import { MainWindow } from './models/main.window';
 import { SplashWindow } from './models/splash.window';
+import { Updater } from './models/updater';
 import { logger } from './models/winston.logger';
 class IndexElectron {
     private _app: typeof app;
@@ -11,6 +11,7 @@ class IndexElectron {
     private _loaders: Map<string, { path: string; loader: any }>;
     private _mainWindow?: MainWindow;
     private _splashWindow?: SplashWindow;
+    private _updater?: Updater;
 
     constructor(eleApp: typeof app, loaderPaths: string[]) {
         logger.debug('construct app');
@@ -46,19 +47,17 @@ class IndexElectron {
 
     private _startApp(): void {
         logger.debug('_startApp');
-        const updater = () => {
-            autoUpdater.logger = logger;
-            autoUpdater.allowPrerelease = true;
-            autoUpdater.checkForUpdatesAndNotify();
-        };
         this._app.on('ready', () => {
             logger.debug('_startApp ready');
-            updater();
             this._splashWindow = new SplashWindow();
             this._mainWindow = new MainWindow(logger, { debug: args.debug });
+            this._updater = new Updater(this._mainWindow);
             this._mainWindow?.onReady(() => {
                 if (this._mainWindow) this._mainWindow.show();
                 if (this._splashWindow) this._splashWindow.close();
+                setTimeout(() => {
+                    this._updater?.checkForUpdatesAndNotify().catch(error => logger.error(error));
+                }, 1000);
             });
         });
 

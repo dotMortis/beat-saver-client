@@ -2,7 +2,7 @@ import { app } from 'electron';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { TInvokeReadCache, TInvokeWriteCache } from '../../src/models/electron/invoke.channels';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 
 export const writeCahceHandle = IpcHelerps.ipcMainHandle<TInvokeWriteCache<any>>(
     'WRITE_CACHE',

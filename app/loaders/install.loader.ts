@@ -4,7 +4,7 @@ import * as path from 'path';
 import { sep } from 'path';
 import { TInvokeInstallSong } from '../../src/models/electron/invoke.channels';
 import { TSongId } from '../../src/models/played-songs.model';
-import { IpcHelerps } from '../models/helpers/ipc-main.register';
+import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { sanitize } from '../models/helpers/sanitize.model';
 import { settings } from './settings.loader';
 
