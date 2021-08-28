@@ -48,17 +48,24 @@ class IndexElectron {
     private _startApp(): void {
         logger.debug('_startApp');
         this._app.on('ready', () => {
-            logger.debug('_startApp ready');
-            this._splashWindow = new SplashWindow();
-            this._mainWindow = new MainWindow(logger, { debug: args.debug });
-            this._updater = new Updater(this._mainWindow);
-            this._mainWindow?.onReady(() => {
-                if (this._mainWindow) this._mainWindow.show();
-                if (this._splashWindow) this._splashWindow.close();
-                setTimeout(() => {
-                    this._updater?.checkForUpdatesAndNotify().catch(error => logger.error(error));
-                }, 1000);
-            });
+            try {
+                logger.debug('_startApp ready');
+                this._splashWindow = new SplashWindow();
+                this._mainWindow = new MainWindow(logger, { debug: args.debug });
+                this._updater = new Updater(this._mainWindow);
+                this._mainWindow?.onReady(() => {
+                    if (this._mainWindow) this._mainWindow.show();
+                    if (this._splashWindow) this._splashWindow.close();
+                    setTimeout(() => {
+                        this._updater
+                            ?.checkForUpdatesAndNotify()
+                            .catch(error => logger.error(error));
+                    }, 1000);
+                });
+            } catch (error) {
+                logger.error(error);
+                app.exit();
+            }
         });
 
         this._app.on('window-all-closed', () => {

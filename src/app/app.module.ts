@@ -34,6 +34,7 @@ import { NavigationBarModule } from './components/modules/navigation-bar/navigat
 import { SettingsModule } from './components/modules/settings/settings.module';
 import { SongPreviewModule } from './components/modules/song-preview/song-preview.module';
 import { SongPreviewService } from './components/modules/song-preview/song-preview.service';
+import { UpdateAppModule } from './components/modules/update-app/update-app.module';
 import { ApiService } from './services/null.provided/api.service';
 import { DlService } from './services/null.provided/dl.service';
 import { InstalledSongsService } from './services/null.provided/installed-songs.service';
@@ -58,7 +59,8 @@ import { SharedAppModule } from './shared/shared-app-module';
         ScrollPanelModule,
         ScrollTopModule,
         ToastModule,
-        DownloadListModule
+        DownloadListModule,
+        UpdateAppModule
     ],
     providers: [
         MessageService,

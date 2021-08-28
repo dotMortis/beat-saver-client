@@ -20,6 +20,11 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
     @ViewChild('mainScroll') scrollPanel?: ScrollPanel;
     @ViewChild('nav') navBar?: NavigationBarComponent;
 
+    private _isElectron?: boolean;
+    get isElectron(): boolean {
+        return this._isElectron || false;
+    }
+
     constructor(
         private _primengConfig: PrimeNGConfig,
         private _optService: SettingsService,
@@ -41,6 +46,7 @@ export class AppComponent extends UnsubscribeComponent implements OnInit, AfterV
     }
 
     ngOnInit() {
+        this._isElectron = this._eleService.isElectron;
         this._primengConfig.ripple = true;
         this.addSub(
             this._scrollService.onScrollTop.pipe(tap(() => this.scrollPanel?.scrollTop(0)))

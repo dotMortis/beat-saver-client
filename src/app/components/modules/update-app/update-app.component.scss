@@ -1,0 +1,11 @@
+.update-app-container {
+    position: fixed;
+    left: 0.25rem;
+    bottom: 0.25rem;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    overflow: hidden;
+    background-color: var(--info);
+    display: flex;
+    flex-wrap: wrap;
+}

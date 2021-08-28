@@ -8,6 +8,7 @@
     <p-scrollTop target="parent" class="scrolltop" [threshold]="200"></p-scrollTop>
 </p-scrollPanel>
 <p-toast position="bottom-center"></p-toast>
+<app-update-app *ngIf="isElectron"></app-update-app>
 <app-download-item></app-download-item>
 <app-settings></app-settings>
 <app-download-list></app-download-list>
