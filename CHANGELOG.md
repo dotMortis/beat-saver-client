@@ -1,5 +1,5 @@
 # Changelog
-## [0.4.0] - 19.08.2021
+## [0.4.0] - 29.08.2021
 ### Added
 - daily rotate logs
 - Changelog panel
