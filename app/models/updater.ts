@@ -47,7 +47,7 @@ export class Updater {
                 body: 'Checking for updates'
             })
             .catch((e: Error) => e);
-        console.log('check', result);
+        logger.debug('CHECK', { data: result });
 
         if (this._mainWindow.window) {
             IpcHelerps.webContentsSend<TSendUpdatefound>(
@@ -65,38 +65,22 @@ export class Updater {
     }
 
     private _initOnDownloadPorgress(): void {
-        this._updater.on(
-            'download-progress',
-            (
-                progress: ProgressInfo,
-                bytesPerSeconds: number,
-                percent: number,
-                total: number,
-                transferred: number
-            ) => {
-                console.log(
-                    'download-progress',
-                    progress,
-                    bytesPerSeconds,
-                    percent,
-                    total,
-                    transferred
-                );
+        this._updater.on('download-progress', (progress: ProgressInfo) => {
+            logger.debug('download-progress', { data: progress });
 
-                if (this._mainWindow.window) {
-                    IpcHelerps.webContentsSend<TSendUpdateDlProgress>(
-                        this._mainWindow.window,
-                        'UPDATE_DL_PROGRESS',
-                        { progress, bytesPerSeconds, percent, total, transferred }
-                    );
-                }
+            if (this._mainWindow.window) {
+                IpcHelerps.webContentsSend<TSendUpdateDlProgress>(
+                    this._mainWindow.window,
+                    'UPDATE_DL_PROGRESS',
+                    progress
+                );
             }
-        );
+        });
     }
 
     private _initOnUpdateDownloaded(): void {
         this._updater.on('update-downloaded', (info: UpdateInfo) => {
-            console.log('update-downloaded', info);
+            logger.debug('update-downloaded', { data: info });
 
             if (this._mainWindow.window) {
                 IpcHelerps.webContentsSend<TSendUpdateDownlaoded>(

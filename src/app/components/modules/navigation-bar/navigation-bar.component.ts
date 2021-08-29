@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
 import { DlService } from '../../../services/null.provided/dl.service';
@@ -27,8 +26,7 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         public dlService: DlService,
         private _installedSongsService: InstalledSongsService,
         private _playerStatsService: PlayerStatsService,
-        private _dialogService: DialogService,
-        private _eleService: ElectronService
+        private _dialogService: DialogService
     ) {
         super();
     }
@@ -37,10 +35,10 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         await Promise.all([
             this._playerStatsService
                 .loadPlayersStats()
-                .catch(e => ipcRendererSend<TSendError>(this.electronService, 'ERROR', e)),
+                .catch(e => this.electronService.send<TSendError>('ERROR', e)),
             this._installedSongsService
                 .loadInstalledSongs()
-                .catch(e => ipcRendererSend<TSendError>(this.electronService, 'ERROR', e))
+                .catch(e => this.electronService.send<TSendError>('ERROR', e))
         ]);
     }
 

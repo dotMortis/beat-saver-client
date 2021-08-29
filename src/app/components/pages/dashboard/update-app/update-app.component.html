@@ -1,0 +1,9 @@
+<div *ngIf="visible" class="update-app-container">
+    <markdown class="m-0 p-0" [data]="statusLabel" ngPreserveWhitespaces emoji> </markdown>
+    <div *ngIf="updateService.updateError" class="pt-1">{{updateService.updateError.message}}</div>
+    <div *ngIf="updateService.updateStatus === 'UPDATE_DL_PROGRESS'" class="pt-1">
+        <p-progressBar
+            [value]="updateService.downloadProgress?.percent | number : '1.0-2'"
+        ></p-progressBar>
+    </div>
+</div>

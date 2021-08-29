@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { TSettings } from '../../../../models/settings.model';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
@@ -44,7 +43,7 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
             )
         );
         this._setCardSettings(this._settingsService.settings);
-        //this.onSearch();
+        this.onSearch();
     }
 
     onSearch(more: boolean = false): void {
@@ -52,7 +51,7 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
             .getList(more)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                     return EMPTY;
                 })
             )

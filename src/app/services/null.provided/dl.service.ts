@@ -4,13 +4,12 @@ import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
 import { TMapDetail, TMapVersion } from '../../../models/api.models';
 import { TInstalled, TSongDownloadInfo } from '../../../models/download.model';
-import { ipcRendererInvoke, ipcRendererSend } from '../../../models/electron/electron.register';
 import {
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
 } from '../../../models/electron/invoke.channels';
-import { TSendDebug, TSendError } from '../../../models/electron/send.channels';
+import { TSendError } from '../../../models/electron/send.channels';
 import { TSongHash } from '../../../models/played-songs.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
@@ -150,7 +149,7 @@ export class DlService {
             try {
                 await this._installedSongsService.loadInstalledSongs();
             } catch (error) {
-                ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                this._eleService.send<TSendError>('ERROR', error);
             }
         });
     }
@@ -193,7 +192,7 @@ export class DlService {
                             z++;
                             this._downloadSong(item);
                         } catch (error) {
-                            ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                            this._eleService.send<TSendError>('ERROR', error);
                         }
                     }
                     return z < dlSize;
@@ -206,7 +205,7 @@ export class DlService {
             try {
                 await this._installedSongsService.loadInstalledSongs();
             } catch (error) {
-                ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                this._eleService.send<TSendError>('ERROR', error);
             }
         });
     }
@@ -235,12 +234,7 @@ export class DlService {
                     sub.unsubscribe();
                 })
             )
-            .subscribe()
-            .add(() => {
-                ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
-                    msg: 'UNSUBSCRIBE downloadSong'
-                });
-            });
+            .subscribe();
     }
 
     private async _installSong(blob: Blob, info: TSongDownloadInfo): Promise<void> {
@@ -248,11 +242,11 @@ export class DlService {
             this._activeInstallations++;
             info.installed.status = 'INSTALLING';
             const arrayBuffer = await blob.arrayBuffer();
-            const result = await ipcRendererInvoke<TInvokeInstallSong>(
-                this._eleService,
-                'INSTALL_SONG',
-                { arrayBuffer, songId: info.mapDetail.id, songName: info.mapDetail.name }
-            );
+            const result = await this._eleService.invoke<TInvokeInstallSong>('INSTALL_SONG', {
+                arrayBuffer,
+                songId: info.mapDetail.id,
+                songName: info.mapDetail.name
+            });
             if (result && result.result instanceof Error) {
                 info.error = result.result;
             } else {
@@ -278,8 +272,7 @@ export class DlService {
     private _handleQueueCache(): void {
         this._eleService.addOnClose(async () => {
             this.clearInstalled();
-            await ipcRendererInvoke<TInvokeWriteCache<Array<[TSongHash, TSongDownloadInfo]>>>(
-                this._eleService,
+            await this._eleService.invoke<TInvokeWriteCache<Array<[TSongHash, TSongDownloadInfo]>>>(
                 'WRITE_CACHE',
                 {
                     name: 'dl_queue',
@@ -287,20 +280,19 @@ export class DlService {
                 }
             );
         });
-        ipcRendererInvoke<TInvokeReadCache<Array<[TSongHash, TSongDownloadInfo]>>>(
-            this._eleService,
-            'READ_CACHE',
-            { name: 'dl_queue' }
-        )
+        this._eleService
+            .invoke<TInvokeReadCache<Array<[TSongHash, TSongDownloadInfo]>>>('READ_CACHE', {
+                name: 'dl_queue'
+            })
             .then((result: false | Error | { data: Array<[TSongHash, TSongDownloadInfo]> }) => {
                 if (result && !(result instanceof Error)) {
                     for (const info of result.data || []) {
                         this._dlList.set(info[0], info[1]);
                     }
                 } else if (result instanceof Error) {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', result);
+                    this._eleService.send<TSendError>('ERROR', result);
                 }
             })
-            .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error));
+            .catch(error => this._eleService.send<TSendError>('ERROR', error));
     }
 }

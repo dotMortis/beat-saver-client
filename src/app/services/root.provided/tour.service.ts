@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { EMPTY } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
-import { ipcRendererSend } from '../../../models/electron/electron.register';
 import { TSendError } from '../../../models/electron/send.channels';
 import { TSongId } from '../../../models/played-songs.model';
 import { ElectronService } from './electron.service';
@@ -44,7 +43,7 @@ export class TourService {
             })
             .pipe(
                 catchError(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                     return EMPTY;
                 }),
                 finalize(() => {

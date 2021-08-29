@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TMapDetail, TMapVersion } from '../../../../../models/api.models';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
-import { DlService } from '../../../../services/null.provided/dl.service';
+import { TMapDetail, TMapVersion } from '../../../../../../models/api.models';
+import { UnsubscribeComponent } from '../../../../../../models/unsubscribe.model';
+import { DlService } from '../../../../../services/null.provided/dl.service';
 import { SongPreviewService } from '../../song-preview/song-preview.service';
 
 @Component({

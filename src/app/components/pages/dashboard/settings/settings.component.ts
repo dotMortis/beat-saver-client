@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
-import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
-import { TSettings } from '../../../../models/settings.model';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
-import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
-import { ElectronService } from '../../../services/root.provided/electron.service';
-import { SettingsService } from '../../../services/root.provided/settings.service';
-import { TourService } from '../../../services/root.provided/tour.service';
+import { TSendDebug, TSendError } from '../../../../../models/electron/send.channels';
+import { TSettings } from '../../../../../models/settings.model';
+import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
+import { InstalledSongsService } from '../../../../services/null.provided/installed-songs.service';
+import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
+import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { SettingsService } from '../../../../services/root.provided/settings.service';
+import { TourService } from '../../../../services/root.provided/tour.service';
 
 @Component({
     selector: 'app-settings',
@@ -120,7 +119,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                             await this.playerStatsService.loadPlayerNames().toPromise();
                         }
                     } catch (error) {
-                        ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                        this._eleService.send<TSendError>('ERROR', error);
                     } finally {
                         this._isInit = true;
                     }
@@ -138,20 +137,20 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                 expandAllSongCards: this.expandAllSongCards || false
             });
             const saveResult = await this.optService.saveSettings().catch(error => {
-                ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                this._eleService.send<TSendError>('ERROR', error);
             });
 
             if (saveResult) {
                 this._setValues(saveResult.result);
                 await this.installedSongsService.loadInstalledSongs().catch(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                 });
                 await this.playerStatsService.loadPlayersStats().catch(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                 });
             }
         } catch (error) {
-            ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+            this._eleService.send<TSendError>('ERROR', error);
         }
     }
 
@@ -162,14 +161,14 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                 this._setValues(result.result);
             }
         } catch (error) {
-            ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+            this._eleService.send<TSendError>('ERROR', error);
         }
     }
 
     private _observePlayerNamesChange(): Observable<string[] | undefined> {
         return this.playerStatsService.playerNamesChange.pipe(
             tap((playerNames: string[] | undefined) => {
-                ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                this._eleService.send<TSendDebug>('DEBUG', {
                     msg: 'playerNamesChange',
                     meta: playerNames
                 });

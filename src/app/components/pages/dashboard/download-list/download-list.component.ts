@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { TSongDownloadInfo } from '../../../../models/download.model';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
-import { TSendError } from '../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { ApiService } from '../../../services/null.provided/api.service';
-import { DlService } from '../../../services/null.provided/dl.service';
-import { ElectronService } from '../../../services/root.provided/electron.service';
-import { NotifyService } from '../../../services/root.provided/notify.service';
+import { TSongDownloadInfo } from '../../../../../models/download.model';
+import { TSendError } from '../../../../../models/electron/send.channels';
+import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
+import { ApiService } from '../../../../services/null.provided/api.service';
+import { DlService } from '../../../../services/null.provided/dl.service';
+import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 
 @Component({
     selector: 'app-download-list',
@@ -51,7 +50,7 @@ export class DownloadListComponent extends UnsubscribeComponent {
                 message: `Let's play!`
             });
         } catch (error) {
-            ipcRendererSend<TSendError>(this._electronService, 'ERROR', error);
+            this._electronService.send<TSendError>('ERROR', error);
         }
     }
 

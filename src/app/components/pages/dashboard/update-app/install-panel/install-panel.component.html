@@ -1,0 +1,10 @@
+<!-- prettier-ignore -->
+<div class="markdown">
+    <markdown ngPreserveWhitespaces emoji>
+        # {{label}}
+        ## {{info?.releaseName}} - {{info?.releaseDate | date}}
+        <br/>
+        {{info?.releaseNotes}}
+    </markdown>
+    <button pButton (click)="onInstall()" label="Install now!" class="p-button-success"></button>
+</div>

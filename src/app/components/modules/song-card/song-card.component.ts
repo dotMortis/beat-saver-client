@@ -9,7 +9,6 @@ import {
     TMapVersion
 } from '../../../../models/api.models';
 import { TInstalled } from '../../../../models/download.model';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
 import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player-data.model';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
@@ -18,7 +17,7 @@ import { InstalledSongsService } from '../../../services/null.provided/installed
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { NotifyService } from '../../../services/root.provided/notify.service';
-import { SongPreviewService } from '../song-preview/song-preview.service';
+import { SongPreviewService } from '../../pages/dashboard/song-preview/song-preview.service';
 import { SongCardService } from './song-card.service';
 
 @Component({
@@ -124,7 +123,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
-                .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error))
+                .catch(error => this._eleService.send<TSendError>('ERROR', error))
                 .finally(() => {
                     this.addSub(
                         this.playerStatsService.selectedPlayerChange.pipe(
@@ -134,7 +133,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                                         await this._loadPlayerSongStats();
                                     }
                                 } catch (error) {
-                                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                                    this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
                         )
@@ -145,7 +144,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                                 try {
                                     await this._loadPlayerSongStats();
                                 } catch (error) {
-                                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                                    this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
                         )
@@ -153,7 +152,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 });
 
             this._initIsInstalledSong()
-                .catch(error => ipcRendererSend<TSendError>(this._eleService, 'ERROR', error))
+                .catch(error => this._eleService.send<TSendError>('ERROR', error))
                 .finally(() => {
                     this.addSub(
                         this.installedSongsService.installedSongsReloaded.pipe(
@@ -161,7 +160,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                                 try {
                                     await this._initIsInstalledSong();
                                 } catch (error) {
-                                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                                    this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
                         )
@@ -211,9 +210,9 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 .loadPlayerSongStats(this.latestVersion.hash)
                 .toPromise()
                 .catch(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                 });
-            ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+            this._eleService.send<TSendDebug>('DEBUG', {
                 msg: 'LEVELSTATSINFO',
                 meta: tLevelStatsInfo
             });
@@ -234,7 +233,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             const result = await this.installedSongsService
                 .songIsInstalled(this.tMapDetail?.id)
                 .catch(error => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                 });
             this.isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
         }

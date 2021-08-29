@@ -30,7 +30,6 @@ export class MainWindow extends EventEmitter {
         this._windowStorage = new WindowStorage();
         this._windowStorage.init();
         this._window = null;
-        this._init();
     }
 
     onReady(cb: () => void): this {
@@ -48,14 +47,14 @@ export class MainWindow extends EventEmitter {
         return super.emit('ready');
     }
 
-    private _init(): void {
+    public async init(): Promise<void> {
         this._window = this._generateWindow();
         this._downloadSender = new DownloadSender(this._window);
         this._initOnNewWindow(this._window);
         this._initOnReady(this._window);
-        this._loadContent(this._window);
         this._initOnClose(this._window);
         this._initOnClosed(this._window);
+        await this._loadContent(this._window);
     }
 
     private _generateWindow(): BrowserWindow {
@@ -79,6 +78,9 @@ export class MainWindow extends EventEmitter {
     private _initOnClose(window: BrowserWindow): void {
         window.on('close', (event: Electron.Event) => {
             if (!this._isReadyToClose && this._window) {
+                setTimeout(() => {
+                    if (this._window && !this._window.isDestroyed()) this._window?.destroy();
+                }, 30000);
                 IpcHelerps.ipcMainOn<TSendReadyClose>(
                     'ON_READY_CLOSE',
                     (event: Electron.IpcMainInvokeEvent) => {
@@ -106,20 +108,23 @@ export class MainWindow extends EventEmitter {
     }
 
     private _initOnNewWindow(window: BrowserWindow): void {
-        window.webContents.on('new-window', (event: Electron.Event, url: string) => {
-            event.preventDefault();
-            shell.openExternal(url);
+        window.webContents.setWindowOpenHandler((details: Electron.HandlerDetails) => {
+            this.logger.debug('setWindowOpenHandler', details);
+            shell.openExternal(details.url);
+            return { action: 'deny' };
         });
     }
 
-    private _loadContent(window: BrowserWindow): void {
+    private async _loadContent(window: BrowserWindow): Promise<void> {
         if (this._serve) {
             this.logger.debug('_createWindow serve');
-            window.loadURL('http://localhost:4200');
+            await window.loadURL('http://localhost:4200');
         } else {
             const path = resolve(__dirname, '..', '..', 'ui', 'index.html');
             this.logger.debug('_createWindow prod ' + path);
-            window.loadFile(path);
+            await window.loadFile(path);
+            //TODO: index.html is missing on reload path -> WHY???
+            window.webContents.on('did-fail-load', () => window.loadURL(path));
         }
         if (this._debug) window.webContents.openDevTools();
     }

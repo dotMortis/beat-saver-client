@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { SharedAppModule } from '../../../shared/shared-app-module';
+import { SharedAppModule } from '../../../../shared/shared-app-module';
 import { DownloadItemComponent } from './download-item.component';
 
 @NgModule({

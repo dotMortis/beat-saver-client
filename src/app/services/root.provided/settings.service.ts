@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ipcRendererInvoke } from '../../../models/electron/electron.register';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../../models/electron/invoke.channels';
 import { TSettings } from '../../../models/settings.model';
 import { ElectronService } from './electron.service';
@@ -56,8 +55,7 @@ export class SettingsService {
 
     async saveSettings(): Promise<{ result: TSettings } | false> {
         if (this._settings) {
-            const result = await ipcRendererInvoke<TInvokeSetSettings>(
-                this.eleService,
+            const result = await this.eleService.invoke<TInvokeSetSettings>(
                 'SET_SETTINGS',
                 this._settings
             );
@@ -71,8 +69,7 @@ export class SettingsService {
     }
 
     async loadSettings(): Promise<{ result: TSettings } | false> {
-        const settings = await ipcRendererInvoke<TInvokeGetSettings>(
-            this.eleService,
+        const settings = await this.eleService.invoke<TInvokeGetSettings>(
             'GET_SETTINGS',
             undefined
         );

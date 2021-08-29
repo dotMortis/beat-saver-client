@@ -1,5 +1,4 @@
-import { UpdateInfo } from 'electron-updater';
-import { TUpdateProgress } from './update.types';
+import { ProgressInfo, UpdateInfo } from 'electron-updater';
 
 export type TSend<CHANNEL extends string, ARGS> = {
     channel: CHANNEL;
@@ -42,7 +41,7 @@ export type TSendReady = TSend<'READY', void>;
 //#region Updater
 export type TSendCheckUpdates = TSend<'CHECK_UPDATES', void>;
 export type TSendUpdatefound = TSend<'UPDATE_FOUND', UpdateInfo | Error | null>;
-export type TSendUpdateDlProgress = TSend<'UPDATE_DL_PROGRESS', TUpdateProgress>;
+export type TSendUpdateDlProgress = TSend<'UPDATE_DL_PROGRESS', ProgressInfo>;
 export type TSendUpdateDownlaoded = TSend<'UPDATE_DOWNLOADED', UpdateInfo>;
 export type TSendUpdate = TSend<'UPDATE', void>;
 //#endregion

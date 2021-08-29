@@ -2,27 +2,27 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SidebarModule } from 'primeng/sidebar';
-import { SharedAppModule } from '../../../shared/shared-app-module';
-import { SettingsComponent } from './settings.component';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { SharedAppModule } from '../../../../shared/shared-app-module';
+import { DlSongCardModule } from './dl-song-card/dl-song-card.module';
+import { DownloadListComponent } from './download-list.component';
 
 @NgModule({
-    declarations: [SettingsComponent],
+    declarations: [DownloadListComponent],
     imports: [
         CommonModule,
         SharedAppModule,
-        FormsModule,
+        DlSongCardModule,
         SidebarModule,
         ScrollPanelModule,
         ButtonModule,
+        SplitButtonModule,
         InputTextModule,
-        DropdownModule,
-        InputSwitchModule
+        FormsModule
     ],
-    exports: [SettingsComponent]
+    exports: [DownloadListComponent]
 })
-export class SettingsModule {}
+export class DownloadListModule {}

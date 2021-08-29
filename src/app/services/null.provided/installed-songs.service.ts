@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ipcRendererInvoke, ipcRendererSend } from '../../../models/electron/electron.register';
 import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
@@ -23,23 +22,18 @@ export class InstalledSongsService {
     async songIsInstalled(
         songId: TSongId
     ): Promise<false | { result: boolean | undefined; status: TFileLoaded }> {
-        const result = await ipcRendererInvoke<TInvokeIsInstalled>(
-            this._eleService,
-            'SONG_IS_INSTALLED',
-            {
-                songId
-            }
-        );
+        const result = await this._eleService.invoke<TInvokeIsInstalled>('SONG_IS_INSTALLED', {
+            songId
+        });
         this._notify.errorFileHandle(result, 'BS Installation');
         return result;
     }
 
     async loadInstalledSongs(): Promise<false | { status: TFileLoaded }> {
-        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+        this._eleService.send<TSendDebug>('DEBUG', {
             msg: 'loadInstalledSongs'
         });
-        const result = await ipcRendererInvoke<TInvokeLoadInstalledSongs>(
-            this._eleService,
+        const result = await this._eleService.invoke<TInvokeLoadInstalledSongs>(
             'LOAD_INSTALLED_STATS',
             undefined
         );

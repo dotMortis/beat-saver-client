@@ -1,15 +1,5 @@
 <p-scrollPanel #mainScroll [style]="{ width: '100vw', height: '100vh' }" styleClass="custombar1">
-    <div class="container pb-5">
-        <div class="pb-4">
-            <app-navigation-bar #nav class="mb-4"></app-navigation-bar>
-        </div>
-        <router-outlet #o="outlet"></router-outlet>
-    </div>
+    <router-outlet #o="outlet"></router-outlet>
     <p-scrollTop target="parent" class="scrolltop" [threshold]="200"></p-scrollTop>
+    <p-toast position="bottom-center"></p-toast>
 </p-scrollPanel>
-<p-toast position="bottom-center"></p-toast>
-<app-update-app *ngIf="isElectron"></app-update-app>
-<app-download-item></app-download-item>
-<app-settings></app-settings>
-<app-download-list></app-download-list>
-<app-song-preview></app-song-preview>

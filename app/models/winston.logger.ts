@@ -29,20 +29,18 @@ export const logger = winston.createLogger({
         }),
         new DailyRotateFile({
             filename: join(app.getPath('appData'), app.getName(), 'logs', 'error.log'),
-            datePattern: 'YYYY-MM-DD-HH',
+            datePattern: 'YYYY-MM-DD',
             zippedArchive: true,
             maxSize: '20m',
             maxFiles: '14d',
-            level: 'error',
-            frequency: '1d'
+            level: 'error'
         }),
         new DailyRotateFile({
             filename: join(app.getPath('appData'), app.getName(), 'logs', 'combined.log'),
-            datePattern: 'YYYY-MM-DD-HH',
+            datePattern: 'YYYY-MM-DD',
             zippedArchive: true,
             maxSize: '20m',
-            maxFiles: '14d',
-            frequency: '1d'
+            maxFiles: '14d'
         })
     ]
 });

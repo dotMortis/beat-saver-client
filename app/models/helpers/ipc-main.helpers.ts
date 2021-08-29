@@ -11,7 +11,6 @@ export class IpcHelerps {
         ) => Promise<INVOKE_TYPE['retrunValue']>
     ): INVOKE_TYPE['channel'] {
         ipcMain.handle(channel, cb);
-        //appLogger()?.debug(`[Registered ipcMainHandle]:\t${channel}`);
         return channel;
     }
 
@@ -20,7 +19,6 @@ export class IpcHelerps {
         cb: (event: Electron.IpcMainInvokeEvent, args: SEND_TYPE['args']) => void
     ): SEND_TYPE['channel'] {
         ipcMain.on(channel, cb);
-        //appLogger()?.debug(`[Registered ipcMainSend]:\t${channel}`);
         return channel;
     }
 

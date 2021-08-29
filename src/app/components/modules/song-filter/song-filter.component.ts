@@ -4,7 +4,6 @@ import { Calendar } from 'primeng/calendar';
 import { EMPTY } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { EListSortOrder, IListOptions } from '../../../../models/api.models';
-import { ipcRendererSend } from '../../../../models/electron/electron.register';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
@@ -88,7 +87,7 @@ export class SongFilterComponent {
             .getList(false)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
-                    ipcRendererSend<TSendError>(this._eleService, 'ERROR', error);
+                    this._eleService.send<TSendError>('ERROR', error);
                     return EMPTY;
                 })
             )

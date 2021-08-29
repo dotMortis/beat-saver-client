@@ -2,7 +2,6 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { uniqueId } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
-import { ipcRendererInvoke, ipcRendererSend } from '../../../models/electron/electron.register';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
@@ -74,17 +73,16 @@ export class PlayerStatsService {
             return this.selectedPlayerSubject.pipe(
                 mergeMap(async (selectedPlayer: { name: string } | undefined) => {
                     if (!selectedPlayer) {
-                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                        this._eleService.send<TSendDebug>('DEBUG', {
                             msg: `LOAD PLAYERNAMES V: ${v}`
                         });
                         const result = await this.loadPlayerNames().toPromise();
                         return result === false ? false : undefined;
                     } else {
-                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                        this._eleService.send<TSendDebug>('DEBUG', {
                             msg: `RETURN PLAYER V: ${v}`
                         });
-                        const result = await ipcRendererInvoke<TInvokeGetPlayerSongStats>(
-                            this._eleService,
+                        const result = await this._eleService.invoke<TInvokeGetPlayerSongStats>(
                             'GET_PLAYER_SONG_STATS',
                             { playerName: selectedPlayer.name, songHash }
                         );
@@ -113,7 +111,7 @@ export class PlayerStatsService {
     }
 
     loadPlayerNames(): Observable<false | { result: string[] | undefined; status: TFileLoaded }> {
-        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+        this._eleService.send<TSendDebug>('DEBUG', {
             msg: `loadPlayerNames INIT`
         });
         const v = uniqueId();
@@ -124,13 +122,12 @@ export class PlayerStatsService {
                     if (result !== true) {
                         if (!loadPlayerNames) return result;
                         try {
-                            ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                            this._eleService.send<TSendDebug>('DEBUG', {
                                 msg: `loadPlayerNames V: ${v}`,
                                 meta: result
                             });
                             this._playerNamesLoading.next(true);
-                            const ipcResult = await ipcRendererInvoke<TInvokeGetPlayerNames>(
-                                this._eleService,
+                            const ipcResult = await this._eleService.invoke<TInvokeGetPlayerNames>(
                                 'GET_PLAYER_NAMES',
                                 undefined
                             );
@@ -152,7 +149,7 @@ export class PlayerStatsService {
                         }
                     } else {
                         loadPlayerNames = false;
-                        ipcRendererSend<TSendDebug>(this._eleService, 'DEBUG', {
+                        this._eleService.send<TSendDebug>('DEBUG', {
                             msg: `loadPlayerNames V: ${v}`,
                             meta: result
                         });
@@ -176,8 +173,7 @@ export class PlayerStatsService {
 
     async loadPlayersStats(): Promise<false | { status: TFileLoaded }> {
         try {
-            const result = await ipcRendererInvoke<TInvokeLoadPlayedSongs>(
-                this._eleService,
+            const result = await this._eleService.invoke<TInvokeLoadPlayedSongs>(
                 'LOAD_PLAYER_STATS',
                 undefined
             );

@@ -85,11 +85,3 @@
         font-size: 0.75rem;
     }
 }
-
-:host ::ng-deep .p-progressbar {
-    height: 1.25rem;
-
-    .p-progressbar-label {
-        top: 50%;
-    }
-}
