@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-
+import { environment } from '../../../../../../environments/environment';
 @Component({
     selector: 'app-coffee',
     templateUrl: './coffee.component.html',
@@ -15,6 +15,10 @@ export class CoffeeComponent {
     private _patreonImgUrl: string;
     get patreonImgUrl(): string {
         return this._patreonImgUrl;
+    }
+
+    get version(): string {
+        return environment.version;
     }
 
     constructor(private _ref: DynamicDialogRef) {

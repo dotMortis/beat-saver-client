@@ -4,6 +4,7 @@
 
 ### Added
 - community menu button
+- add version to about panel
 
 ### Fixed
 - default settings not loaded on first start
