@@ -23,11 +23,3 @@
         padding: 0.714rem 1rem;
     }
 }
-
-:host ::ng-deep .p-progressbar {
-    height: 1.25rem;
-
-    .p-progressbar-label {
-        top: 50%;
-    }
-}

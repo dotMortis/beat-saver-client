@@ -69,19 +69,14 @@ export class PlayerStatsService {
         songHash: TSongHash
     ): Observable<false | { status: TFileLoaded; result: TLevelStatsInfo | undefined }> {
         try {
-            const v = uniqueId();
             return this.selectedPlayerSubject.pipe(
                 mergeMap(async (selectedPlayer: { name: string } | undefined) => {
+                    console.log(selectedPlayer);
+
                     if (!selectedPlayer) {
-                        this._eleService.send<TSendDebug>('DEBUG', {
-                            msg: `LOAD PLAYERNAMES V: ${v}`
-                        });
                         const result = await this.loadPlayerNames().toPromise();
                         return result === false ? false : undefined;
                     } else {
-                        this._eleService.send<TSendDebug>('DEBUG', {
-                            msg: `RETURN PLAYER V: ${v}`
-                        });
                         const result = await this._eleService.invoke<TInvokeGetPlayerSongStats>(
                             'GET_PLAYER_SONG_STATS',
                             { playerName: selectedPlayer.name, songHash }
@@ -111,10 +106,10 @@ export class PlayerStatsService {
     }
 
     loadPlayerNames(): Observable<false | { result: string[] | undefined; status: TFileLoaded }> {
-        this._eleService.send<TSendDebug>('DEBUG', {
-            msg: `loadPlayerNames INIT`
-        });
         const v = uniqueId();
+        this._eleService.send<TSendDebug>('DEBUG', {
+            msg: `loadPlayerNames INIT V: ${v}`
+        });
         let loadPlayerNames = true;
         return this._playerNamesLoading.pipe(
             mergeMap(
@@ -122,10 +117,6 @@ export class PlayerStatsService {
                     if (result !== true) {
                         if (!loadPlayerNames) return result;
                         try {
-                            this._eleService.send<TSendDebug>('DEBUG', {
-                                msg: `loadPlayerNames V: ${v}`,
-                                meta: result
-                            });
                             this._playerNamesLoading.next(true);
                             const ipcResult = await this._eleService.invoke<TInvokeGetPlayerNames>(
                                 'GET_PLAYER_NAMES',
@@ -149,10 +140,6 @@ export class PlayerStatsService {
                         }
                     } else {
                         loadPlayerNames = false;
-                        this._eleService.send<TSendDebug>('DEBUG', {
-                            msg: `loadPlayerNames V: ${v}`,
-                            meta: result
-                        });
                         return undefined;
                     }
                 }

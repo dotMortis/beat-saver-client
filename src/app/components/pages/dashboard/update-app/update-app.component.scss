@@ -8,9 +8,12 @@
     overflow: hidden;
     background-color: var(--info);
     max-width: 350px;
+}
 
-    p {
-        margin: 0;
-        padding: 0;
+:host ::ng-deep {
+    markdown {
+        p {
+            margin: 0;
+        }
     }
 }

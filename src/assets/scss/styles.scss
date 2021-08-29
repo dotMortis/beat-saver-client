@@ -33,6 +33,12 @@ hr {
             }
         }
     }
+
+    &.hide-x {
+        .p-scrollpanel-bar-x {
+            display: none !important;
+        }
+    }
 }
 
 .markdown {
@@ -49,5 +55,13 @@ hr {
 
     h3 {
         font-size: 1.17em;
+    }
+}
+
+.p-progressbar {
+    height: 1.25rem;
+
+    .p-progressbar-label {
+        top: 50%;
     }
 }
