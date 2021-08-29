@@ -5,7 +5,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { SharedAppModule } from '../../../shared/shared-app-module';
+import { SharedAppModule } from '../../../../shared/shared-app-module';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { CoffeeComponent } from './coffee/coffee.component';
 import { NavigationBarComponent } from './navigation-bar.component';

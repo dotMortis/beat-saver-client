@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
-import { TSendError } from '../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
-import { DlService } from '../../../services/null.provided/dl.service';
-import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
-import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
-import { ElectronService } from '../../../services/root.provided/electron.service';
-import { SettingsService } from '../../../services/root.provided/settings.service';
+import { TSendError } from '../../../../../models/electron/send.channels';
+import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
+import { DlService } from '../../../../services/null.provided/dl.service';
+import { InstalledSongsService } from '../../../../services/null.provided/installed-songs.service';
+import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
+import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { SettingsService } from '../../../../services/root.provided/settings.service';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { CoffeeComponent } from './coffee/coffee.component';
 
