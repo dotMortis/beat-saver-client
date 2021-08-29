@@ -1,4 +1,21 @@
 <div class="row navigation-bar no-gutters">
+    <div class="col-auto nav-item-l">
+        <button
+            pButton
+            pRipple
+            class="p-button-sm"
+            label="Community"
+            [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
+            (click)="communityMenu.toggle($event)"
+        ></button>
+        <p-tieredMenu
+            #communityMenu
+            appendTo="body"
+            [model]="communityMenuItems"
+            [popup]="true"
+        ></p-tieredMenu>
+    </div>
+    <h1></h1>
     <div *ngIf="electronService.isElectron" class="col-auto ml-auto nav-item-r">
         <button
             pButton

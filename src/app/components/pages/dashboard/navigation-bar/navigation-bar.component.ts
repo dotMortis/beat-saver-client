@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
 import { TSendError } from '../../../../../models/electron/send.channels';
@@ -19,6 +20,10 @@ import { CoffeeComponent } from './coffee/coffee.component';
 })
 export class NavigationBarComponent extends UnsubscribeComponent {
     private _ref?: DynamicDialogRef;
+    private _communityMenuItems: MenuItem[];
+    get communityMenuItems(): MenuItem[] {
+        return this._communityMenuItems;
+    }
 
     constructor(
         public electronService: ElectronService,
@@ -29,6 +34,58 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         private _dialogService: DialogService
     ) {
         super();
+        this._communityMenuItems = [
+            {
+                label: 'Discords',
+                items: [
+                    {
+                        label: 'Cube Community',
+                        url: 'https://discord.gg/dwe8mbC',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'Score Saber',
+                        url: 'https://discord.gg/WpuDMwU',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'BSMG',
+                        url: 'https://discord.gg/beatsabermods',
+                        target: '_blank'
+                    }
+                ]
+            },
+            {
+                label: 'Websites',
+                items: [
+                    {
+                        label: 'BeastSaber',
+                        url: 'https://bsaber.com/',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'ScoreSaber',
+                        url: 'https://scoresaber.com/',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'ModelSaber',
+                        url: 'https://modelsaber.com/',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'BeatMods',
+                        url: 'https://beatmods.com/',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'BSMG Wiki',
+                        url: 'https://bsmg.wiki/',
+                        target: '_blank'
+                    }
+                ]
+            }
+        ];
     }
 
     async onReload(): Promise<void> {
