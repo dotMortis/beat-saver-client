@@ -47,7 +47,7 @@
                             text="Download and install the sond directly to your custom songs folder"
                             class="mr-3 card-btn"
                             (click)="onDownloadSingle()"
-                            href="#"
+                            [routerLink]=""
                             pTooltip="Install song directly"
                             ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
                         ></a>
@@ -57,7 +57,7 @@
                             class="card-btn"
                             text="Copy the command for the song request manager for twitch"
                             (click)="onCopySRM()"
-                            href="#"
+                            [routerLink]=""
                             pTooltip="Copy song request command"
                             ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
                         ></a>
@@ -69,7 +69,7 @@
                             joyrideStep="{{tMapDetail?.id}}5"
                             text="Expand the card and display detailed map details"
                             pRipple
-                            href="#"
+                            [routerLink]=""
                             class="d-flex align-items-center expand-btn"
                             pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
                             (click)="expanded = !expanded"
@@ -135,7 +135,7 @@
                     {{ songNameShort }}</a
                 >
                 <br />
-                <a href="#"> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
+                <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
                 <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
                 <span
                     *ngFor="let groupedDif of diffsArr; let last = last"

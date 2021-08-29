@@ -41,7 +41,7 @@
                             pRipple
                             class="mr-3 card-btn"
                             (click)="onDownloadSingle()"
-                            href="#"
+                            [routerLink]=""
                             pTooltip="Install song directly"
                             ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
                         ></a>
@@ -49,7 +49,7 @@
                             pRipple
                             class="card-btn"
                             (click)="onCopySRM()"
-                            href="#"
+                            [routerLink]=""
                             pTooltip="Copy song request command"
                             ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
                         ></a>
@@ -96,7 +96,7 @@
                     {{ songNameShort }}</a
                 >
                 <br />
-                <a href="#"> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
+                <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
                 <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
             </div>
             <div
