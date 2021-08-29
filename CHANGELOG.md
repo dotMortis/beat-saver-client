@@ -8,6 +8,9 @@
 - lazy loaded dashboard
 - visual tweaks
 
+### Fixed
+- property changed wasn't called on ipc events
+
 ## [0.3.0] - 25.08.2021
 ### Added
 - Functions tour
