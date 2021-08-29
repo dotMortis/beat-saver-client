@@ -4,6 +4,16 @@
             pButton
             pRipple
             class="p-button-sm"
+            pTooltip="Home"
+            icon="pi pi-home"
+            (click)="onHome()"
+        ></button>
+    </div>
+    <div class="col-auto nav-item-l">
+        <button
+            pButton
+            pRipple
+            class="p-button-sm"
             label="Community"
             [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
             (click)="communityMenu.toggle($event)"

@@ -9,6 +9,11 @@ const routes: Routes = [
             {
                 path: '',
                 loadChildren: () => import('./../songs/songs.module').then(m => m.SongsModule)
+            },
+            {
+                path: ':songId',
+                loadChildren: () =>
+                    import('./../songs-detail/songs-detail.module').then(m => m.SongsDetailModule)
             }
         ]
     }

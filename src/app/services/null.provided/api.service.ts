@@ -6,6 +6,7 @@ import {
     EListSortOrder,
     IListOptions,
     ListOptions,
+    TMapDetail,
     TSearchResult
 } from '../../../models/api.models';
 
@@ -97,7 +98,7 @@ export class ApiService {
             this._latestFilter = this._filter.getQueryParams();
         }
         return this._http
-            .get<TSearchResult>(this._computePatch(['search', 'text', this._page]), {
+            .get<TSearchResult>(this._computePath(['search', 'text', this._page]), {
                 params: this._latestFilter
             })
             .pipe(
@@ -112,6 +113,10 @@ export class ApiService {
             );
     }
 
+    public getById(songId: string): Observable<TMapDetail> {
+        return this._http.get<TMapDetail>(this._computePath(['maps', 'id', songId]));
+    }
+
     public downloadZip(path: string) {
         return this._http.get(path, {
             responseType: 'blob',
@@ -120,7 +125,7 @@ export class ApiService {
         });
     }
 
-    private _computePatch(pathFragments: Array<string | number>): string {
+    private _computePath(pathFragments: Array<string | number>): string {
         let tempPath = this._basePath;
         for (const fragment of pathFragments) {
             const strFragment = typeof fragment === 'number' ? fragment.toString() : fragment;

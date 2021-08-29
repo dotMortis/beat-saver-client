@@ -43,7 +43,7 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
             )
         );
         this._setCardSettings(this._settingsService.settings);
-        this.onSearch();
+        if (!this.apiService.tSearchResult) this.onSearch();
     }
 
     onSearch(more: boolean = false): void {

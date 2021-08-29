@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
@@ -31,7 +32,8 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         public dlService: DlService,
         private _installedSongsService: InstalledSongsService,
         private _playerStatsService: PlayerStatsService,
-        private _dialogService: DialogService
+        private _dialogService: DialogService,
+        private _router: Router
     ) {
         super();
         this._communityMenuItems = [
@@ -86,6 +88,10 @@ export class NavigationBarComponent extends UnsubscribeComponent {
                 ]
             }
         ];
+    }
+
+    onHome() {
+        this._router.navigate(['']);
     }
 
     async onReload(): Promise<void> {

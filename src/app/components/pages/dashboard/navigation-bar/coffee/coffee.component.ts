@@ -25,7 +25,6 @@ export class CoffeeComponent {
         this._coffeeImgUrl = 'assets/coffee.png';
         this._patreonImgUrl = 'assets/become_a_patreon.png';
     }
-
     onChangelog() {
         this._ref.close('CHANGELOG');
     }

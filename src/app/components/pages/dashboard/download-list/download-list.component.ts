@@ -61,6 +61,4 @@ export class DownloadListComponent extends UnsubscribeComponent {
             this.dlService.clearInstalled();
         }
     }
-
-    onSearch() {}
 }
