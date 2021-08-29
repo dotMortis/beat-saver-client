@@ -1,6 +1,9 @@
 # Changelog
 
-## [0.5.0] - soon
+## [0.5.0] - 29.08.2021
+
+### Added
+- community menu button
 
 ### Fixed
 - default settings not loaded on first start
