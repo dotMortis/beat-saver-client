@@ -1,9 +1,12 @@
 # Changelog
-## [0.4.0] - soon
+## [0.4.0] - 19.08.2021
 ### Added
 - daily rotate logs
 - Changelog panel
 - About panel
+- auto app updater
+- lazy loaded dashboard
+- visual tweaks
 
 ## [0.3.0] - 25.08.2021
 ### Added
