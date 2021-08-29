@@ -8,6 +8,7 @@
 
 ### Fixed
 - default settings not loaded on first start
+
 ## [0.4.0] - 29.08.2021
 ### Added
 - daily rotate logs
