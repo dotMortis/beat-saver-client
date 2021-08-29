@@ -71,8 +71,6 @@ export class PlayerStatsService {
         try {
             return this.selectedPlayerSubject.pipe(
                 mergeMap(async (selectedPlayer: { name: string } | undefined) => {
-                    console.log(selectedPlayer);
-
                     if (!selectedPlayer) {
                         const result = await this.loadPlayerNames().toPromise();
                         return result === false ? false : undefined;

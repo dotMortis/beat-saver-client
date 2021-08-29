@@ -1,4 +1,5 @@
 import { NsisUpdater, ProgressInfo, UpdateCheckResult, UpdateInfo } from 'electron-updater';
+import { version } from '../../package.json';
 import {
     TSendCheckUpdates,
     TSendUpdate,
@@ -50,10 +51,18 @@ export class Updater {
         logger.debug('CHECK', { data: result });
 
         if (this._mainWindow.window) {
+            let updateFoundResult: TSendUpdatefound['args'];
+            if (result instanceof Error) {
+                updateFoundResult = result;
+            } else if (!result || result.updateInfo.version.includes(version)) {
+                updateFoundResult = null;
+            } else {
+                updateFoundResult = result.updateInfo;
+            }
             IpcHelerps.webContentsSend<TSendUpdatefound>(
                 this._mainWindow.window,
                 'UPDATE_FOUND',
-                result instanceof Error ? result : result?.updateInfo || null
+                updateFoundResult
             );
         }
         if (result instanceof Error) throw result;
