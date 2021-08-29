@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../../models/electron/invoke.channels';
 import { TSettings } from '../../../models/settings.model';
 import { ElectronService } from './electron.service';
@@ -18,7 +19,7 @@ export class SettingsService {
     get visible(): boolean {
         return this._visible;
     }
-    visibleChange: EventEmitter<boolean>;
+    visibleChange: BehaviorSubject<boolean>;
     //#endregion
 
     //#region settings
@@ -39,7 +40,7 @@ export class SettingsService {
 
     constructor(public eleService: ElectronService) {
         this._visible = false;
-        this.visibleChange = new EventEmitter<boolean>();
+        this.visibleChange = new BehaviorSubject<boolean>(false);
         this.settingsChange = new EventEmitter<TSettings>();
     }
 

@@ -113,10 +113,10 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                     try {
                         if (result) {
                             this._showTour = !this._tourService.isShown;
+                            await this.playerStatsService.loadPlayerNames().toPromise();
                             if (this.optService.settings) {
                                 this._setValues(this.optService.settings);
                             }
-                            await this.playerStatsService.loadPlayerNames().toPromise();
                         }
                     } catch (error) {
                         this._eleService.send<TSendError>('ERROR', error);
@@ -173,11 +173,11 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                     meta: playerNames
                 });
                 if (playerNames?.length) {
-                    this._selectablePlayerNames = new Array(
+                    this.selectablePlayerNames = new Array(
                         ...playerNames.map((name: string) => ({ name }))
                     );
                 } else {
-                    this._selectablePlayerNames.length = 0;
+                    this.selectablePlayerNames.length = 0;
                 }
             })
         );
@@ -193,7 +193,9 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
             expandAllSongCards.value != null
                 ? expandAllSongCards.value
                 : expandAllSongCards.default;
-        const tempPlayerName = playerName.value || playerName.default;
+        const tempPlayerName =
+            playerName.value || playerName.default || this.selectablePlayerNames[0]?.name;
+
         if (tempPlayerName) {
             this.selectedPlayerName = {
                 name: tempPlayerName
