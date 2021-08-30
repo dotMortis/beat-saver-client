@@ -8,7 +8,6 @@ import {
     utimesSync,
     writeFileSync
 } from 'fs';
-import { cloneDeep } from 'lodash';
 import * as path from 'path';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../src/models/electron/invoke.channels';
 import { TSettingCheck, TSettings, TSettingType } from '../../src/models/settings.model';
@@ -101,7 +100,7 @@ class Settings {
     }
 
     private _loadSettings(settings: TSettings): TSettings {
-        const settingsClone = cloneDeep(settings);
+        const settingsClone = this._clone(settings);
         try {
             const fileBuffer = readFileSync(this._fullPath);
             const savedSettings = JSON.parse(fileBuffer.toString());
@@ -173,6 +172,27 @@ class Settings {
         } catch (err) {
             closeSync(openSync(file, 'w'));
         }
+    }
+
+    private _clone<T>(settings: T): T {
+        if (settings instanceof Array) {
+            return <any>settings.map((val: any) => this._clone(val));
+        } else if (!(settings instanceof Object)) {
+            return settings;
+        }
+        const clone: T = <T>{};
+        Object.keys(settings).forEach((key: string) => {
+            const typedKey = <keyof T>key;
+            const tempValue = settings[typedKey];
+            if (tempValue instanceof Array) {
+                clone[typedKey] = <typeof tempValue>tempValue.map((val: any) => this._clone(val));
+            } else if (tempValue instanceof Object) {
+                clone[typedKey] = this._clone(tempValue);
+            } else {
+                clone[typedKey] = tempValue;
+            }
+        });
+        return clone;
     }
 }
 

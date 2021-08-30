@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import { join } from 'path';
 import * as winston from 'winston';
-import * as DailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import { args } from './args.model';
 
 const consoleLogFormat = winston.format.printf(info => {

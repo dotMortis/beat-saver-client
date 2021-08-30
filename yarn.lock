@@ -1738,11 +1738,6 @@
   dependencies:
     jszip "*"
 
-"@types/lodash@^4.14.172":
-  version "4.14.172"
-  resolved "https://npm.braun-its.de/@types%2flodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
-  integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
-
 "@types/marked@^2.0.0":
   version "2.0.5"
   resolved "https://npm.braun-its.de/@types%2fmarked/-/marked-2.0.5.tgz#453e27f1e97199d45bb25297b0dd2b9bbc1e05ea"

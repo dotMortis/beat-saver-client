@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { uniqueId } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
+import { v4 } from 'uuid';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
@@ -104,7 +104,7 @@ export class PlayerStatsService {
     }
 
     loadPlayerNames(): Observable<false | { result: string[] | undefined; status: TFileLoaded }> {
-        const v = uniqueId();
+        const v = v4();
         this._eleService.send<TSendDebug>('DEBUG', {
             msg: `loadPlayerNames INIT V: ${v}`
         });
