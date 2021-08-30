@@ -52,10 +52,6 @@ export class DifficultyCardComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.groupedDifs);
-        setTimeout(() => {
-            console.log(this.groupedDifs);
-        }, 5000);
         for (const [characteristic, diffs] of this.groupedDifs || []) {
             const dropdownItem = {
                 label: characteristic,

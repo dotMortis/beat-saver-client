@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { mergeMap, tap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../../models/api.helpers';
@@ -89,8 +89,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         private _eleService: ElectronService,
         private _notify: NotifyService,
         private _clipboard: Clipboard,
-        private _route: ActivatedRoute,
-        private _cdr: ChangeDetectorRef
+        private _route: ActivatedRoute
     ) {
         super();
         this.isInstalledSong = { status: false };
@@ -149,8 +148,6 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         )[this.tMapDetail.versions.length - 1];
         if (this.latestVersion != null) {
             this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
-            console.log('DIFFS', this.diffs);
-            this._cdr.detectChanges();
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
                 .catch(error => this._eleService.send<TSendError>('ERROR', error))
