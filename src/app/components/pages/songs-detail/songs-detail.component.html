@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-    <div [ngClass]="{ 'col-12 p-2 mb-2 main-frame': true}">
+    <div class="col-12 p-2 mb-2 main-frame">
         <div class="row no-gutters">
             <div class="mb-2 col-auto song-col-1">
                 <div class="song-cover-container">
@@ -103,26 +103,31 @@
                 <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
                 <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
             </div>
-            <div
-                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
-                class="col-12 row no-gutters player-stats"
-            >
-                <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
-                    <app-player-stats
-                        [ngClass]="{ 'col-12': true, 'player-stats-item-border': !last }"
-                        [stats]="statInfo"
-                    ></app-player-stats>
-                </ng-container>
-            </div>
         </div>
     </div>
     <div class="col-12 diff-frame">
         <div class="row mx-n1 inner-diff-frame">
+            <div
+                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
+                class="col-12 px-1 mb-2 row no-gutters player-stats"
+            >
+                <div class="diff-item">
+                    <ng-container
+                        *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last"
+                    >
+                        <app-player-stats [stats]="statInfo"></app-player-stats>
+                    </ng-container>
+                </div>
+            </div>
             <div class="col-12 px-1 col-lg-6 mb-2 mb-lg-0">
-                <app-difficulty-card *ngIf="diffs" [groupedDifs]="diffs"></app-difficulty-card>
+                <app-difficulty-card
+                    *ngIf="diffs"
+                    class="diff-item"
+                    [groupedDifs]="diffs"
+                ></app-difficulty-card>
             </div>
             <div class="col-12 px-1 col-lg-6">
-                <app-leaderboard *ngIf="diffs"></app-leaderboard>
+                <app-leaderboard *ngIf="diffs" class="diff-item"></app-leaderboard>
             </div>
         </div>
     </div>

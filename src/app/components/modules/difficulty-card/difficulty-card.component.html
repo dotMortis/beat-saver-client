@@ -6,21 +6,13 @@
     >
         <ng-template pTemplate="selectedItem">
             <div class="characteristic-item" *ngIf="selectedCharacteristic">
-                <img
-                    [src]="selectedCharacteristic.icon"
-                    pTooltip="{{ selectedCharacteristic.label }}"
-                    class="char-icon mr-2"
-                />
+                <img [src]="selectedCharacteristic.icon" class="char-icon mr-2" />
                 <span>{{ selectedCharacteristic.label }}</span>
             </div>
         </ng-template>
         <ng-template let-characteristic pTemplate="item">
             <div class="characteristic-item">
-                <img
-                    [src]="characteristic.icon"
-                    pTooltip="{{ characteristic.label }}"
-                    class="char-icon mr-2"
-                />
+                <img [src]="characteristic.icon" class="char-icon mr-2" />
                 <span>{{ characteristic.label }}</span>
             </div>
         </ng-template>
