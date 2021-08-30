@@ -45,9 +45,6 @@
                             "node_modules/marked/lib/marked.js",
                             "node_modules/emoji-toolkit/lib/js/joypixels.min.js"
                         ],
-                        "customWebpackConfig": {
-                            "path": "webpack/ele.webpack.js"
-                        },
                         "allowedCommonJsDependencies": ["lodash"]
                     },
                     "configurations": {
@@ -97,10 +94,7 @@
                             "aot": false,
                             "extractLicenses": true,
                             "vendorChunk": false,
-                            "buildOptimizer": false,
-                            "customWebpackConfig": {
-                                "path": "webpack/web.webpack.js"
-                            }
+                            "buildOptimizer": false
                         }
                     },
                     "defaultConfiguration": "production"
