@@ -12,49 +12,45 @@
     'in-queue': inQueue }"
     >
         <div class="row no-gutters">
-            <div class="col-12 d-flex">
-                <div class="row py-1 w-100">
-                    <div class="col-auto">
-                        <fa-icon
-                            *ngIf="isInstalledSong.status"
-                            [icon]="['fas', 'check-circle']"
-                            class="mr-2 song-installed-icon"
-                            pTooltip="Installed"
-                        >
-                        </fa-icon>
-                        <fa-icon
-                            *ngIf="tLevelStatsInfo?.isFav"
-                            [icon]="['fas', 'star']"
-                            class="song-fav-icon"
-                            pTooltip="In your favorites"
-                        ></fa-icon>
-                    </div>
-                    <div class="col-auto ml-auto d-flex flex-wrap">
-                        <a
-                            pRipple
-                            class="mr-3 card-btn"
-                            href="{{ latestVersion?.downloadURL }}"
-                            pTooltip="Download as zip file"
-                            ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
-                        ></a>
-                        <a
-                            pRipple
-                            class="mr-3 card-btn"
-                            (click)="onDownloadSingle()"
-                            [routerLink]=""
-                            pTooltip="Install song directly"
-                            ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
-                        ></a>
-                        <a
-                            pRipple
-                            class="card-btn"
-                            (click)="onCopySRM()"
-                            [routerLink]=""
-                            pTooltip="Copy song request command"
-                            ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
-                        ></a>
-                    </div>
-                </div>
+            <div class="col-auto">
+                <fa-icon
+                    *ngIf="isInstalledSong.status"
+                    [icon]="['fas', 'check-circle']"
+                    class="mr-2 song-installed-icon"
+                    pTooltip="Installed"
+                >
+                </fa-icon>
+                <fa-icon
+                    *ngIf="tLevelStatsInfo?.isFav"
+                    [icon]="['fas', 'star']"
+                    class="song-fav-icon"
+                    pTooltip="In your favorites"
+                ></fa-icon>
+            </div>
+            <div class="col-auto ml-auto d-flex flex-wrap">
+                <a
+                    pRipple
+                    class="mr-3 card-btn"
+                    href="{{ latestVersion?.downloadURL }}"
+                    pTooltip="Download as zip file"
+                    ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
+                ></a>
+                <a
+                    pRipple
+                    class="mr-3 card-btn"
+                    (click)="onDownloadSingle()"
+                    [routerLink]=""
+                    pTooltip="Install song directly"
+                    ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
+                ></a>
+                <a
+                    pRipple
+                    class="card-btn"
+                    (click)="onCopySRM()"
+                    [routerLink]=""
+                    pTooltip="Copy song request command"
+                    ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
+                ></a>
             </div>
         </div>
     </div>
