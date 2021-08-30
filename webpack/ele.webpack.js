@@ -3,6 +3,6 @@
  */
 
 module.exports = (config, options) => {
-    config.target = 'electron-renderer';
+    config.target = 'web';
     return config;
 };
