@@ -1,3 +1,13 @@
+:host ::ng-deep .p-dropdown {
+    > .p-dropdown-label {
+        padding: 0.25rem;
+    }
+}
+
+.char-icon {
+    height: 1rem;
+}
+
 .diff-card-container {
     .characteristic-item {
         white-space: -moz-nowrap; /* Firefox */
@@ -5,9 +15,6 @@
         white-space: nowrap; /* Chrome */
         display: flex;
         align-items: center;
-    }
-    .char-icon {
-        height: 1rem;
     }
 
     .diffs-container {
@@ -72,11 +79,5 @@
                 font-size: 12px;
             }
         }
-    }
-}
-
-:host ::ng-deep .p-dropdown {
-    > .p-dropdown-label {
-        padding: 0.25rem;
     }
 }

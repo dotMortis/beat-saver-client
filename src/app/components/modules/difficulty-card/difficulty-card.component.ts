@@ -9,6 +9,7 @@ import { ECharacteristic, TMapDifficulty } from '../../../../models/api.models';
 })
 export class DifficultyCardComponent implements OnInit {
     @Input() groupedDifs?: Map<ECharacteristic, TMapDifficulty[]>;
+    @Input() stylClass?: string;
 
     private _characteristics: { label: ECharacteristic; icon: string; diffs: TMapDifficulty[] }[];
 

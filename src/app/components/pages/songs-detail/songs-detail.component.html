@@ -12,7 +12,7 @@
     'in-queue': inQueue }"
     >
         <div class="row no-gutters">
-            <div class="col-12 pb-1 d-flex">
+            <div class="col-12 d-flex">
                 <div class="row py-1 w-100">
                     <div class="col-auto">
                         <fa-icon
@@ -116,11 +116,14 @@
             </div>
         </div>
     </div>
-    <div class="col-12 diff-frame col-lg-6 p-2 row no-gutters">
-        <app-difficulty-card
-            *ngIf="diffs"
-            class="w-100"
-            [groupedDifs]="diffs"
-        ></app-difficulty-card>
+    <div class="col-12 diff-frame">
+        <div class="row mx-n1 inner-diff-frame">
+            <div class="col-12 px-1 col-lg-6 mb-2 mb-lg-0">
+                <app-difficulty-card *ngIf="diffs" [groupedDifs]="diffs"></app-difficulty-card>
+            </div>
+            <div class="col-12 px-1 col-lg-6">
+                <app-leaderboard *ngIf="diffs"></app-leaderboard>
+            </div>
+        </div>
     </div>
 </div>
