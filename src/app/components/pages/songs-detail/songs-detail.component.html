@@ -1,14 +1,14 @@
 <div
     (contextmenu)="onCardClick()"
     [ngClass]="{
-    'song-card-container row no-gutters': true,
+    'song-detail-container row no-gutters': true,
     'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav,
     'song-fav': tLevelStatsInfo?.isFav && !isInstalledSong.status,
     'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status
 }"
 >
     <div
-        [ngClass]="{ 'col-12 p-2 main-frame': true,
+        [ngClass]="{ 'col-12 p-2 mb-2 header-frame': true,
     'in-queue': inQueue }"
     >
         <div class="row no-gutters">
@@ -56,6 +56,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div [ngClass]="{ 'col-12 p-2 mb-2 main-frame': true}">
+        <div class="row no-gutters">
             <div class="mb-2 col-auto song-col-1">
                 <div class="song-cover-container">
                     <img
@@ -112,7 +116,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 expand-frame col-lg-6 p-2 row no-gutters">
+    <div class="col-12 diff-frame col-lg-6 p-2 row no-gutters">
         <app-difficulty-card
             *ngIf="diffs"
             class="w-100"

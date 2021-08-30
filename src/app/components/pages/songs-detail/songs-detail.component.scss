@@ -1,8 +1,8 @@
 @use "sass:color";
-.song-card-container {
+.song-detail-container {
     background-color: transparent;
 
-    .main-frame {
+    .header-frame {
         background-color: var(--surface-f);
         border-radius: 0.25rem;
         transition-duration: 0.2s; /* delays for 1 second */
@@ -11,6 +11,7 @@
         -webkit-transition-timing-function: ease-in-out; /* for Safari & Chrome */
         transition-property: background, box-shadow;
         -webkit-transition-property: background, box-shadow; /* for Safari & Chrome */
+
         &:hover {
             box-shadow: 0 0 5px 0 white;
         }
@@ -34,19 +35,6 @@
             }
         }
 
-        .expand-btn {
-            box-shadow: 0 0 2px 0 var(--primary);
-            border-radius: 0.25rem;
-            transition-duration: 0.2s; /* delays for 1 second */
-            -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
-            &:hover {
-                box-shadow: 0 0 4px 0 var(--primary);
-                &:active {
-                    background-color: darken(#262626, 5);
-                }
-            }
-        }
-
         .song-fav-icon {
             color: var(--yellow-400);
         }
@@ -54,6 +42,19 @@
         .song-installed-icon {
             color: var(--success);
         }
+
+        .song-ranked-icon {
+            color: var(--yellow-500);
+        }
+
+        .song-qiali-icon {
+            color: var(--cyan-500);
+        }
+    }
+
+    .main-frame {
+        background-color: var(--surface-f);
+        border-radius: 0.25rem;
 
         .song-col-1 {
             display: flex;
@@ -99,13 +100,6 @@
             font-size: 0.6rem;
         }
 
-        .song-ranked-icon {
-            color: var(--yellow-500);
-        }
-        .song-qiali-icon {
-            color: var(--cyan-500);
-        }
-
         .player-stats {
             border-radius: 0.25rem;
             overflow: hidden;
@@ -125,7 +119,7 @@
         background-repeat: no-repeat;
     }
 
-    .expand-frame {
+    .diff-frame {
         transition-duration: 0.2s; /* delays for 1 second */
         -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
         transition-timing-function: ease-in-out;
