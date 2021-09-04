@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../../models/api.helpers';
 import {
@@ -11,6 +12,7 @@ import {
 } from '../../../../models/api.models';
 import { TInstalled } from '../../../../models/download.model';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
+import { TBoardIdent } from '../../../../models/leaderboard.model';
 import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player-data.model';
 import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
 import { ApiService } from '../../../services/null.provided/api.service';
@@ -80,6 +82,8 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         else return false;
     }
 
+    boardIdent: BehaviorSubject<TBoardIdent | undefined>;
+
     constructor(
         public apiService: ApiService,
         public songPreviewService: SongPreviewService,
@@ -92,6 +96,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         private _route: ActivatedRoute
     ) {
         super();
+        this.boardIdent = new BehaviorSubject<TBoardIdent | undefined>(undefined);
         this.isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
     }
@@ -193,6 +198,17 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                         )
                     );
                 });
+        }
+    }
+
+    onDiffSelected(diff: TMapDifficulty | undefined): void {
+        if (this.latestVersion && diff) {
+            this.boardIdent.next({
+                hash: this.latestVersion.hash,
+                difficulty: diff
+            });
+        } else {
+            this.boardIdent.next(undefined);
         }
     }
 

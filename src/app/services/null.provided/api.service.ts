@@ -2,13 +2,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { ApiHelpers } from '../../../models/api.helpers';
 import {
+    ECharacteristic,
+    EDifficulty,
     EListSortOrder,
     IListOptions,
     ListOptions,
+    TLeaderboard,
     TMapDetail,
     TSearchResult
 } from '../../../models/api.models';
+import { TSongHash } from '../../../models/played-songs.model';
 
 @Injectable({
     providedIn: null
@@ -111,6 +116,28 @@ export class ApiService {
                     }
                 })
             );
+    }
+
+    public getLeaderboard(
+        songHash: TSongHash,
+        difficulty: EDifficulty,
+        characteristic: ECharacteristic,
+        page: number
+    ) {
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append(
+            'difficulty',
+            ApiHelpers.getDifficultyScoreSaberIndex(difficulty)
+        );
+        queryParams = queryParams.append(
+            'gameMode',
+            ApiHelpers.getCharacteristicScoreSaberIndex(characteristic)
+        );
+        console.log(queryParams);
+
+        return this._http.get<TLeaderboard>(this._computePath(['scores', songHash, page]), {
+            params: queryParams
+        });
     }
 
     public getById(songId: string): Observable<TMapDetail> {

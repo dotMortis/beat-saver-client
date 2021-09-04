@@ -1,1 +1,38 @@
-<h1>Leaderboard</h1>
+<p-table
+    *ngIf="boardIdent"
+    [columns]="columns"
+    [value]="scores "
+    [scrollable]="true"
+    [rows]="10"
+    scrollHeight="250px"
+    [virtualScroll]="true"
+    [virtualRowHeight]="20"
+    [lazy]="true"
+    (onLazyLoad)="loadScoresLazy($event)"
+>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns">{{col.header}}</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+            <ng-template ngFor let-col [ngForOf]="columns">
+                <td *ngIf="!isNumber(rowData[col.field]); else scorePercent">
+                    {{rowData[col.field]}}
+                </td>
+                <ng-template #scorePercent>
+                    <td [className]="col.field">{{rowData[col.field] | number : '1.2-2'}}</td>
+                </ng-template>
+            </ng-template>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody" let-columns="columns">
+        <tr style="height: 40px">
+            <td *ngFor="let col of columns">
+                <div class="loading-text"></div>
+                <p-skeleton [ngStyle]="{'width': '100%'}"></p-skeleton>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

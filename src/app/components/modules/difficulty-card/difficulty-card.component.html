@@ -22,7 +22,8 @@
         <div
             *ngFor="let diff of selectedCharacteristic?.diffs; let last = last"
             [className]="diff.difficulty"
-            [ngClass]="{ 'row diff-item px-2 py-1': true, 'diff-item-border': !last }"
+            [ngClass]="{ 'row diff-item px-2 py-1 no-gutters': true, 'diff-item-border': !last, 'selectable': selectable, 'selected': isSelected(diff) }"
+            (click)="onDiffSelect(diff)"
         >
             <div class="col characteristic-item">
                 <img [src]="selectedCharacteristic?.icon" class="char-icon mr-2" />
@@ -40,7 +41,9 @@
                             src="assets/icons/error.png"
                             class="diff-stat-img"
                         />
-                        <span>{{ diff.paritySummary.errors }}</span>
+                        <span [style]="{'font-size': fontSize}"
+                            >{{ diff.paritySummary.errors }}</span
+                        >
                     </div>
                     <div class="diff-stat-item" pTooltip="Parity warnings">
                         <img
@@ -48,13 +51,15 @@
                             src="assets/icons/warn.png"
                             class="diff-stat-img"
                         />
-                        <span>{{ diff.paritySummary.warns }}</span>
+                        <span [style]="{'font-size': fontSize}"
+                            >{{ diff.paritySummary.warns }}</span
+                        >
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Notes">
                         <img alt="Notes" src="assets/icons/notes.png" class="diff-stat-img" />
-                        <span>{{ diff.notes }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.notes }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Note jump speed">
                         <img
@@ -62,13 +67,13 @@
                             src="assets/icons/njs.png"
                             class="diff-stat-img"
                         />
-                        <span>{{ diff.njs }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.njs }}</span>
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Bombs">
                         <img alt="Bombs" src="assets/icons/bombs.png" class="diff-stat-img" />
-                        <span>{{ diff.bombs }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.bombs }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Notes per second">
                         <img
@@ -76,17 +81,17 @@
                             src="assets/icons/nps.png"
                             class="diff-stat-img"
                         />
-                        <span>{{ diff.nps }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.nps }}</span>
                     </div>
                 </div>
                 <div class="col-auto px-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Walls">
                         <img alt="Walls" src="assets/icons/walls.png" class="diff-stat-img" />
-                        <span>{{ diff.obstacles }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.obstacles }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Lights">
                         <img alt="Lights" src="assets/icons/lights.png" class="diff-stat-img" />
-                        <span>{{ diff.events }}</span>
+                        <span [style]="{'font-size': fontSize}">{{ diff.events }}</span>
                     </div>
                 </div>
             </div>

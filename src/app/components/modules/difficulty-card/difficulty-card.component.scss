@@ -26,6 +26,12 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
+        .selectable {
+            &.selected {
+                box-shadow: inset 0 0 3px 1px var(--primary);
+            }
+        }
+
         .diff-item {
             &.Easy {
                 background-color: rgba(#20c997, 0.25);
@@ -44,7 +50,7 @@
             }
 
             .diff-stat-group {
-                min-width: 60px;
+                min-width: 50px;
 
                 .diff-stat-item {
                     display: flex;
@@ -56,7 +62,7 @@
                         margin-right: 0.25rem;
                     }
                     > span {
-                        font-size: 12px;
+                        font-size: 10px;
                     }
                 }
             }
@@ -66,7 +72,7 @@
                     height: 1rem;
                 }
                 .char-label {
-                    font-size: 1rem;
+                    font-size: 15px;
                 }
             }
 

@@ -60,4 +60,69 @@ export class ApiHelpers {
         }
         return groupedDifs;
     }
+
+    public static getDifficultyScoreSaberIndex(diff: EDifficulty): number {
+        switch (diff) {
+            case EDifficulty.Easy: {
+                return 1;
+            }
+            case EDifficulty.Normal: {
+                return 3;
+            }
+            case EDifficulty.Hard: {
+                return 5;
+            }
+            case EDifficulty.Expert: {
+                return 7;
+            }
+            case EDifficulty.ExpertPlus: {
+                return 9;
+            }
+        }
+    }
+
+    public static getCharacteristicScoreSaberIndex(char: ECharacteristic): number {
+        switch (char) {
+            case ECharacteristic.Standard: {
+                return 0;
+            }
+            case ECharacteristic.OneSaber: {
+                return 1;
+            }
+            case ECharacteristic.NoArrows: {
+                return 2;
+            }
+            case ECharacteristic['90Degree']: {
+                return 3;
+            }
+            case ECharacteristic['360Degree']: {
+                return 4;
+            }
+            case ECharacteristic.Lightshow: {
+                return 5;
+            }
+            case ECharacteristic.Lawless: {
+                return 6;
+            }
+        }
+    }
+
+    public static computeDiffId(diff?: TMapDifficulty): string | undefined {
+        if (!diff) return undefined;
+        return diff.difficulty + diff.characteristic;
+    }
+
+    public static calculateMaxScore(notes: number): number {
+        if (notes >= 13) return (notes - 13) * 8 * 115 + 4715;
+        else if (notes > 0) {
+            if (notes === 1) return 115;
+            else if (notes <= 5) return (notes - 1) * 2 * 115 + 115;
+            else return (notes - 5) * 4 * 115 + 920 + 115;
+        }
+        return 0;
+    }
+
+    public static calculateScorePercent(maxScore: number, playerScore: number): number {
+        return (100 / maxScore) * playerScore;
+    }
 }

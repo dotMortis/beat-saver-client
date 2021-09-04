@@ -237,3 +237,21 @@ export enum ECharacteristic {
     'Lightshow' = 'Lightshow',
     'Lawless' = 'Lawless'
 }
+
+export type TLeaderboard = {
+    mods: boolean;
+    ranked: boolean;
+    uid: number;
+    valid: boolean;
+    scores: Array<TScores>;
+};
+
+export type TScores = {
+    mods: Array<string>;
+    name: string;
+    playerId: number;
+    pp: number;
+    rank: number;
+    score: number;
+    scorePercent: number;
+};

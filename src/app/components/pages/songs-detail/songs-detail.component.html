@@ -115,15 +115,18 @@
                     </ng-container>
                 </div>
             </div>
-            <div class="col-12 px-1 col-lg-6 mb-2 mb-lg-0">
+            <div class="col-12 px-1 col-xl-4 mb-2 mb-lg-0">
                 <app-difficulty-card
+                    [selectable]="true"
+                    fontSize="10px"
                     *ngIf="diffs"
                     class="diff-item"
                     [groupedDifs]="diffs"
+                    (selectedDiffChange)="onDiffSelected($event)"
                 ></app-difficulty-card>
             </div>
-            <div class="col-12 px-1 col-lg-6">
-                <app-leaderboard *ngIf="diffs" class="diff-item"></app-leaderboard>
+            <div *ngIf="boardIdent" class="col-12 px-1 col-xl-8">
+                <app-leaderboard [boardIdent]="boardIdent | async"></app-leaderboard>
             </div>
         </div>
     </div>
