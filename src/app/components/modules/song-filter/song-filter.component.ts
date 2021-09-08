@@ -25,16 +25,12 @@ export class SongFilterComponent {
 
     private _orderBySelected: { name: string; code: EListSortOrder };
     get orderBySelected(): { name: string; code: EListSortOrder } {
-        console.log(this.apiService.filter.sortOrder);
-
         return (
             this.orderBys.find(item => item.code === this.apiService.filter.sortOrder) ||
             this._orderBySelected
         );
     }
     set orderBySelected(val: { name: string; code: EListSortOrder }) {
-        console.log('SET', val);
-
         this._orderBySelected = val;
         this.apiService.orderBy = val.code;
     }
