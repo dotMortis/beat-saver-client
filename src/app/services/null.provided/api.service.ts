@@ -24,6 +24,10 @@ export class ApiService {
     private _latestFilter?: HttpParams;
     private _page: number;
 
+    get filter(): ListOptions {
+        return this._filter;
+    }
+
     private _tSearchResult?: TSearchResult;
     get tSearchResult(): TSearchResult | undefined {
         return this._tSearchResult;

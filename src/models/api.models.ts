@@ -69,6 +69,13 @@ export class ListOptions implements IListOptions {
         Object.assign(this, { [key]: value });
     }
 
+    getAllTrue(): Array<keyof ListOptions> {
+        return <Array<keyof ListOptions>>Object.keys(this).filter((key: string) => {
+            const typedKey = <keyof ListOptions>key;
+            return this[typedKey] === true;
+        });
+    }
+
     getQueryParams(): HttpParams {
         let params = new HttpParams();
         Object.keys(this).forEach((key: string) => {
