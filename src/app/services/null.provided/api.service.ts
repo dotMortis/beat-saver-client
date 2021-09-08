@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { forkJoin, Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiHelpers } from '../../../models/api.helpers';
 import {
@@ -122,7 +122,7 @@ export class ApiService {
         songHash: TSongHash,
         difficulty: EDifficulty,
         characteristic: ECharacteristic,
-        page: number
+        pages: number[]
     ) {
         let queryParams = new HttpParams();
         queryParams = queryParams.append(
@@ -133,11 +133,13 @@ export class ApiService {
             'gameMode',
             ApiHelpers.getCharacteristicScoreSaberIndex(characteristic)
         );
-        console.log(queryParams);
-
-        return this._http.get<TLeaderboard>(this._computePath(['scores', songHash, page]), {
-            params: queryParams
-        });
+        return forkJoin(
+            pages.map((page: number) => {
+                return this._http.get<TLeaderboard>(this._computePath(['scores', songHash, page]), {
+                    params: queryParams
+                });
+            })
+        );
     }
 
     public getById(songId: string): Observable<TMapDetail> {

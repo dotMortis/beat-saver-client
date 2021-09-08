@@ -142,7 +142,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 );
                 await this.dlService.installSingle(dlInfo);
             }
-        } catch (error) {
+        } catch (error: any) {
             this._notify.error(error);
         }
     }
@@ -164,7 +164,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                                     if (result) {
                                         await this._loadPlayerSongStats();
                                     }
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
@@ -175,7 +175,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                             mergeMap(async () => {
                                 try {
                                     await this._loadPlayerSongStats();
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
@@ -191,7 +191,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                             mergeMap(async () => {
                                 try {
                                     await this._initIsInstalledSong();
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })

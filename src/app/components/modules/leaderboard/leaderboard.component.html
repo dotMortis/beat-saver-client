@@ -1,24 +1,31 @@
 <p-table
-    *ngIf="boardIdent"
     [columns]="columns"
     [value]="scores "
     [scrollable]="true"
     [rows]="10"
-    scrollHeight="250px"
+    scrollHeight="450px"
     [virtualScroll]="true"
-    [virtualRowHeight]="20"
+    [virtualRowHeight]="40"
     [lazy]="true"
+    [loading]="loading"
     (onLazyLoad)="loadScoresLazy($event)"
+    [resizableColumns]="true"
+    styleClass="p-datatable-gridlines w-100"
+    columnResizeMode="expand"
+    responsiveLayout="scroll"
+    [rowHover]="true"
 >
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns">{{col.header}}</th>
+            <th pResizableColumn *ngFor="let col of columns">{{col.header}}</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr>
+        <tr style="height: 40px">
             <ng-template ngFor let-col [ngForOf]="columns">
-                <td *ngIf="!isNumber(rowData[col.field]); else scorePercent">
+                <td
+                    *ngIf="!isNumber(rowData[col.field]) || col.field === 'rank'; else scorePercent"
+                >
                     {{rowData[col.field]}}
                 </td>
                 <ng-template #scorePercent>
@@ -30,7 +37,6 @@
     <ng-template pTemplate="loadingbody" let-columns="columns">
         <tr style="height: 40px">
             <td *ngFor="let col of columns">
-                <div class="loading-text"></div>
                 <p-skeleton [ngStyle]="{'width': '100%'}"></p-skeleton>
             </td>
         </tr>
