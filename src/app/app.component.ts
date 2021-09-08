@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 import { ScrollPanel } from 'primeng/scrollpanel';
-import { tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { TSendError } from '../models/electron/send.channels';
 import { UnsubscribeComponent } from '../models/unsubscribe.model';
 import { ElectronService } from './services/root.provided/electron.service';
@@ -19,7 +20,8 @@ export class AppComponent extends UnsubscribeComponent implements OnInit {
         private _primengConfig: PrimeNGConfig,
         private _optService: SettingsService,
         private _eleService: ElectronService,
-        private _scrollService: ScrollService
+        private _scrollService: ScrollService,
+        private _router: Router
     ) {
         super();
     }
@@ -28,6 +30,12 @@ export class AppComponent extends UnsubscribeComponent implements OnInit {
         this._primengConfig.ripple = true;
         this.addSub(
             this._scrollService.onScrollTop.pipe(tap(() => this.scrollPanel?.scrollTop(0)))
+        );
+        this.addSub(
+            this._router.events.pipe(
+                filter(event => event instanceof NavigationEnd),
+                tap(() => this.scrollPanel?.scrollTop(0))
+            )
         );
         this._optService
             .loadSettings()

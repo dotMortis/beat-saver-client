@@ -56,31 +56,8 @@
     </div>
     <div class="col-12 p-2 mb-2 main-frame">
         <div class="row no-gutters">
-            <div class="mb-2 col-auto song-col-1">
-                <div class="song-cover-container">
-                    <img
-                        [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
-                        [ngClass]="{
-                'rounded float-start song-cover': true
-            }"
-                        alt="{{ songName }}"
-                    />
-                    <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
-                        <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
-                    </div>
-                </div>
-                <app-song-stats
-                    *ngIf="tMapDetail"
-                    [tMapStats]="tMapDetail?.stats"
-                    class="pt-2 pb-1"
-                ></app-song-stats>
-            </div>
-            <div class="mb-2 col">
-                <a
-                    [routerLink]="[tMapDetail?.id]"
-                    routerLinkActive="router-link-active"
-                    [title]="songName"
-                >
+            <div class="col-12 mb-2">
+                <h5>
                     <fa-icon
                         *ngIf="tMapDetail?.ranked"
                         [icon]="['fas', 'trophy']"
@@ -93,11 +70,29 @@
                         class="song-qiali-icon"
                         pTooltip="Qualified"
                     ></fa-icon>
-                    {{ songNameShort }}</a
+                    {{ songNameShort }}
+                </h5>
+            </div>
+            <div class="mb-2 col-auto song-col-cover">
+                <div class="song-cover-container">
+                    <img
+                        [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
+                        class="rounded float-start song-cover"
+                        alt="{{ songName }}"
+                    />
+                    <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
+                        <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-2 col">
+                <p-scrollPanel
+                    *ngIf="tMapDetail?.description"
+                    [style]="{ width: '100%', 'max-height': '500px' }"
+                    styleClass="custombar1"
                 >
-                <br />
-                <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
-                <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                    <span style="white-space: pre-line"> {{tMapDetail?.description}} </span>
+                </p-scrollPanel>
             </div>
         </div>
     </div>
@@ -108,22 +103,47 @@
                 class="col-12 px-1 mb-2 row no-gutters player-stats"
             >
                 <div class="diff-item">
-                    <ng-container
-                        *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last"
-                    >
+                    <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats">
                         <app-player-stats [stats]="statInfo"></app-player-stats>
                     </ng-container>
                 </div>
             </div>
             <div class="col-12 px-1 col-xl-4 mb-2 mb-lg-0">
-                <app-difficulty-card
-                    [selectable]="true"
-                    fontSize="10px"
-                    *ngIf="diffs"
-                    class="diff-item"
-                    [groupedDifs]="diffs"
-                    (selectedDiffChange)="onDiffSelected($event)"
-                ></app-difficulty-card>
+                <div class="row">
+                    <div class="col-12 pb-2">
+                        <div class="mapper-stats">
+                            <div class="d-flex justify-content-between">
+                                <div>Mapper</div>
+                                <a [routerLink]="">
+                                    {{ tMapDetail?.uploader?.name || 'N/A' }}
+                                    ({{tMapDetail?.metadata?.levelAuthorName}})
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <div>Uploaded</div>
+                                <span class="song-upload-date"> {{ uploadTimeInfo }} </span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <div>Rating</div>
+                                <div>
+                                    {{tMapDetail?.stats?.upvotes}} /
+                                    {{tMapDetail?.stats?.downvotes}} ({{((tMapDetail?.stats?.score
+                                    || 0) * 100) | number : '1.1-1'}}%)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <app-difficulty-card
+                            [selectable]="true"
+                            fontSize="10px"
+                            *ngIf="diffs"
+                            class="diff-item"
+                            [groupedDifs]="diffs"
+                            (selectedDiffChange)="onDiffSelected($event)"
+                        ></app-difficulty-card>
+                    </div>
+                </div>
             </div>
             <div *ngIf="boardIdent" class="col-12 px-1 col-xl-8">
                 <app-leaderboard [boardIdent]="boardIdent | async"></app-leaderboard>

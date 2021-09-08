@@ -3,41 +3,94 @@
     [value]="scores "
     [scrollable]="true"
     [rows]="10"
-    scrollHeight="450px"
+    scrollHeight="400px"
     [virtualScroll]="true"
-    [virtualRowHeight]="40"
+    [virtualRowHeight]="41"
     [lazy]="true"
     [loading]="loading"
     (onLazyLoad)="loadScoresLazy($event)"
     [resizableColumns]="true"
-    styleClass="p-datatable-gridlines w-100"
+    styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
     columnResizeMode="expand"
     responsiveLayout="scroll"
     [rowHover]="true"
 >
+    <ng-template pTemplate="caption">
+        <div class="d-block">
+            <a
+                class="card-btn"
+                [href]="lbUrl"
+                target="_blank"
+                pTooltip="Go to Score Saber"
+                [showDelay]="250"
+                ><img class="score-saber-icon" src="assets/icons/scoresaber.svg" /> Leaderboard</a
+            >
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+            <col
+                *ngFor="let col of columns"
+                [style]="{'width': col.width, 'min-width': col['min-width'] || 0}"
+            />
+        </colgroup>
+    </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th pResizableColumn *ngFor="let col of columns">{{col.header}}</th>
+            <ng-container *ngFor="let col of columns; first as first">
+                <th
+                    [style]="{'min-width': col['min-width'] || 0}"
+                    pResizableColumn
+                    *ngIf="!first;else notResizable"
+                >
+                    {{col.header}}
+                </th>
+                <ng-template #notResizable>
+                    <th [style]="{'min-width': col['min-width'] || 0}" [class]="col.headerClass">
+                        {{col.header}}
+                    </th>
+                </ng-template>
+            </ng-container>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr style="height: 40px">
+        <tr>
             <ng-template ngFor let-col [ngForOf]="columns">
                 <td
-                    *ngIf="!isNumber(rowData[col.field]) || col.field === 'rank'; else scorePercent"
+                    [style]="{'min-width': col['min-width'] || 0}"
+                    [class]="col.class"
+                    *ngIf="!isNumber(rowData[col.field]) || col.field === 'rank'; else numberField"
                 >
-                    {{rowData[col.field]}}
+                    {{getCellValue(rowData[col.field], col.default)}}
                 </td>
-                <ng-template #scorePercent>
-                    <td [className]="col.field">{{rowData[col.field] | number : '1.2-2'}}</td>
+                <ng-template #numberField>
+                    <td
+                        *ngIf="col.field !== 'scorePercent'; else scorePercent"
+                        [style]="{'min-width': col['min-width'] || 0}"
+                        [class]="col.class"
+                    >
+                        {{getCellValue(rowData[col.field], col.default) | number : '1.2-2'}}
+                    </td>
+                    <ng-template #scorePercent>
+                        <td
+                            [style]="{'min-width': col['min-width'] || 0}"
+                            [class]="col.class"
+                            [className]="getScoreClass(rowData[col.field])"
+                        >
+                            {{getCellValue(rowData[col.field], col.default) | number : '1.2-2'}}
+                        </td>
+                    </ng-template>
                 </ng-template>
             </ng-template>
         </tr>
     </ng-template>
     <ng-template pTemplate="loadingbody" let-columns="columns">
-        <tr style="height: 40px">
+        <tr style="height: 41px">
             <td *ngFor="let col of columns">
-                <p-skeleton [ngStyle]="{'width': '100%'}"></p-skeleton>
+                <p-skeleton
+                    [ngStyle]="{'width': '100%', 'min-width': col['min-width'] || 0}"
+                ></p-skeleton>
             </td>
         </tr>
     </ng-template>

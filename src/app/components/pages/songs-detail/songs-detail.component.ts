@@ -202,7 +202,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
     }
 
     onDiffSelected(diff: TMapDifficulty | undefined): void {
-        if (this.latestVersion && diff) {
+        if (this.latestVersion && diff && this._tMapDetail) {
             this.boardIdent.next({
                 hash: this.latestVersion.hash,
                 difficulty: diff

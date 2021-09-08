@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0] - Soon
+
+### Added
+- Song detail page
+- Song Leaderboard
+
 ## [0.5.0] - 29.08.2021
 
 ### Added

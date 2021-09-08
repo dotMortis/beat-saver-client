@@ -1,6 +1,12 @@
-:host ::ng-deep p-table {
-    .p-datatable-wrapper,
-    .p-datatable-table {
-        width: 100% !important;
-    }
+.score-saber-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.score-90 {
+    color: var(--blue);
+}
+
+.score-80 {
+    color: var(--green);
 }

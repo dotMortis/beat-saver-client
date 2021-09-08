@@ -30,22 +30,41 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
         return this._boardIdent;
     }
 
+    private _uid?: number;
+    get lbUrl(): string {
+        return 'https://scoresaber.com/leaderboard/' + this._uid;
+    }
+
     private _boardIdentChange: BehaviorSubject<TBoardIdent | undefined>;
 
     scores: TScores[];
-    columns: { field: string; header: string }[];
+    columns: {
+        field: string;
+        header: string;
+        class?: string;
+        headerClass?: string;
+        'min-width'?: string;
+        width?: string;
+        default?: string | number;
+    }[];
     loading: boolean;
 
     constructor(private _apiService: ApiService, private _cdr: ChangeDetectorRef) {
         super();
         this._boardIdentChange = new BehaviorSubject<TBoardIdent | undefined>(undefined);
         this.columns = [
-            { field: 'rank', header: 'rank' },
-            { field: 'name', header: 'name' },
-            { field: 'score', header: 'score' },
-            { field: 'mods', header: 'mods' },
-            { field: 'scorePercent', header: '%' },
-            { field: 'pp', header: 'pp' }
+            {
+                field: 'rank',
+                header: '#',
+                width: '50px',
+                class: 'text-center',
+                headerClass: 'text-center'
+            },
+            { field: 'name', header: 'Player', width: '200px', 'min-width': '100px' },
+            { field: 'score', header: 'Score', 'min-width': '100px', width: '100px' },
+            { field: 'mods', header: 'Mods', 'min-width': '65px', width: '65px', default: '-' },
+            { field: 'scorePercent', header: '%', 'min-width': '65px', width: '65px' },
+            { field: 'pp', header: 'PP', 'min-width': '65px', width: '65px', default: 0 }
         ];
         this.scores = new Array<TScores>();
         this.loading = false;
@@ -91,6 +110,7 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
                     )
                     .pipe(
                         tap((lbs: TLeaderboard[]) => {
+                            this._uid = lbs[0]?.uid;
                             let scores = new Array<TScores>();
                             for (const lb of lbs) {
                                 this._calcScorePercent(lb.scores);
@@ -103,6 +123,17 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
                     )
             );
         }
+    }
+
+    getCellValue(val: any, defaultVal: string | number): any {
+        if (val == null || (val instanceof Array && val.length === 0)) return defaultVal || val;
+        return val;
+    }
+
+    getScoreClass(score: number): string {
+        if (score >= 90) return 'score-90';
+        else if (score >= 80) return 'score-80';
+        return 'score-0';
     }
 
     private _calcScorePercent(scores: TScores[]): void {

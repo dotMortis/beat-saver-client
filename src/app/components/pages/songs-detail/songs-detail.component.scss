@@ -33,10 +33,6 @@
             color: var(--success);
         }
 
-        .song-ranked-icon {
-            color: var(--yellow-500);
-        }
-
         .song-qiali-icon {
             color: var(--cyan-500);
         }
@@ -46,17 +42,21 @@
         background-color: var(--surface-f);
         border-radius: 0.25rem;
 
-        .song-col-1 {
+        .song-ranked-icon {
+            color: var(--yellow-500);
+        }
+
+        .song-col-cover {
             display: flex;
             flex-direction: column;
             margin-right: 0.75rem;
-            width: 100px;
+            width: 200px;
 
             .song-cover-container {
                 position: relative;
 
                 img.song-cover {
-                    height: 100px;
+                    height: 200px;
                     width: 100%;
                     border-radius: 0.25rem !important;
                     box-shadow: 0 0 8px 0 black;
@@ -65,7 +65,7 @@
                 .song-cover-hover {
                     width: 100%;
                     height: 100%;
-                    line-height: 100px;
+                    line-height: 200px;
                     font-size: 1.5rem;
                     text-align: center;
                     transition: 0.3s ease;
@@ -96,9 +96,23 @@
             .diff-item {
                 display: block;
                 width: 100%;
+            }
+
+            .mapper-stats {
+                display: block;
+                width: 100%;
                 background-color: var(--surface-f);
-                padding: 0.5rem;
+
                 border-radius: 0.25rem;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+
+                > :not(:last-child) {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                }
+
+                > * {
+                    padding: 0.5rem;
+                }
             }
         }
     }

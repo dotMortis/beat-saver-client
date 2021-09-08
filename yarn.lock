@@ -7984,12 +7984,12 @@ primeicons@^4.1.0:
   resolved "https://npm.braun-its.de/primeicons/-/primeicons-4.1.0.tgz#19eaef8ef5594b0006358ae64e738d03e167c9bb"
   integrity sha512-uEv2pSPk1zQCfaB2VgnUfnUxxlGryYi+5rbdxmZBBt5v9S/pscIQYS5YDLxsQZ7D9jn5c76+Tx5wX/2J1nK6sA==
 
-primeng@12:
-  version "12.1.0"
-  resolved "https://npm.braun-its.de/primeng/-/primeng-12.1.0.tgz#63bde5f62860692a2f46a1476d47510b2e7c3db9"
-  integrity sha512-JHhiVHg1ANU2auMn9NVnrpZA+tmpcpAQvxcZj6KSPtQNIeDgTZGzrVGzntEz+6T4Yn1Otxjf0aidAn+K3a8tyg==
+primeng@11.4.4:
+  version "11.4.4"
+  resolved "https://npm.braun-its.de/primeng/-/primeng-11.4.4.tgz#97e33ad450478f891fb7808756610bd343635e8a"
+  integrity sha512-q0ugvii+6cm7yJjfOIAJfeAKFDVcfc4Sm5rmdpOuv2jnL5S79Kquu5tbBLHeTZmoKakaPzoX+4SeI/WMIkrMlQ==
   dependencies:
-    tslib "^2.1.0"
+    tslib "^2.0.0"
 
 prismjs@^1.23.0:
   version "1.24.1"
