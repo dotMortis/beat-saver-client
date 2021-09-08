@@ -3,8 +3,9 @@
 ## [0.6.0] - Soon
 
 ### Added
-- Song detail page
-- Song Leaderboard
+- song detail page
+- song leaderboard
+- persistent filter (on navigate)
 
 ## [0.5.0] - 29.08.2021
 
