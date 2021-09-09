@@ -1,5 +1,7 @@
 import db, { Database } from 'better-sqlite3';
+import { createHash } from 'crypto';
 import { app } from 'electron';
+import EventEmitter from 'events';
 import { copyFileSync, Dirent, existsSync, readdir } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
@@ -9,11 +11,12 @@ import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
-import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/localMapInfo.model';
+import { LocalMapInfo } from '../../src/models/localMapInfo.model';
 import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
+import { chacheLoader } from './cache.loader';
 import { appLogger } from './logger.loader';
 import { settings } from './settings.loader';
 
@@ -32,7 +35,7 @@ export const songIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled
     }
 );
 
-class InstalledSongs {
+class InstalledSongs extends EventEmitter {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
         return tempPath ? path.join(tempPath, 'Beat Saber_Data', 'CustomLevels') : '';
@@ -41,31 +44,65 @@ class InstalledSongs {
     private _loaded: BehaviorSubject<TFileLoaded>;
     private _loading: boolean;
     private _db: Database;
+    private __idsHash: string;
+    private set _idsHash(val: string) {
+        if (this.__idsHash !== val) {
+            console.log('HASH CHANGE', val);
+
+            this.__idsHash = val;
+            this.emitIdsHash(val);
+        }
+    }
+    private _localMapsSyncing: boolean;
+    private _syncAgain: false | string;
 
     constructor() {
+        super();
+        this._syncAgain = this._localMapsSyncing = false;
+        this.__idsHash = chacheLoader.readCache('ids_hash');
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._songIds = new Set<string>();
         const dbFilePath = this._ensureDbFile();
         this._db = new db(dbFilePath, { fileMustExist: true, verbose: console.log });
-        console.log(this._db);
+        this.onIdsHash((hash: string) => {
+            if (this._localMapsSyncing) {
+                this._syncAgain = hash;
+                return;
+            }
+            this._localMapsSyncing = true;
+            this.syncInstalledSongs()
+                .then(() => chacheLoader.writeCache('ids_hash', hash))
+                .finally(() => {
+                    this._localMapsSyncing = false;
+                    if (this._syncAgain) {
+                        this.emitIdsHash(this._syncAgain);
+                        this._syncAgain = false;
+                    }
+                })
+                .catch(error => appLogger().error(error));
+        });
+    }
 
-        this.syncInstalledSongs();
+    onIdsHash(cb: (hash: string) => void): this {
+        return super.on('idsHash', cb);
+    }
+
+    emitIdsHash(hash: string): boolean {
+        return super.emit('idsHash', hash);
     }
 
     syncInstalledSongs() {
-        const mapsR: TDBLocalMapInfo[] = this._db.prepare('SELECT * FROM maps').all();
-        console.log('MAPSR', mapsR);
-        const songs = new Array<LocalMapInfo>();
-        return new Promise<{ status: TFileLoaded }>(res => {
+        return new Promise<void>((res, rej) => {
             readdir(
                 this._filePath,
                 { withFileTypes: true },
                 (err: NodeJS.ErrnoException | null, files: Dirent[]) => {
                     if (err) {
-                        return res({ status: 'INVALID_PATH' });
+                        return rej(err);
                     }
                     try {
+                        const songs = new Array<LocalMapInfo>();
                         for (const file of files) {
                             if (file.isDirectory())
                                 songs.push(
@@ -75,17 +112,14 @@ class InstalledSongs {
                                     )
                                 );
                         }
-                        res({ status: 'LOADED' });
+                        this.insertMapInfos(songs);
+                        res();
                     } catch (error: any) {
-                        res({ status: error });
+                        rej(error);
                     }
                 }
             );
-        })
-            .then(() => {
-                this.insertMapInfos(songs);
-            })
-            .catch(error => console.log(error));
+        });
     }
 
     private insertMapInfos(mapInfos: LocalMapInfo[]): void {
@@ -122,6 +156,11 @@ class InstalledSongs {
                         this._songIds.clear();
                         for (const file of files) {
                             if (file.isDirectory()) this._songIds?.add(file.name.split(' ')[0]);
+                        }
+                        if (this._songIds) {
+                            this._idsHash = createHash('sha1')
+                                .update(Array.from(this._songIds).join(','))
+                                .digest('hex');
                         }
                         res({ status: 'LOADED' });
                     } catch (error: any) {
