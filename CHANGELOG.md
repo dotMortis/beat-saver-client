@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0] - Soon
+## [0.6.0] - 09.09.2021
 
 ### Added
 - song detail page
