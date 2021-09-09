@@ -16,7 +16,7 @@
     [rowHover]="true"
 >
     <ng-template pTemplate="caption">
-        <div class="d-block">
+        <div class="w-100 d-flex">
             <a
                 class="card-btn"
                 [href]="lbUrl"
@@ -25,6 +25,18 @@
                 [showDelay]="250"
                 ><img class="score-saber-icon" src="assets/icons/scoresaber.svg" /> Leaderboard</a
             >
+            <div class="ml-auto">
+                <button
+                    pRipple
+                    type="button"
+                    pButton
+                    pTooltip="Refresh"
+                    icon="pi-refresh pi"
+                    class="p-button-sm"
+                    style="height: 1.5rem; width: 1.5rem"
+                    (click)="onRefresh()"
+                ></button>
+            </div>
         </div>
     </ng-template>
 

@@ -136,6 +136,12 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
         return 'score-0';
     }
 
+    onRefresh(): void {
+        this.scores = [];
+        this.loadScoresLazy({ first: 0, rows: 20 });
+        this._cdr.detectChanges();
+    }
+
     private _calcScorePercent(scores: TScores[]): void {
         if (this._boardIdent && scores) {
             for (const score of scores) {
