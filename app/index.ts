@@ -95,8 +95,8 @@ class IndexElectron {
 
 const loaderRootDir = resolve(__dirname, 'loaders');
 const electronApp = new IndexElectron(app, [
-    join(loaderRootDir, 'cache.loader'),
     join(loaderRootDir, 'logger.loader'),
+    join(loaderRootDir, 'cache.loader'),
     join(loaderRootDir, 'settings.loader'),
     join(loaderRootDir, 'played-songs.loader'),
     join(loaderRootDir, 'installed-songs.loader'),
@@ -109,7 +109,5 @@ electronApp
         logger.debug('Electron started');
     })
     .catch(error => {
-        console.log(error);
-
         logger.error(error);
     });

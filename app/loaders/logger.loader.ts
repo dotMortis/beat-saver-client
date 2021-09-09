@@ -42,7 +42,6 @@ class Logger {
 }
 
 let _logger: Logger;
-export const appLogger = () => _logger;
 export const initLogger = (logger: winston.Logger) => {
     if (!_logger) {
         _logger = new Logger(logger);

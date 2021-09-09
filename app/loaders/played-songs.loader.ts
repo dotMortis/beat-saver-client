@@ -11,7 +11,7 @@ import { TSongHash } from '../../src/models/played-songs.model';
 import { PlayerData, TLevelStatsInfo } from '../../src/models/player-data.model';
 import { TFileLoaded } from '../../src/models/types';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
-import { appLogger } from './logger.loader';
+import { logger } from '../models/winston.logger';
 import { settings } from './settings.loader';
 
 export const loadPlayerStatsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadPlayedSongs>(
@@ -51,7 +51,7 @@ class PlayedSongs {
     }
 
     async loadPlayerStats(): Promise<{ status: TFileLoaded }> {
-        appLogger().debug('loadPlayerStats');
+        logger.debug('loadPlayerStats');
         if (this._playerStatsloading) return { status: 'LOADING' };
         this._playerStatsloading = true;
         if (!this._filePath) {
@@ -92,7 +92,7 @@ class PlayedSongs {
     }
 
     async getAvailablePlayers(): Promise<{ status: TFileLoaded; result: undefined | string[] }> {
-        appLogger().debug('getAvailablePlayers');
+        logger.debug('getAvailablePlayers');
         return this._handleLoadPlayerStats<string[]>(async () => {
             const playerNames = new Array<string>();
             for (const [playerName, playerStats] of this._playerData?.localPlayers || []) {
@@ -106,7 +106,7 @@ class PlayedSongs {
         songHash: TSongHash,
         playerName: string
     ): Promise<{ status: TFileLoaded; result: TLevelStatsInfo | undefined }> {
-        appLogger().debug(`getPlayerSongStatsFromHash HASH: ${songHash} PLAYER: ${playerName}`);
+        logger.debug(`getPlayerSongStatsFromHash HASH: ${songHash} PLAYER: ${playerName}`);
         return this._handleLoadPlayerStats<TLevelStatsInfo | undefined>(async () => {
             if (!this._loaded) await this.loadPlayerStats();
             const playerData = this._playerData?.localPlayers.get(playerName);
@@ -120,14 +120,14 @@ class PlayedSongs {
     private async _handleLoadPlayerStats<RESULT = never>(
         onLoaded: () => Promise<RESULT>
     ): Promise<{ status: TFileLoaded; result: RESULT | undefined }> {
-        appLogger().debug(`handleLoadPlayerStats`);
+        logger.debug(`handleLoadPlayerStats`);
 
         return new Promise<{ status: TFileLoaded; result: RESULT | undefined }>((res, rej) => {
             this._loaded
                 .pipe(
                     mergeMap(async (status: TFileLoaded) => {
                         try {
-                            appLogger().debug(`handleLoadPlayerStats`, status);
+                            logger.debug(`handleLoadPlayerStats`, status);
                             switch (status) {
                                 case false: {
                                     await this.loadPlayerStats();
@@ -164,7 +164,7 @@ class PlayedSongs {
                     }
                 })
                 .add(() => {
-                    appLogger().debug(`handleLoadPlayerStats UNSUBSCRIBED`);
+                    logger.debug(`handleLoadPlayerStats UNSUBSCRIBED`);
                 });
         });
     }

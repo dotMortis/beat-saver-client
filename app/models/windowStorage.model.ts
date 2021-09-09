@@ -1,7 +1,7 @@
 import { app, Rectangle, screen } from 'electron';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { appLogger } from '../loaders/logger.loader';
+import { logger } from './winston.logger';
 
 export class WindowStorage {
     public readonly path: string;
@@ -30,7 +30,7 @@ export class WindowStorage {
         try {
             writeFileSync(this.fullPath, JSON.stringify(data));
         } catch (error: any) {
-            appLogger().error(error);
+            logger.error(error);
         }
     }
 

@@ -5,8 +5,10 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 import { args } from './args.model';
 
 const consoleLogFormat = winston.format.printf(info => {
-    return `[${new Date(info.timestamp).toLocaleString()}] [${info.level}] [${info.message}] [${
-        info.data ? JSON.stringify(info.data, null, 2) : ''
+    const ts = new Date(info.metadata.timestamp)?.toLocaleString();
+    delete info.metadata.timestamp;
+    return `[${ts}] [${info.level}] [${info.message}] [${
+        info.metadata ? JSON.stringify(info.metadata, null, 2) : ''
     }]`;
 });
 
@@ -14,6 +16,7 @@ export const logger = winston.createLogger({
     level: args.debug ? 'debug' : 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
+        winston.format.errors({ stack: true }),
         winston.format.metadata(),
         winston.format.json()
     ),
@@ -23,19 +26,22 @@ export const logger = winston.createLogger({
             format: winston.format.combine(winston.format.colorize(), consoleLogFormat)
         }),
         new DailyRotateFile({
-            filename: join(app.getPath('appData'), app.getName(), 'logs', 'error.log'),
-            datePattern: 'YYYY-MM-DD',
+            filename: 'error-%DATE%',
+            dirname: join(app.getPath('appData'), app.getName(), 'logs'),
+            level: 'error',
+            maxFiles: '7d',
+            utc: true,
             zippedArchive: true,
-            maxSize: '20m',
-            maxFiles: '14d',
-            level: 'error'
+            extension: '.log'
         }),
         new DailyRotateFile({
-            filename: join(app.getPath('appData'), app.getName(), 'logs', 'combined.log'),
-            datePattern: 'YYYY-MM-DD',
-            zippedArchive: true,
+            filename: 'combined-%DATE%',
+            dirname: join(app.getPath('appData'), app.getName(), 'logs'),
             maxSize: '20m',
-            maxFiles: '14d'
+            maxFiles: '7d',
+            utc: true,
+            zippedArchive: true,
+            extension: '.log'
         })
     ]
 });

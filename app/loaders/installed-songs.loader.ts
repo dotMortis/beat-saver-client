@@ -2,7 +2,7 @@ import db, { Database } from 'better-sqlite3';
 import { createHash } from 'crypto';
 import { app } from 'electron';
 import EventEmitter from 'events';
-import { copyFileSync, Dirent, existsSync, readdir } from 'fs';
+import { copyFileSync, Dirent, existsSync, readdir, readdirSync } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
 import { BehaviorSubject } from 'rxjs';
@@ -16,8 +16,8 @@ import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
+import { logger } from '../models/winston.logger';
 import { chacheLoader } from './cache.loader';
-import { appLogger } from './logger.loader';
 import { settings } from './settings.loader';
 
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
@@ -44,97 +44,43 @@ class InstalledSongs extends EventEmitter {
     private _loaded: BehaviorSubject<TFileLoaded>;
     private _loading: boolean;
     private _db: Database;
-    private __idsHash: string;
-    private set _idsHash(val: string) {
-        if (this.__idsHash !== val) {
-            console.log('HASH CHANGE', val);
-
-            this.__idsHash = val;
-            this.emitIdsHash(val);
-        }
-    }
+    private _currentIdsHash: string;
     private _localMapsSyncing: boolean;
-    private _syncAgain: false | string;
+    private _syncAgain: false | { hash: string; ids: string[] };
 
     constructor() {
         super();
         this._syncAgain = this._localMapsSyncing = false;
-        this.__idsHash = chacheLoader.readCache('ids_hash');
+        this._currentIdsHash = chacheLoader.readCache('ids_hash');
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._songIds = new Set<string>();
         const dbFilePath = this._ensureDbFile();
-        this._db = new db(dbFilePath, { fileMustExist: true, verbose: console.log });
-        this.onIdsHash((hash: string) => {
-            if (this._localMapsSyncing) {
-                this._syncAgain = hash;
-                return;
-            }
-            this._localMapsSyncing = true;
-            this.syncInstalledSongs()
-                .then(() => chacheLoader.writeCache('ids_hash', hash))
-                .finally(() => {
-                    this._localMapsSyncing = false;
-                    if (this._syncAgain) {
-                        this.emitIdsHash(this._syncAgain);
-                        this._syncAgain = false;
-                    }
-                })
-                .catch(error => appLogger().error(error));
-        });
+        this._db = new db(dbFilePath, { fileMustExist: true, verbose: logger.debug });
+        this._initLocalMapSync();
     }
 
-    onIdsHash(cb: (hash: string) => void): this {
+    onIdsHash(cb: (hash: string, ids: string[]) => void): this {
         return super.on('idsHash', cb);
     }
 
-    emitIdsHash(hash: string): boolean {
-        return super.emit('idsHash', hash);
+    emitIdsHash(hash: string, ids: string[]): boolean {
+        return super.emit('idsHash', hash, ids);
     }
 
-    syncInstalledSongs() {
-        return new Promise<void>((res, rej) => {
-            readdir(
-                this._filePath,
-                { withFileTypes: true },
-                (err: NodeJS.ErrnoException | null, files: Dirent[]) => {
-                    if (err) {
-                        return rej(err);
-                    }
-                    try {
-                        const songs = new Array<LocalMapInfo>();
-                        for (const file of files) {
-                            if (file.isDirectory())
-                                songs.push(
-                                    MapHelpers.getLocalMapInfo(
-                                        join(this._filePath, file.name),
-                                        file.name
-                                    )
-                                );
-                        }
-                        this.insertMapInfos(songs);
-                        res();
-                    } catch (error: any) {
-                        rej(error);
-                    }
-                }
-            );
-        });
-    }
-
-    private insertMapInfos(mapInfos: LocalMapInfo[]): void {
-        const insert = this._db.prepare(
-            'REPLACE INTO maps (id, song_name, song_sub_name, song_author_name, level_author_name, bpm, cover_image_filename, difficulties, hash) ' +
-                'VALUES (@id, @song_name, @song_sub_name, @song_author_name, @level_author_name, @bpm, @cover_image_filename, @difficulties, @hash)'
-        );
-        const insertMany = this._db.transaction((mapInfos: LocalMapInfo[]) => {
-            for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
-        });
-        return insertMany(mapInfos);
+    syncInstalledSongs(): void {
+        const files = readdirSync(this._filePath, { withFileTypes: true });
+        const songs = new Array<LocalMapInfo>();
+        for (const file of files) {
+            if (file.isDirectory()) {
+                songs.push(MapHelpers.getLocalMapInfo(join(this._filePath, file.name), file.name));
+            }
+        }
+        this._insertMapInfos(songs);
     }
 
     async loadInstalledSongs(): Promise<{ status: TFileLoaded }> {
-        appLogger().debug('loadInstalledSongs');
+        logger.debug('loadInstalledSongs');
         if (this._loading) return { status: 'LOADING' };
         this._loading = true;
         if (!this._filePath) {
@@ -155,13 +101,9 @@ class InstalledSongs extends EventEmitter {
                     try {
                         this._songIds.clear();
                         for (const file of files) {
-                            if (file.isDirectory()) this._songIds?.add(file.name.split(' ')[0]);
+                            if (file.isDirectory()) this._songIds.add(file.name.split(' ')[0]);
                         }
-                        if (this._songIds) {
-                            this._idsHash = createHash('sha1')
-                                .update(Array.from(this._songIds).join(','))
-                                .digest('hex');
-                        }
+                        this._setIdsHash(Array.from(this._songIds));
                         res({ status: 'LOADED' });
                     } catch (error: any) {
                         res({ status: error });
@@ -184,23 +126,69 @@ class InstalledSongs extends EventEmitter {
     async songInstalled(
         songId: TSongId
     ): Promise<{ status: TFileLoaded; result: boolean | undefined }> {
-        appLogger().debug('songInstalled ' + songId);
+        logger.debug('songInstalled ' + songId);
         return this._handleLoadInstalledSongs<boolean>(async () => {
             if (!this._loaded) await this.loadInstalledSongs();
             return this._songIds?.has(songId) || false;
         });
     }
 
+    private _initLocalMapSync(): void {
+        this.onIdsHash((hash: string, ids: string[]) => {
+            if (this._localMapsSyncing) {
+                this._syncAgain = { hash, ids };
+                return;
+            }
+            this._localMapsSyncing = true;
+            try {
+                this._deleteRemovedIds(ids);
+                this.syncInstalledSongs();
+                chacheLoader.writeCache('ids_hash', hash);
+            } catch (error: any) {
+                logger.error(error);
+            } finally {
+                this._localMapsSyncing = false;
+                if (this._syncAgain) {
+                    this.emitIdsHash(this._syncAgain.hash, this._syncAgain.ids);
+                    this._syncAgain = false;
+                }
+            }
+        });
+    }
+
+    private _setIdsHash(ids: string[]) {
+        const newHash = createHash('sha1').update(ids.join(',')).digest('hex');
+        if (this._currentIdsHash !== newHash) {
+            this._currentIdsHash = newHash;
+            this.emitIdsHash(newHash, ids);
+        }
+    }
+
+    private _deleteRemovedIds(availableIds: string[]): void {
+        this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
+    }
+
+    private _insertMapInfos(mapInfos: LocalMapInfo[]): void {
+        const insert = this._db.prepare(
+            'REPLACE INTO maps (id, song_name, song_sub_name, song_author_name, level_author_name, bpm, cover_image_filename, difficulties, hash) ' +
+                'VALUES (@id, @song_name, @song_sub_name, @song_author_name, @level_author_name, @bpm, @cover_image_filename, @difficulties, @hash)'
+        );
+        const insertMany = this._db.transaction((mapInfos: LocalMapInfo[]) => {
+            for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
+        });
+        return insertMany(mapInfos);
+    }
+
     private async _handleLoadInstalledSongs<RESULT = never>(
         onLoaded: () => Promise<RESULT>
     ): Promise<{ status: TFileLoaded; result: RESULT | undefined }> {
-        appLogger().debug('_handleLoadInstalledSongs');
+        logger.debug('_handleLoadInstalledSongs');
         return new Promise<{ status: TFileLoaded; result: RESULT | undefined }>((res, rej) => {
             this._loaded
                 .pipe(
                     mergeMap(async (status: TFileLoaded) => {
                         try {
-                            appLogger().debug('songInstalled', status);
+                            logger.debug('songInstalled', status);
                             switch (status) {
                                 case false: {
                                     await this.loadInstalledSongs();
@@ -237,7 +225,7 @@ class InstalledSongs extends EventEmitter {
                     }
                 })
                 .add(() => {
-                    appLogger().debug('_handleLoadInstalledSongs UNSUBSCRIBED');
+                    logger.debug('_handleLoadInstalledSongs UNSUBSCRIBED');
                 });
         });
     }
@@ -245,8 +233,6 @@ class InstalledSongs extends EventEmitter {
     private _ensureDbFile(): string {
         const filePath = path.resolve(app.getPath('cache'), app.getName(), 'db.sqlite3');
         if (!existsSync(filePath)) {
-            console.log('COPY');
-
             const templatePath = path.resolve('assets', 'db', 'db.sqlite3');
             copyFileSync(templatePath, filePath);
         }
