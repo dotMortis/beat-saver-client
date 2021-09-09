@@ -81,6 +81,29 @@ export class ApiHelpers {
         }
     }
 
+    public static getDifficultyFromScoreSaberIndex(diff: number): EDifficulty | undefined {
+        switch (diff) {
+            case 1: {
+                return EDifficulty.Easy;
+            }
+            case 3: {
+                return EDifficulty.Normal;
+            }
+            case 5: {
+                return EDifficulty.Hard;
+            }
+            case 7: {
+                return EDifficulty.Expert;
+            }
+            case 9: {
+                return EDifficulty.ExpertPlus;
+            }
+            default: {
+                return undefined;
+            }
+        }
+    }
+
     public static getCharacteristicScoreSaberIndex(char: ECharacteristic): number {
         switch (char) {
             case ECharacteristic.Standard: {

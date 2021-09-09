@@ -1,14 +1,19 @@
-import { Dirent, readdir } from 'fs';
+import db, { Database } from 'better-sqlite3';
+import { app } from 'electron';
+import { copyFileSync, Dirent, existsSync, readdir } from 'fs';
 import * as path from 'path';
+import { join } from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
 import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
+import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/localMapInfo.model';
 import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
+import MapHelpers from '../models/helpers/mapHelpers';
 import { appLogger } from './logger.loader';
 import { settings } from './settings.loader';
 
@@ -35,11 +40,63 @@ class InstalledSongs {
     private _songIds: Set<string>;
     private _loaded: BehaviorSubject<TFileLoaded>;
     private _loading: boolean;
+    private _db: Database;
 
     constructor() {
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._songIds = new Set<string>();
+        const dbFilePath = this._ensureDbFile();
+        this._db = new db(dbFilePath, { fileMustExist: true, verbose: console.log });
+        console.log(this._db);
+
+        this.syncInstalledSongs();
+    }
+
+    syncInstalledSongs() {
+        const mapsR: TDBLocalMapInfo[] = this._db.prepare('SELECT * FROM maps').all();
+        console.log('MAPSR', mapsR);
+        const songs = new Array<LocalMapInfo>();
+        return new Promise<{ status: TFileLoaded }>(res => {
+            readdir(
+                this._filePath,
+                { withFileTypes: true },
+                (err: NodeJS.ErrnoException | null, files: Dirent[]) => {
+                    if (err) {
+                        return res({ status: 'INVALID_PATH' });
+                    }
+                    try {
+                        for (const file of files) {
+                            if (file.isDirectory())
+                                songs.push(
+                                    MapHelpers.getLocalMapInfo(
+                                        join(this._filePath, file.name),
+                                        file.name
+                                    )
+                                );
+                        }
+                        res({ status: 'LOADED' });
+                    } catch (error: any) {
+                        res({ status: error });
+                    }
+                }
+            );
+        })
+            .then(() => {
+                this.insertMapInfos(songs);
+            })
+            .catch(error => console.log(error));
+    }
+
+    private insertMapInfos(mapInfos: LocalMapInfo[]): void {
+        const insert = this._db.prepare(
+            'REPLACE INTO maps (id, song_name, song_sub_name, song_author_name, level_author_name, bpm, cover_image_filename, difficulties, hash) ' +
+                'VALUES (@id, @song_name, @song_sub_name, @song_author_name, @level_author_name, @bpm, @cover_image_filename, @difficulties, @hash)'
+        );
+        const insertMany = this._db.transaction((mapInfos: LocalMapInfo[]) => {
+            for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
+        });
+        return insertMany(mapInfos);
     }
 
     async loadInstalledSongs(): Promise<{ status: TFileLoaded }> {
@@ -144,6 +201,17 @@ class InstalledSongs {
                     appLogger().debug('_handleLoadInstalledSongs UNSUBSCRIBED');
                 });
         });
+    }
+
+    private _ensureDbFile(): string {
+        const filePath = path.resolve(app.getPath('cache'), app.getName(), 'db.sqlite3');
+        if (!existsSync(filePath)) {
+            console.log('COPY');
+
+            const templatePath = path.resolve('assets', 'db', 'db.sqlite3');
+            copyFileSync(templatePath, filePath);
+        }
+        return filePath;
     }
 }
 
