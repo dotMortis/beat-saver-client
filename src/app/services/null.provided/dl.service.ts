@@ -148,7 +148,7 @@ export class DlService {
         }).finally(async () => {
             try {
                 await this._installedSongsService.loadInstalledSongs();
-            } catch (error) {
+            } catch (error: any) {
                 this._eleService.send<TSendError>('ERROR', error);
             }
         });
@@ -191,7 +191,7 @@ export class DlService {
                             if (this._activeDownloads > 3) break;
                             z++;
                             this._downloadSong(item);
-                        } catch (error) {
+                        } catch (error: any) {
                             this._eleService.send<TSendError>('ERROR', error);
                         }
                     }
@@ -204,7 +204,7 @@ export class DlService {
         }).finally(async () => {
             try {
                 await this._installedSongsService.loadInstalledSongs();
-            } catch (error) {
+            } catch (error: any) {
                 this._eleService.send<TSendError>('ERROR', error);
             }
         });
@@ -252,7 +252,7 @@ export class DlService {
             } else {
                 info.installed.status = 'INSTALLED';
             }
-        } catch (error) {
+        } catch (error: any) {
             info.error = error;
         } finally {
             this._activeInstallations--;

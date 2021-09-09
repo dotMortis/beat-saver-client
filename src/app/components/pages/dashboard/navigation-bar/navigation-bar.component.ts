@@ -101,7 +101,7 @@ export class NavigationBarComponent extends UnsubscribeComponent {
                 .catch(e => this.electronService.send<TSendError>('ERROR', e)),
             this._installedSongsService
                 .loadInstalledSongs()
-                .catch(e => this.electronService.send<TSendError>('ERROR', e))
+                .catch((e: any) => this.electronService.send<TSendError>('ERROR', e))
         ]);
     }
 

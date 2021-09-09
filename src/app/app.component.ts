@@ -44,6 +44,6 @@ export class AppComponent extends UnsubscribeComponent implements OnInit {
                     this._optService.visible = true;
                 }
             })
-            .catch(error => this._eleService.send<TSendError>('ERROR', error));
+            .catch((error: any) => this._eleService.send<TSendError>('ERROR', error));
     }
 }

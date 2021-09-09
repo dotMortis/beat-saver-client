@@ -73,7 +73,7 @@ class PlayedSongs {
                         this._playerData = new PlayerData(payload);
                     }
                     res({ status: 'LOADED' });
-                } catch (error) {
+                } catch (error: any) {
                     this._loaded.next(error);
                     res({ status: error });
                 }
@@ -141,7 +141,7 @@ class PlayedSongs {
                                 }
                             }
                             return { status, result: undefined };
-                        } catch (error) {
+                        } catch (error: any) {
                             return { status: error, result: undefined };
                         }
                     }),

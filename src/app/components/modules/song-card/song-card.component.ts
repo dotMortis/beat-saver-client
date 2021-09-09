@@ -121,7 +121,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
-                .catch(error => this._eleService.send<TSendError>('ERROR', error))
+                .catch((error: any) => this._eleService.send<TSendError>('ERROR', error))
                 .finally(() => {
                     this.addSub(
                         this.playerStatsService.selectedPlayerChange.pipe(
@@ -130,7 +130,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                                     if (result) {
                                         await this._loadPlayerSongStats();
                                     }
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
@@ -141,7 +141,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                             mergeMap(async () => {
                                 try {
                                     await this._loadPlayerSongStats();
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
@@ -157,7 +157,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                             mergeMap(async () => {
                                 try {
                                     await this._initIsInstalledSong();
-                                } catch (error) {
+                                } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
                             })
@@ -195,7 +195,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 );
                 await this.dlService.installSingle(dlInfo);
             }
-        } catch (error) {
+        } catch (error: any) {
             this._notify.error(error);
         }
     }

@@ -118,7 +118,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                                 this._setValues(this.optService.settings);
                             }
                         }
-                    } catch (error) {
+                    } catch (error: any) {
                         this._eleService.send<TSendError>('ERROR', error);
                     } finally {
                         this._isInit = true;
@@ -149,7 +149,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                     this._eleService.send<TSendError>('ERROR', error);
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
             this._eleService.send<TSendError>('ERROR', error);
         }
     }
@@ -160,7 +160,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
             if (result) {
                 this._setValues(result.result);
             }
-        } catch (error) {
+        } catch (error: any) {
             this._eleService.send<TSendError>('ERROR', error);
         }
     }

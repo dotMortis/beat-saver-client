@@ -29,7 +29,7 @@ export class WindowStorage {
         };
         try {
             writeFileSync(this.fullPath, JSON.stringify(data));
-        } catch (error) {
+        } catch (error: any) {
             appLogger().error(error);
         }
     }

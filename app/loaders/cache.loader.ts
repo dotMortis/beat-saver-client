@@ -9,7 +9,7 @@ export const writeCahceHandle = IpcHelerps.ipcMainHandle<TInvokeWriteCache<any>>
     async (event: Electron.IpcMainInvokeEvent, args: { name: string; data: any }) => {
         try {
             return chacheLoader.writeCache(args.name, args.data);
-        } catch (error) {
+        } catch (error: any) {
             return error;
         }
     }
@@ -20,7 +20,7 @@ export const readCahceHandle = IpcHelerps.ipcMainHandle<TInvokeReadCache<any>>(
     async (event: Electron.IpcMainInvokeEvent, args: { name: string }) => {
         try {
             return { data: chacheLoader.readCache(args.name) };
-        } catch (error) {
+        } catch (error: any) {
             return error;
         }
     }

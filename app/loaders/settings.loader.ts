@@ -145,7 +145,7 @@ class Settings {
                 try {
                     this._touch(value);
                     return undefined;
-                } catch (error) {
+                } catch (error: any) {
                     return error.name;
                 }
             }
@@ -157,7 +157,7 @@ class Settings {
                 try {
                     mkdirSync(this._folderPath, { recursive: true });
                     return undefined;
-                } catch (error) {
+                } catch (error: any) {
                     return error.name;
                 }
             }

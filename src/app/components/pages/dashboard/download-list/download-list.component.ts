@@ -49,7 +49,7 @@ export class DownloadListComponent extends UnsubscribeComponent {
                 title: 'Bulkdownload finished',
                 message: `Let's play!`
             });
-        } catch (error) {
+        } catch (error: any) {
             this._electronService.send<TSendError>('ERROR', error);
         }
     }

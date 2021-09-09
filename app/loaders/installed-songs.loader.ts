@@ -67,7 +67,7 @@ class InstalledSongs {
                             if (file.isDirectory()) this._songIds?.add(file.name.split(' ')[0]);
                         }
                         res({ status: 'LOADED' });
-                    } catch (error) {
+                    } catch (error: any) {
                         res({ status: error });
                     }
                 }
@@ -118,7 +118,7 @@ class InstalledSongs {
                                 }
                             }
                             return { status, result: undefined };
-                        } catch (error) {
+                        } catch (error: any) {
                             return { status: error, result: undefined };
                         }
                     }),

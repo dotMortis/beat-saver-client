@@ -47,7 +47,7 @@ class Install {
                 }
             }
             return { result: true };
-        } catch (error) {
+        } catch (error: any) {
             return { result: error };
         }
     }
