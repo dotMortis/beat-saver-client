@@ -10,6 +10,7 @@ import {
 import { TSongHash } from '../../src/models/played-songs.model';
 import { PlayerData, TLevelStatsInfo } from '../../src/models/player-data.model';
 import { TFileLoaded } from '../../src/models/types';
+import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { logger } from '../models/winston.logger';
 import { settings } from './settings.loader';
@@ -36,7 +37,7 @@ export const getPlayerNamesHandle = IpcHelerps.ipcMainHandle<TInvokeGetPlayerNam
     }
 );
 
-class PlayedSongs {
+class PlayedSongs extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsAppDataPath.value;
         return tempPath ? path.join(tempPath, 'PlayerData.dat') : '';
@@ -46,6 +47,7 @@ class PlayedSongs {
     private _playerStatsloading: boolean;
 
     constructor() {
+        super();
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._playerStatsloading = false;
     }
@@ -171,3 +173,4 @@ class PlayedSongs {
 }
 
 const playedSongs = new PlayedSongs();
+export default playedSongs;

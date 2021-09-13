@@ -1,23 +1,23 @@
 import db, { Database } from 'better-sqlite3';
 import { createHash } from 'crypto';
 import { app } from 'electron';
-import EventEmitter from 'events';
 import { copyFileSync, Dirent, existsSync, readdir, readdirSync } from 'fs';
 import * as path from 'path';
-import { join } from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
 import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
+import { TSendMapSyncStatus } from '../../src/models/electron/send.channels';
 import { LocalMapInfo } from '../../src/models/localMapInfo.model';
 import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
+import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
 import { logger } from '../models/winston.logger';
-import { chacheLoader } from './cache.loader';
+import { cacheLoader } from './cache.loader';
 import { settings } from './settings.loader';
 
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
@@ -35,7 +35,7 @@ export const songIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled
     }
 );
 
-class InstalledSongs extends EventEmitter {
+class InstalledSongs extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
         return tempPath ? path.join(tempPath, 'Beat Saber_Data', 'CustomLevels') : '';
@@ -51,7 +51,7 @@ class InstalledSongs extends EventEmitter {
     constructor() {
         super();
         this._syncAgain = this._localMapsSyncing = false;
-        this._currentIdsHash = chacheLoader.readCache('ids_hash');
+        this._currentIdsHash = cacheLoader.readCache('ids_hash');
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._songIds = new Set<string>();
@@ -68,15 +68,30 @@ class InstalledSongs extends EventEmitter {
         return super.emit('idsHash', hash, ids);
     }
 
-    syncInstalledSongs(): void {
+    syncInstalledSongs(idsCount: number): void {
         const files = readdirSync(this._filePath, { withFileTypes: true });
         const songs = new Array<LocalMapInfo>();
+        let z = 0;
         for (const file of files) {
             if (file.isDirectory()) {
-                songs.push(MapHelpers.getLocalMapInfo(join(this._filePath, file.name), file.name));
+                IpcHelerps.webContentsSend<TSendMapSyncStatus>(
+                    this.browserWindow,
+                    'MAP_SYNC_STATUS',
+                    {
+                        status: 'SYNCING',
+                        currentCount: ++z,
+                        sum: idsCount
+                    }
+                );
+                songs.push(MapHelpers.getLocalMapInfo(this._filePath, file.name));
             }
         }
         this._insertMapInfos(songs);
+        IpcHelerps.webContentsSend<TSendMapSyncStatus>(this.browserWindow, 'MAP_SYNC_STATUS', {
+            status: 'FINISH',
+            currentCount: z,
+            sum: idsCount
+        });
     }
 
     async loadInstalledSongs(): Promise<{ status: TFileLoaded }> {
@@ -142,10 +157,20 @@ class InstalledSongs extends EventEmitter {
             this._localMapsSyncing = true;
             try {
                 this._deleteRemovedIds(ids);
-                this.syncInstalledSongs();
-                chacheLoader.writeCache('ids_hash', hash);
+                this.syncInstalledSongs(ids.length);
+                cacheLoader.writeCache('ids_hash', hash);
             } catch (error: any) {
                 logger.error(error);
+                IpcHelerps.webContentsSend<TSendMapSyncStatus>(
+                    this.browserWindow,
+                    'MAP_SYNC_STATUS',
+                    {
+                        status: 'ERROR',
+                        error: error,
+                        sum: ids.length,
+                        currentCount: 0
+                    }
+                );
             } finally {
                 this._localMapsSyncing = false;
                 if (this._syncAgain) {
@@ -170,8 +195,8 @@ class InstalledSongs extends EventEmitter {
 
     private _insertMapInfos(mapInfos: LocalMapInfo[]): void {
         const insert = this._db.prepare(
-            'REPLACE INTO maps (id, song_name, song_sub_name, song_author_name, level_author_name, bpm, cover_image_filename, difficulties, hash) ' +
-                'VALUES (@id, @song_name, @song_sub_name, @song_author_name, @level_author_name, @bpm, @cover_image_filename, @difficulties, @hash)'
+            'REPLACE INTO maps (id, song_name, song_sub_name, song_author_name, level_author_name, bpm, cover_image_filename, difficulties, hash, folder_name) ' +
+                'VALUES (@id, @song_name, @song_sub_name, @song_author_name, @level_author_name, @bpm, @cover_image_filename, @difficulties, @hash, @folder_name)'
         );
         const insertMany = this._db.transaction((mapInfos: LocalMapInfo[]) => {
             for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
@@ -241,3 +266,4 @@ class InstalledSongs extends EventEmitter {
 }
 
 const isntalledSongs = new InstalledSongs();
+export default isntalledSongs;

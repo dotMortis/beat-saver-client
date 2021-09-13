@@ -4,6 +4,7 @@ import { TDifficulyBeatmapSet, TRawMapInfo } from './rawMapInfo.model';
 
 export type TDBLocalMapInfo = {
     id: string;
+    folder_name: string;
     song_name: string;
     song_sub_name: string | null;
     song_author_name: string | null;
@@ -16,6 +17,7 @@ export type TDBLocalMapInfo = {
 
 export interface ILocalMapInfo {
     id: string;
+    folder_name: string;
     song_name: string;
     song_sub_name: string | null;
     song_author_name: string | null;
@@ -28,6 +30,7 @@ export interface ILocalMapInfo {
 
 export class LocalMapInfo implements ILocalMapInfo {
     id: string;
+    folder_name: string;
     song_name: string;
     song_sub_name: string | null;
     song_author_name: string | null;
@@ -39,6 +42,7 @@ export class LocalMapInfo implements ILocalMapInfo {
 
     constructor(localMapInfo?: ILocalMapInfo | TDBLocalMapInfo) {
         this.id = localMapInfo ? localMapInfo.id : '';
+        this.folder_name = localMapInfo ? localMapInfo.folder_name : '';
         this.song_name = localMapInfo ? localMapInfo.song_name : '';
         this.song_sub_name = localMapInfo ? localMapInfo.song_sub_name : '';
         this.song_author_name = localMapInfo ? localMapInfo.song_author_name : '';
@@ -68,9 +72,15 @@ export class LocalMapInfo implements ILocalMapInfo {
         };
     }
 
-    public static fromRawMapInfo(rawMap: TRawMapInfo, hash: string, id: string): LocalMapInfo {
+    public static fromRawMapInfo(
+        rawMap: TRawMapInfo,
+        hash: string,
+        id: string,
+        folderName: string
+    ): LocalMapInfo {
         const localMapInfo = new LocalMapInfo();
         localMapInfo.id = id;
+        localMapInfo.folder_name = folderName;
         localMapInfo.song_name = rawMap._songName;
         localMapInfo.song_sub_name = rawMap._songSubName;
         localMapInfo.song_author_name = rawMap._songAuthorName;

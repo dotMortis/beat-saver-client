@@ -4,6 +4,7 @@ import * as path from 'path';
 import { sep } from 'path';
 import { TInvokeInstallSong } from '../../src/models/electron/invoke.channels';
 import { TSongId } from '../../src/models/played-songs.model';
+import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { sanitize } from '../models/helpers/sanitize.model';
 import { settings } from './settings.loader';
@@ -18,7 +19,7 @@ export const installSongHandle = IpcHelerps.ipcMainHandle<TInvokeInstallSong>(
     }
 );
 
-class Install {
+class Install extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
         if (!tempPath) {
@@ -29,8 +30,6 @@ class Install {
             return path.join(tempPath, 'Beat Saber_Data', 'CustomLevels');
         }
     }
-
-    constructor() {}
 
     async installSong(info: { arrayBuffer: ArrayBuffer; songId: TSongId; songName: string }) {
         try {
@@ -71,3 +70,4 @@ class Install {
 }
 
 export const install = new Install();
+export default install;
