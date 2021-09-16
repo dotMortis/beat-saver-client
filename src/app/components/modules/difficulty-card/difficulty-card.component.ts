@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { ECharacteristic, TMapDifficulty } from '../../../../models/api.models';
+import { ECharacteristic, TMapDifficulty } from '../../../../models/api/api.models';
+import { ApiHelpers } from '../../../../models/maps/maps.helpers';
 
 @Component({
     selector: 'app-difficulty-card',

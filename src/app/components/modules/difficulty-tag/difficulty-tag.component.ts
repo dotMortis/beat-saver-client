@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { TMapDifficulty } from '../../../../models/api.models';
+import { TMapDifficulty } from '../../../../models/api/api.models';
+import { ApiHelpers } from '../../../../models/maps/maps.helpers';
 
 @Component({
     selector: 'app-difficulty-tag',

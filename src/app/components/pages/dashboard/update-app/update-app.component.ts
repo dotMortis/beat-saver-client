@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { tap } from 'rxjs/operators';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
+import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { UpdateService } from '../../../../services/null.provided/update.service';
 import { InstallPanelComponent } from './install-panel/install-panel.component';
 

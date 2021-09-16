@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
+import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import {
     TDownloadItemInfo,
     TSendBrowserDownload
 } from '../../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
 
 @Component({

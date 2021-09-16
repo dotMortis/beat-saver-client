@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
+import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { TSendDebug, TSendError } from '../../../../../models/electron/send.channels';
 import { TSettings } from '../../../../../models/settings.model';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
 import { InstalledSongsService } from '../../../../services/null.provided/installed-songs.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';

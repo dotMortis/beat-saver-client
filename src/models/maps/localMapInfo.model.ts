@@ -1,5 +1,5 @@
-import { ApiHelpers } from './api.helpers';
-import { ECharacteristic, EDifficulty } from './api.models';
+import { ECharacteristic, EDifficulty } from '../api/api.models';
+import { ApiHelpers } from './maps.helpers';
 import { TDifficulyBeatmapSet, TRawMapInfo } from './rawMapInfo.model';
 
 export type TDBLocalMapInfo = {

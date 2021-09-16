@@ -1,4 +1,4 @@
-import { ECharacteristic } from './api.models';
+import { ECharacteristic } from '../api/api.models';
 
 export type TRawMapInfo = {
     _songName: string;

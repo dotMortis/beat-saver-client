@@ -1,8 +1,8 @@
 import { createHash } from 'crypto';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { LocalMapInfo } from '../../../src/models/localMapInfo.model';
-import { TRawMapInfo } from '../../../src/models/rawMapInfo.model';
+import { LocalMapInfo } from '../../../src/models/maps/localMapInfo.model';
+import { TRawMapInfo } from '../../../src/models/maps/rawMapInfo.model';
 
 export default class MapHelpers {
     public static getLocalMapInfo(mapsFolderPath: string, mapFolderName: string): LocalMapInfo {

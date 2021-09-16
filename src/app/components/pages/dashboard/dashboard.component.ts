@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TSendReady } from '../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { TourService } from '../../../services/root.provided/tour.service';
 import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';

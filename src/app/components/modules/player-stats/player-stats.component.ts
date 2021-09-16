@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { EDifficulty } from '../../../../models/api.models';
-import { LevelStatsData } from '../../../../models/player-data.model';
+import { EDifficulty } from '../../../../models/api/api.models';
+import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { LevelStatsData } from '../../../../models/player/player-data.model';
 
 @Component({
     selector: 'app-player-stats',

@@ -1,0 +1,16 @@
+<div class="row mx-n2">
+    <div class="col-12">{{localMapsService.searchResult | json}}</div>
+    <div class="col-12">
+        <button
+            *ngIf="localMapsService.canLoadMore && localMapsService.searchResult && localMapsService.searchResult.length"
+            pButton
+            pRipple
+            pTooltip="Load more maps"
+            tooltipPosition="top"
+            type="button"
+            icon="pi pi-chevron-down"
+            class="w-100 p-button-sm"
+            (click)="onSearch(true)"
+        ></button>
+    </div>
+</div>

@@ -2,15 +2,15 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
 import { v4 } from 'uuid';
+import { TFileLoaded } from '../../../models/electron/file-loaded.model';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
     TInvokeLoadPlayedSongs
 } from '../../../models/electron/invoke.channels';
 import { TSendDebug } from '../../../models/electron/send.channels';
-import { TSongHash } from '../../../models/played-songs.model';
-import { TLevelStatsInfo } from '../../../models/player-data.model';
-import { TFileLoaded } from '../../../models/types';
+import { TSongHash } from '../../../models/maps/map-ids.model';
+import { TLevelStatsInfo } from '../../../models/player/player-data.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { NotifyService } from '../root.provided/notify.service';
 

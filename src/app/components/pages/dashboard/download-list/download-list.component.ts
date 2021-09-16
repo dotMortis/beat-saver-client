@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { TSongDownloadInfo } from '../../../../../models/download.model';
+import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
+import { TSongDownloadInfo } from '../../../../../models/electron/download.model';
 import { TSendError } from '../../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
 import { ApiService } from '../../../../services/null.provided/api.service';
 import { DlService } from '../../../../services/null.provided/dl.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';

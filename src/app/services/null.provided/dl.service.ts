@@ -2,15 +2,15 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
-import { TMapDetail, TMapVersion } from '../../../models/api.models';
-import { TInstalled, TSongDownloadInfo } from '../../../models/download.model';
+import { TMapDetail, TMapVersion } from '../../../models/api/api.models';
+import { TInstalled, TSongDownloadInfo } from '../../../models/electron/download.model';
 import {
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
 } from '../../../models/electron/invoke.channels';
 import { TSendError } from '../../../models/electron/send.channels';
-import { TSongHash } from '../../../models/played-songs.model';
+import { TSongHash } from '../../../models/maps/map-ids.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
 import { InstalledSongsService } from './installed-songs.service';

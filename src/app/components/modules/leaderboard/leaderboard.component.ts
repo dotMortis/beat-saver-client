@@ -2,10 +2,10 @@ import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { TLeaderboard, TScores } from '../../../../models/api.models';
-import { TBoardIdent } from '../../../../models/leaderboard.model';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
+import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
+import { TLeaderboard, TScores } from '../../../../models/api/api.models';
+import { TBoardIdent } from '../../../../models/api/leaderboard.model';
+import { ApiHelpers } from '../../../../models/maps/maps.helpers';
 import { ApiService } from '../../../services/null.provided/api.service';
 
 @Component({

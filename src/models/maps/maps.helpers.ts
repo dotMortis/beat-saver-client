@@ -1,5 +1,5 @@
-import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from './api.models';
-import { TDifficultyIndex } from './player-data.model';
+import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from '../api/api.models';
+import { TDifficultyIndex } from '../player/player-data.model';
 
 export class ApiHelpers {
     public static getDifficultyLabel(difficulty?: EDifficulty): string {

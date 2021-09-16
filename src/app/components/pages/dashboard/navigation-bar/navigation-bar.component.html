@@ -14,6 +14,16 @@
             pButton
             pRipple
             class="p-button-sm"
+            pTooltip="Home"
+            icon="pi pi-star"
+            [routerLink]="['locals']"
+        ></button>
+    </div>
+    <div class="col-auto nav-item-l">
+        <button
+            pButton
+            pRipple
+            class="p-button-sm"
             label="Community"
             [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
             (click)="communityMenu.toggle($event)"

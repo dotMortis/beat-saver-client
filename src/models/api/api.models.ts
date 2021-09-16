@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Helpers } from './helpers.model';
+import { Helpers } from '../angular/helpers.model';
 
 export interface IListOptions {
     automapper?: boolean;

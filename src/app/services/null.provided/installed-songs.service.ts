@@ -1,11 +1,11 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { TFileLoaded } from '../../../models/electron/file-loaded.model';
 import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../../models/electron/invoke.channels';
 import { TSendDebug } from '../../../models/electron/send.channels';
-import { TSongId } from '../../../models/played-songs.model';
-import { TFileLoaded } from '../../../models/types';
+import { TSongId } from '../../../models/maps/map-ids.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { NotifyService } from '../root.provided/notify.service';
 

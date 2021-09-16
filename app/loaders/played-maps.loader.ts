@@ -2,14 +2,14 @@ import { readFile } from 'fs';
 import * as path from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
+import { TFileLoaded } from '../../src/models/electron/file-loaded.model';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
     TInvokeLoadPlayedSongs
 } from '../../src/models/electron/invoke.channels';
-import { TSongHash } from '../../src/models/played-songs.model';
-import { PlayerData, TLevelStatsInfo } from '../../src/models/player-data.model';
-import { TFileLoaded } from '../../src/models/types';
+import { TSongHash } from '../../src/models/maps/map-ids.model';
+import { PlayerData, TLevelStatsInfo } from '../../src/models/player/player-data.model';
 import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import { logger } from '../models/winston.logger';

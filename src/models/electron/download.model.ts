@@ -1,4 +1,4 @@
-import { TMapDetail, TMapVersion } from './api.models';
+import { TMapDetail, TMapVersion } from '../api/api.models';
 
 export type TSongDownloadInfo = {
     mapDetail: TMapDetail;

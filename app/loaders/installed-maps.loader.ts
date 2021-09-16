@@ -5,15 +5,15 @@ import { copyFileSync, Dirent, existsSync, readdir, readdirSync } from 'fs';
 import * as path from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
+import { TFileLoaded } from '../../src/models/electron/file-loaded.model';
 import {
     TInvokeFilterLocalMaps,
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
 import { TSendMapSyncStatus } from '../../src/models/electron/send.channels';
-import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/localMapInfo.model';
-import { TSongId } from '../../src/models/played-songs.model';
-import { TFileLoaded } from '../../src/models/types';
+import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/maps/localMapInfo.model';
+import { TSongId } from '../../src/models/maps/map-ids.model';
 import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
@@ -114,9 +114,9 @@ class InstalledMaps extends CommonLoader {
                 ' WHERE song_name LIKE :q OR id LIKE :q OR song_sub_name LIKE :q OR song_author_name LIKE :q OR level_author_name LIKE :q OR hash LIKE :q';
         }
         query += ' ORDER BY song_name ASC LIMIT 20 OFFSET :skip';
-        const find = this._db.prepare('SELECT * FROM maps ORDER BY song_name ASC');
+        const find = this._db.prepare(query);
         return find
-            .all({ q, skip: (page - 1) * 20 })
+            .all({ q, skip: page * 20 })
             .map((info: TDBLocalMapInfo) => new LocalMapInfo(info));
     }
 

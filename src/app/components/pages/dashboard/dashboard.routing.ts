@@ -11,6 +11,11 @@ const routes: Routes = [
                 loadChildren: () => import('./../songs/songs.module').then(m => m.SongsModule)
             },
             {
+                path: 'locals',
+                loadChildren: () =>
+                    import('./../local-maps/local-maps.module').then(m => m.LocalMapsModule)
+            },
+            {
                 path: ':songId',
                 loadChildren: () =>
                     import('./../songs-detail/songs-detail.module').then(m => m.SongsDetailModule)

@@ -1,8 +1,8 @@
-import { ILocalMapInfo } from '../localMapInfo.model';
-import { TSongHash, TSongId } from '../played-songs.model';
-import { TLevelStatsInfo } from '../player-data.model';
+import { ILocalMapInfo } from '../maps/localMapInfo.model';
+import { TSongHash, TSongId } from '../maps/map-ids.model';
+import { TLevelStatsInfo } from '../player/player-data.model';
 import { TSettings } from '../settings.model';
-import { TFileLoaded } from '../types';
+import { TFileLoaded } from './file-loaded.model';
 
 export type TInvoke<CHANNEL extends string, ARGS, RETURN_VALUE> = {
     channel: CHANNEL;

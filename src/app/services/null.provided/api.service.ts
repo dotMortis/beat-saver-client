@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ApiHelpers } from '../../../models/api.helpers';
 import {
     ECharacteristic,
     EDifficulty,
@@ -12,8 +11,9 @@ import {
     TLeaderboard,
     TMapDetail,
     TSearchResult
-} from '../../../models/api.models';
-import { TSongHash } from '../../../models/played-songs.model';
+} from '../../../models/api/api.models';
+import { TSongHash } from '../../../models/maps/map-ids.model';
+import { ApiHelpers } from '../../../models/maps/maps.helpers';
 
 @Injectable({
     providedIn: null

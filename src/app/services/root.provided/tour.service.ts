@@ -3,7 +3,7 @@ import { JoyrideService } from 'ngx-joyride';
 import { EMPTY } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { TSendError } from '../../../models/electron/send.channels';
-import { TSongId } from '../../../models/played-songs.model';
+import { TSongId } from '../../../models/maps/map-ids.model';
 import { ElectronService } from './electron.service';
 import { ScrollService } from './scroll.service';
 

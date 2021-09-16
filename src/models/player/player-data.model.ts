@@ -1,5 +1,5 @@
-import { ECharacteristic } from './api.models';
-import { TSongHash } from './played-songs.model';
+import { ECharacteristic } from '../api/api.models';
+import { TSongHash } from '../maps/map-ids.model';
 
 export interface IPlayerData {
     version: string;

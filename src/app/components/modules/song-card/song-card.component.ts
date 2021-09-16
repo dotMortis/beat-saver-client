@@ -1,17 +1,17 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { mergeMap, tap } from 'rxjs/operators';
-import { ApiHelpers } from '../../../../models/api.helpers';
+import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import {
     ECharacteristic,
     TMapDetail,
     TMapDifficulty,
     TMapVersion
-} from '../../../../models/api.models';
-import { TInstalled } from '../../../../models/download.model';
+} from '../../../../models/api/api.models';
+import { TInstalled } from '../../../../models/electron/download.model';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
-import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player-data.model';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
+import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player/player-data.model';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';

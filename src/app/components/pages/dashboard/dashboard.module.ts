@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
+import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { DashboardComponent } from './dashboard.component';
@@ -32,6 +33,7 @@ import { UpdateAppModule } from './update-app/update-app.module';
     providers: [
         SongPreviewService,
         ApiService,
+        LocalMapsService,
         PlayerStatsService,
         InstalledSongsService,
         DlService
