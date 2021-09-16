@@ -23,7 +23,7 @@ export class InstalledSongsService {
         songId: TSongId
     ): Promise<false | { result: boolean | undefined; status: TFileLoaded }> {
         const result = await this._eleService.invoke<TInvokeIsInstalled>('SONG_IS_INSTALLED', {
-            songId
+            mapId: songId
         });
         this._notify.errorFileHandle(result, 'BS Installation');
         return result;

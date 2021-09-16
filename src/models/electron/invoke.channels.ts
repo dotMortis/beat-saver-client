@@ -1,3 +1,4 @@
+import { ILocalMapInfo } from '../localMapInfo.model';
 import { TSongHash, TSongId } from '../played-songs.model';
 import { TLevelStatsInfo } from '../player-data.model';
 import { TSettings } from '../settings.model';
@@ -14,7 +15,7 @@ export type TInvokeLoadPlayedSongs = TInvoke<'LOAD_PLAYER_STATS', void, { status
 
 export type TInvokeGetPlayerSongStats = TInvoke<
     'GET_PLAYER_SONG_STATS',
-    { playerName: string; songHash: TSongHash },
+    { playerName: string; mapHash: TSongHash },
     { status: TFileLoaded; result: TLevelStatsInfo | undefined }
 >;
 
@@ -31,11 +32,15 @@ export type TInvokeLoadInstalledSongs = TInvoke<
     void,
     { status: TFileLoaded }
 >;
-
 export type TInvokeIsInstalled = TInvoke<
     'SONG_IS_INSTALLED',
-    { songId: TSongId },
+    { mapId: TSongId },
     { result: boolean | undefined; status: TFileLoaded }
+>;
+export type TInvokeFilterLocalMaps = TInvoke<
+    'FILTER_LOCAL_MAPS',
+    { q: string | undefined; page: number },
+    Error | ILocalMapInfo[]
 >;
 //#endregion
 
@@ -49,7 +54,7 @@ export type TInvokeSetSettings = TInvoke<'SET_SETTINGS', TSettings, { result: TS
 //#region Install
 export type TInvokeInstallSong = TInvoke<
     'INSTALL_SONG',
-    { arrayBuffer: ArrayBuffer; songId: TSongId; songName: string },
+    { arrayBuffer: ArrayBuffer; mapId: TSongId; songName: string },
     { result: boolean | Error }
 >;
 //#endregion

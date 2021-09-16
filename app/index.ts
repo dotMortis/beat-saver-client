@@ -108,8 +108,8 @@ const electronApp = new IndexElectron(app, [
     join(loaderRootDir, 'logger.loader'),
     join(loaderRootDir, 'cache.loader'),
     join(loaderRootDir, 'settings.loader'),
-    join(loaderRootDir, 'played-songs.loader'),
-    join(loaderRootDir, 'installed-songs.loader'),
+    join(loaderRootDir, 'played-maps.loader'),
+    join(loaderRootDir, 'installed-maps.loader'),
     join(loaderRootDir, 'install.loader')
 ]);
 

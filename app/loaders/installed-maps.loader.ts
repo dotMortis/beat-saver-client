@@ -6,11 +6,12 @@ import * as path from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
 import {
+    TInvokeFilterLocalMaps,
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
 import { TSendMapSyncStatus } from '../../src/models/electron/send.channels';
-import { LocalMapInfo } from '../../src/models/localMapInfo.model';
+import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/localMapInfo.model';
 import { TSongId } from '../../src/models/played-songs.model';
 import { TFileLoaded } from '../../src/models/types';
 import { CommonLoader } from '../models/CommonLoader.model';
@@ -23,24 +24,36 @@ import { settings } from './settings.loader';
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
     'LOAD_INSTALLED_STATS',
     (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return isntalledSongs.loadInstalledSongs();
+        return isntalledMaps.loadInstalledMaps();
     }
 );
 
-export const songIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled>(
+export const mapIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled>(
     'SONG_IS_INSTALLED',
-    (event: Electron.IpcMainInvokeEvent, args: { songId: TSongId }) => {
-        const { songId } = args;
-        return isntalledSongs.songInstalled(songId);
+    (event: Electron.IpcMainInvokeEvent, args: { mapId: TSongId }) => {
+        const { mapId } = args;
+        return isntalledMaps.mapIsInstalled(mapId);
     }
 );
 
-class InstalledSongs extends CommonLoader {
+export const filterLocalMapsHandle = IpcHelerps.ipcMainHandle<TInvokeFilterLocalMaps>(
+    'FILTER_LOCAL_MAPS',
+    async (event: Electron.IpcMainInvokeEvent, args: { q: string | undefined; page: number }) => {
+        try {
+            const { q, page } = args;
+            return isntalledMaps.getFilteredLocalMaps(page, q);
+        } catch (error: any) {
+            return error;
+        }
+    }
+);
+
+class InstalledMaps extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
         return tempPath ? path.join(tempPath, 'Beat Saber_Data', 'CustomLevels') : '';
     }
-    private _songIds: Set<string>;
+    private _mapIds: Set<string>;
     private _loaded: BehaviorSubject<TFileLoaded>;
     private _loading: boolean;
     private _db: Database;
@@ -54,7 +67,7 @@ class InstalledSongs extends CommonLoader {
         this._currentIdsHash = cacheLoader.readCache('ids_hash');
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
-        this._songIds = new Set<string>();
+        this._mapIds = new Set<string>();
         const dbFilePath = this._ensureDbFile();
         this._db = new db(dbFilePath, { fileMustExist: true, verbose: logger.debug });
         this._initLocalMapSync();
@@ -70,7 +83,7 @@ class InstalledSongs extends CommonLoader {
 
     syncInstalledSongs(idsCount: number): void {
         const files = readdirSync(this._filePath, { withFileTypes: true });
-        const songs = new Array<LocalMapInfo>();
+        const maps = new Array<LocalMapInfo>();
         let z = 0;
         for (const file of files) {
             if (file.isDirectory()) {
@@ -83,10 +96,10 @@ class InstalledSongs extends CommonLoader {
                         sum: idsCount
                     }
                 );
-                songs.push(MapHelpers.getLocalMapInfo(this._filePath, file.name));
+                maps.push(MapHelpers.getLocalMapInfo(this._filePath, file.name));
             }
         }
-        this._insertMapInfos(songs);
+        this._insertMapInfos(maps);
         IpcHelerps.webContentsSend<TSendMapSyncStatus>(this.browserWindow, 'MAP_SYNC_STATUS', {
             status: 'FINISH',
             currentCount: z,
@@ -94,7 +107,20 @@ class InstalledSongs extends CommonLoader {
         });
     }
 
-    async loadInstalledSongs(): Promise<{ status: TFileLoaded }> {
+    getFilteredLocalMaps(page: number, q: string | undefined): LocalMapInfo[] {
+        let query = 'SELECT * FROM maps';
+        if (q) {
+            query +=
+                ' WHERE song_name LIKE :q OR id LIKE :q OR song_sub_name LIKE :q OR song_author_name LIKE :q OR level_author_name LIKE :q OR hash LIKE :q';
+        }
+        query += ' ORDER BY song_name ASC LIMIT 20 OFFSET :skip';
+        const find = this._db.prepare('SELECT * FROM maps ORDER BY song_name ASC');
+        return find
+            .all({ q, skip: (page - 1) * 20 })
+            .map((info: TDBLocalMapInfo) => new LocalMapInfo(info));
+    }
+
+    async loadInstalledMaps(): Promise<{ status: TFileLoaded }> {
         logger.debug('loadInstalledSongs');
         if (this._loading) return { status: 'LOADING' };
         this._loading = true;
@@ -114,11 +140,11 @@ class InstalledSongs extends CommonLoader {
                         return res({ status: 'INVALID_PATH' });
                     }
                     try {
-                        this._songIds.clear();
+                        this._mapIds.clear();
                         for (const file of files) {
-                            if (file.isDirectory()) this._songIds.add(file.name.split(' ')[0]);
+                            if (file.isDirectory()) this._mapIds.add(file.name.split(' ')[0]);
                         }
-                        this._setIdsHash(Array.from(this._songIds));
+                        this._setIdsHash(Array.from(this._mapIds));
                         res({ status: 'LOADED' });
                     } catch (error: any) {
                         res({ status: error });
@@ -138,13 +164,13 @@ class InstalledSongs extends CommonLoader {
             });
     }
 
-    async songInstalled(
-        songId: TSongId
+    async mapIsInstalled(
+        mapId: TSongId
     ): Promise<{ status: TFileLoaded; result: boolean | undefined }> {
-        logger.debug('songInstalled ' + songId);
+        logger.debug('mapIsInstalled ' + mapId);
         return this._handleLoadInstalledSongs<boolean>(async () => {
-            if (!this._loaded) await this.loadInstalledSongs();
-            return this._songIds?.has(songId) || false;
+            if (!this._loaded) await this.loadInstalledMaps();
+            return this._mapIds?.has(mapId) || false;
         });
     }
 
@@ -213,10 +239,10 @@ class InstalledSongs extends CommonLoader {
                 .pipe(
                     mergeMap(async (status: TFileLoaded) => {
                         try {
-                            logger.debug('songInstalled', status);
+                            logger.debug('mapInstalled', status);
                             switch (status) {
                                 case false: {
-                                    await this.loadInstalledSongs();
+                                    await this.loadInstalledMaps();
                                     break;
                                 }
                                 case 'LOADED': {
@@ -265,5 +291,5 @@ class InstalledSongs extends CommonLoader {
     }
 }
 
-const isntalledSongs = new InstalledSongs();
-export default isntalledSongs;
+const isntalledMaps = new InstalledMaps();
+export default isntalledMaps;

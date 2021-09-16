@@ -13,7 +13,7 @@ export const installSongHandle = IpcHelerps.ipcMainHandle<TInvokeInstallSong>(
     'INSTALL_SONG',
     async (
         event: Electron.IpcMainInvokeEvent,
-        args: { arrayBuffer: ArrayBuffer; songId: TSongId; songName: string }
+        args: { arrayBuffer: ArrayBuffer; mapId: TSongId; songName: string }
     ) => {
         return install.installSong(args);
     }
@@ -31,11 +31,11 @@ class Install extends CommonLoader {
         }
     }
 
-    async installSong(info: { arrayBuffer: ArrayBuffer; songId: TSongId; songName: string }) {
+    async installSong(info: { arrayBuffer: ArrayBuffer; mapId: TSongId; songName: string }) {
         try {
             const zip = await JSZip.loadAsync(info.arrayBuffer);
 
-            const subFolder = sanitize(`${info.songId} (${info.songName})`);
+            const subFolder = sanitize(`${info.mapId} (${info.songName})`);
             for (const filename of Object.keys(zip.files)) {
                 const file = zip.files[filename];
                 if (file.name.endsWith(sep)) {

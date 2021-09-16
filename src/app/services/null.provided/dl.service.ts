@@ -244,7 +244,7 @@ export class DlService {
             const arrayBuffer = await blob.arrayBuffer();
             const result = await this._eleService.invoke<TInvokeInstallSong>('INSTALL_SONG', {
                 arrayBuffer,
-                songId: info.mapDetail.id,
+                mapId: info.mapDetail.id,
                 songName: info.mapDetail.name
             });
             if (result && result.result instanceof Error) {

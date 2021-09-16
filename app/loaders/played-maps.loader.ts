@@ -18,26 +18,26 @@ import { settings } from './settings.loader';
 export const loadPlayerStatsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadPlayedSongs>(
     'LOAD_PLAYER_STATS',
     (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return playedSongs.loadPlayerStats();
+        return playedMaps.loadPlayerStats();
     }
 );
 
 export const getPlayerSongStatsHandle = IpcHelerps.ipcMainHandle<TInvokeGetPlayerSongStats>(
     'GET_PLAYER_SONG_STATS',
     (event: Electron.IpcMainInvokeEvent, args) => {
-        const { playerName, songHash } = args;
-        return playedSongs.getPlayerSongStatsFromHash(songHash, playerName);
+        const { playerName, mapHash } = args;
+        return playedMaps.getPlayerSongStatsFromHash(mapHash, playerName);
     }
 );
 
 export const getPlayerNamesHandle = IpcHelerps.ipcMainHandle<TInvokeGetPlayerNames>(
     'GET_PLAYER_NAMES',
     (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return playedSongs.getAvailablePlayers();
+        return playedMaps.getAvailablePlayers();
     }
 );
 
-class PlayedSongs extends CommonLoader {
+class PlayedMaps extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsAppDataPath.value;
         return tempPath ? path.join(tempPath, 'PlayerData.dat') : '';
@@ -105,17 +105,17 @@ class PlayedSongs extends CommonLoader {
     }
 
     async getPlayerSongStatsFromHash(
-        songHash: TSongHash,
+        mapHash: TSongHash,
         playerName: string
     ): Promise<{ status: TFileLoaded; result: TLevelStatsInfo | undefined }> {
-        logger.debug(`getPlayerSongStatsFromHash HASH: ${songHash} PLAYER: ${playerName}`);
+        logger.debug(`getPlayerSongStatsFromHash HASH: ${mapHash} PLAYER: ${playerName}`);
         return this._handleLoadPlayerStats<TLevelStatsInfo | undefined>(async () => {
             if (!this._loaded) await this.loadPlayerStats();
             const playerData = this._playerData?.localPlayers.get(playerName);
             if (!playerData) {
                 throw new Error(`Player with name ${playerName} not found.`);
             }
-            return playerData.levelsStatsData.get(songHash);
+            return playerData.levelsStatsData.get(mapHash);
         });
     }
 
@@ -172,5 +172,5 @@ class PlayedSongs extends CommonLoader {
     }
 }
 
-const playedSongs = new PlayedSongs();
-export default playedSongs;
+const playedMaps = new PlayedMaps();
+export default playedMaps;

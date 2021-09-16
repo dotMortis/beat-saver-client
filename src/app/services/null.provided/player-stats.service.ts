@@ -77,7 +77,7 @@ export class PlayerStatsService {
                     } else {
                         const result = await this._eleService.invoke<TInvokeGetPlayerSongStats>(
                             'GET_PLAYER_SONG_STATS',
-                            { playerName: selectedPlayer.name, songHash }
+                            { playerName: selectedPlayer.name, mapHash: songHash }
                         );
                         this._notify.errorFileHandle(result, 'BS AppData');
                         return result;
