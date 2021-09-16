@@ -135,8 +135,10 @@
                     {{ songNameShort }}</a
                 >
                 <br />
-                <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
-                <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                <div class="pb-2">
+                    <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
+                    <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                </div>
                 <span
                     *ngFor="let groupedDif of diffsArr; let last = last"
                     [ngClass]="{ 'row no-gutters justify-content-start': true, 'pb-1': !last }"
