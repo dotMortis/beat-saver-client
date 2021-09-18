@@ -15,7 +15,7 @@ import { TSendDebug, TSendError } from '../../../../models/electron/send.channel
 import { ILocalMapInfo } from '../../../../models/maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
 import { ApiHelpers } from '../../../../models/maps/maps.helpers';
-import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player/player-data.model';
+import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
@@ -35,7 +35,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     @Input() localMode: boolean;
     @Input() tMapDetail?: TMapDetail;
     @Input() localMapInfo?: ILocalMapInfo;
-    public tLevelStatsInfo?: TLevelStatsInfo;
+    public tGroupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]>;
     public isInstalledSong: { status: TInstalled };
     public latestVersion?: TMapVersion;
     public uploadTimeInfo?: string | Date;
@@ -84,6 +84,8 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         return this.latestVersion?.coverURL || 'assets/bs-default.jpeg';
     }
 
+    public isFav: boolean;
+
     public loading: boolean;
 
     constructor(
@@ -105,6 +107,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         this._expanded = this._songCardService.expandAll;
         this.localMode = false;
         this.loading = true;
+        this.isFav = false;
     }
 
     ngOnInit(): void {
@@ -248,36 +251,32 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     }
 
     private async _loadPlayerSongStats(hash: TSongHash): Promise<void> {
-        if (hash) {
-            const tLevelStatsInfo = await this.playerStatsService
-                .loadPlayerSongStats(hash)
-                .toPromise()
-                .catch(error => {
-                    this._eleService.send<TSendError>('ERROR', error);
-                });
-            this._eleService.send<TSendDebug>('DEBUG', {
-                msg: 'LEVELSTATSINFO',
-                meta: tLevelStatsInfo
+        const tLevelStatsInfo = await this.playerStatsService
+            .loadPlayerSongStats(hash)
+            .toPromise()
+            .catch(error => {
+                this._eleService.send<TSendError>('ERROR', error);
             });
-            if (tLevelStatsInfo && tLevelStatsInfo.result) {
-                tLevelStatsInfo.result.levelStats = tLevelStatsInfo.result.levelStats.sort(
-                    (a: LevelStatsData, b: LevelStatsData) =>
-                        a.difficulty < b.difficulty ? 1 : a.difficulty > b.difficulty ? -1 : 0
-                );
-                this.tLevelStatsInfo = tLevelStatsInfo.result;
-            } else {
-                this.tLevelStatsInfo = undefined;
-            }
+        this._eleService.send<TSendDebug>('DEBUG', {
+            msg: 'LEVELSTATSINFO',
+            meta: tLevelStatsInfo
+        });
+        if (tLevelStatsInfo && tLevelStatsInfo.result) {
+            this.isFav = tLevelStatsInfo.result.isFav;
+            this.tGroupedLevelStatsData = ApiHelpers.getPlayerLevelStatsGroupedByChar(
+                tLevelStatsInfo.result
+            );
+        } else {
+            this.isFav = false;
+            this.tGroupedLevelStatsData = undefined;
         }
     }
 
     private async _initIsInstalledSong(id: TSongId): Promise<void> {
-        if (id) {
-            const result = await this.installedSongsService.songIsInstalled(id).catch(error => {
-                this._eleService.send<TSendError>('ERROR', error);
-            });
-            this.isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
-        }
+        const result = await this.installedSongsService.songIsInstalled(id).catch(error => {
+            this._eleService.send<TSendError>('ERROR', error);
+        });
+        this.isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
     }
 
     private _setUploadTimeInfo(isoString: string): void {

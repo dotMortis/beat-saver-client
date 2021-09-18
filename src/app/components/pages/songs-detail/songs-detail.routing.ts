@@ -4,7 +4,17 @@ import { SongsDetailComponent } from './songs-detail.component';
 const routes: Routes = [
     {
         path: '',
-        component: SongsDetailComponent
+        children: [
+            {
+                path: '',
+                redirectTo: '',
+                pathMatch: 'full'
+            },
+            {
+                path: ':songId',
+                component: SongsDetailComponent
+            }
+        ]
     }
 ];
 

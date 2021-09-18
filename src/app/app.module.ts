@@ -16,6 +16,7 @@ import {
     faGraduationCap,
     faHeart,
     faLink,
+    faPlay,
     faPlayCircle,
     faStar,
     faTrash,
@@ -68,7 +69,8 @@ export class AppModule {
             faChevronLeft,
             faChevronRight,
             faHeart,
-            faTrash
+            faTrash,
+            faPlay
         );
     }
 }

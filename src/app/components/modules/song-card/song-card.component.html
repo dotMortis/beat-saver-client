@@ -4,9 +4,9 @@
     (contextmenu)="onCardClick()"
     [ngClass]="{
         'song-card-container row no-gutters': true,
-        'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav && !localMode,
-        'song-fav': tLevelStatsInfo?.isFav && (!isInstalledSong.status || localMode),
-        'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status && !localMode
+        'song-installed': isInstalledSong.status && !isFav && !localMode,
+        'song-fav': isFav && (!isInstalledSong.status || localMode),
+        'song-installed-fav': isFav && isInstalledSong.status && !localMode
     }"
 >
     <div
@@ -31,7 +31,7 @@
                             >
                             </fa-icon>
                             <fa-icon
-                                *ngIf="tLevelStatsInfo?.isFav"
+                                *ngIf="isFav"
                                 [icon]="['fas', 'heart']"
                                 class="song-fav-icon"
                                 pTooltip="In your favorites"
@@ -173,19 +173,12 @@
             </div>
         </div>
     </div>
-    <div *ngIf="expanded && tMapDetail" class="col-9 expand-frame p-2 row no-gutters">
-        <app-difficulty-card class="w-100" [groupedDifs]="diffs"></app-difficulty-card>
-    </div>
-    <div
-        *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
-        class="col-3 row no-gutters player-stats"
-    >
-        <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
-            <app-player-stats
-                [ngClass]="{ 'col-12': true, 'player-stats-item-border': !last }"
-                [stats]="statInfo"
-            ></app-player-stats>
-        </ng-container>
+    <div *ngIf="expanded && tMapDetail" class="col-12 expand-frame p-2 row no-gutters">
+        <app-difficulty-card
+            class="w-100"
+            [groupedDifs]="diffs"
+            [groupedLevelStatsData]="tGroupedLevelStatsData"
+        ></app-difficulty-card>
     </div>
 </div>
 <p-confirmPopup styleClass="confirm-delete"></p-confirmPopup>

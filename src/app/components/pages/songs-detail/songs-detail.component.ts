@@ -14,7 +14,7 @@ import { TBoardIdent } from '../../../../models/api/leaderboard.model';
 import { TInstalled } from '../../../../models/electron/download.model';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
 import { ApiHelpers } from '../../../../models/maps/maps.helpers';
-import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player/player-data.model';
+import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
@@ -45,7 +45,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         this._tMapDetail = val;
     }
 
-    public tLevelStatsInfo?: TLevelStatsInfo;
+    public groupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]> | undefined;
     public isInstalledSong: { status: TInstalled };
     public latestVersion?: TMapVersion;
     public uploadTimeInfo?: string | Date;
@@ -82,6 +82,8 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         else return false;
     }
 
+    public isFav: boolean;
+
     boardIdent: BehaviorSubject<TBoardIdent | undefined>;
 
     constructor(
@@ -99,6 +101,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         this.boardIdent = new BehaviorSubject<TBoardIdent | undefined>(undefined);
         this.isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
+        this.isFav = false;
     }
 
     ngOnInit(): void {
@@ -225,13 +228,13 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 meta: tLevelStatsInfo
             });
             if (tLevelStatsInfo && tLevelStatsInfo.result) {
-                tLevelStatsInfo.result.levelStats = tLevelStatsInfo.result.levelStats.sort(
-                    (a: LevelStatsData, b: LevelStatsData) =>
-                        a.difficulty < b.difficulty ? 1 : a.difficulty > b.difficulty ? -1 : 0
+                this.groupedLevelStatsData = ApiHelpers.getPlayerLevelStatsGroupedByChar(
+                    tLevelStatsInfo.result
                 );
-                this.tLevelStatsInfo = tLevelStatsInfo.result;
+                this.isFav = tLevelStatsInfo.result.isFav;
             } else {
-                this.tLevelStatsInfo = undefined;
+                this.groupedLevelStatsData = undefined;
+                this.isFav = false;
             }
         }
     }

@@ -92,6 +92,35 @@
                     </div>
                 </div>
             </div>
+            <ng-container
+                [ngTemplateOutlet]="playerStats"
+                [ngTemplateOutletContext]="{stat: getPlayerStatsData(diff.difficulty)}"
+            ></ng-container>
         </div>
     </div>
+
+    <ng-template #playerStats let-stat="stat">
+        <div *ngIf="stat" class="col-12 player-stats">
+            <div class="row justify-content-start">
+                <div class="col-auto">
+                    <span pTooltip="Your play count" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'play']" class="mr-1"></fa-icon>
+                        <span class="char-label">{{ stat.playCount || 0 | number: '1.0-0' }}</span>
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span pTooltip="Your high score" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'trophy']" class="mr-1"></fa-icon>
+                        <span class="char-label">{{ stat.highScore || 0 | number: '1.0-0' }}</span>
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span pTooltip="Your max combo" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'link']" class="mr-1"></fa-icon>
+                        <span class="char-label">{{ stat.maxCombo || 0 | number: '1.0-0' }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </div>

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ECharacteristic, TMapDifficulty } from '../../../../models/api/api.models';
+import { ECharacteristic, EDifficulty, TMapDifficulty } from '../../../../models/api/api.models';
 import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { TLevelStatsData } from '../../../../models/player/player-data.model';
 
 @Component({
     selector: 'app-difficulty-card',
@@ -8,6 +9,18 @@ import { ApiHelpers } from '../../../../models/maps/maps.helpers';
     styleUrls: ['./difficulty-card.component.scss']
 })
 export class DifficultyCardComponent implements OnInit {
+    private _groupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]>;
+    @Input()
+    get groupedLevelStatsData(): Map<ECharacteristic, TLevelStatsData[]> | undefined {
+        return this._groupedLevelStatsData;
+    }
+    set groupedLevelStatsData(val: Map<ECharacteristic, TLevelStatsData[]> | undefined) {
+        this._groupedLevelStatsData = val;
+    }
+    get activeLevelStatsData(): TLevelStatsData[] | undefined {
+        return this._activeChar ? this._groupedLevelStatsData?.get(this._activeChar) : undefined;
+    }
+
     private _groupedDifs?: Map<ECharacteristic, TMapDifficulty[]>;
     @Input()
     get groupedDifs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
@@ -16,10 +29,11 @@ export class DifficultyCardComponent implements OnInit {
     set groupedDifs(val: Map<ECharacteristic, TMapDifficulty[]> | undefined) {
         this._groupedDifs = val;
     }
-    @Input() selectable: boolean;
 
+    @Input() selectable: boolean;
     private _selectedDiffId?: string;
     private _selectedDiff?: TMapDifficulty;
+    private _activeChar?: ECharacteristic;
     @Input()
     get selectedDiff(): TMapDifficulty | undefined {
         return this._selectedDiff;
@@ -28,6 +42,7 @@ export class DifficultyCardComponent implements OnInit {
         if (this._selectedDiffId !== ApiHelpers.computeDiffId(val)) {
             this._selectedDiff = val;
             this._selectedDiffId = val ? ApiHelpers.computeDiffId(val) : undefined;
+            this._activeChar = val?.characteristic;
             this.selectedDiffChange.next(this._selectedDiff);
         }
     }
@@ -108,5 +123,10 @@ export class DifficultyCardComponent implements OnInit {
 
     getLabel(tMapDifficulty: TMapDifficulty): string {
         return ApiHelpers.getDifficultyLabel(tMapDifficulty?.difficulty);
+    }
+
+    getPlayerStatsData(diff: EDifficulty): TLevelStatsData | undefined {
+        const diffIndex = ApiHelpers.getIndexFromDifficulty(diff);
+        return this.activeLevelStatsData?.find(data => data.difficulty === diffIndex);
     }
 }

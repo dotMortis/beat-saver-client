@@ -2,9 +2,9 @@
     (contextmenu)="onCardClick()"
     [ngClass]="{
     'song-detail-container row no-gutters': true,
-    'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav,
-    'song-fav': tLevelStatsInfo?.isFav && !isInstalledSong.status,
-    'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status
+    'song-installed': isInstalledSong.status && !isFav,
+    'song-fav': isFav && !isInstalledSong.status,
+    'song-installed-fav': isFav && isInstalledSong.status
 }"
 >
     <div
@@ -21,7 +21,7 @@
                 >
                 </fa-icon>
                 <fa-icon
-                    *ngIf="tLevelStatsInfo?.isFav"
+                    *ngIf="isFav"
                     [icon]="['fas', 'star']"
                     class="song-fav-icon"
                     pTooltip="In your favorites"
@@ -98,16 +98,6 @@
     </div>
     <div class="col-12 diff-frame">
         <div class="row mx-n1 inner-diff-frame">
-            <div
-                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
-                class="col-12 px-1 mb-2 row no-gutters player-stats"
-            >
-                <div class="diff-item">
-                    <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats">
-                        <app-player-stats [stats]="statInfo"></app-player-stats>
-                    </ng-container>
-                </div>
-            </div>
             <div class="col-12 px-1 col-xl-4 mb-2 mb-lg-0">
                 <div class="row">
                     <div class="col-12 pb-2">
@@ -133,12 +123,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 pb-2">
                         <app-difficulty-card
                             [selectable]="true"
                             *ngIf="diffs"
                             class="diff-item"
                             [groupedDifs]="diffs"
+                            [groupedLevelStatsData]="groupedLevelStatsData"
                             (selectedDiffChange)="onDiffSelected($event)"
                         ></app-difficulty-card>
                     </div>

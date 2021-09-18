@@ -232,7 +232,6 @@ class InstalledMaps extends CommonLoader {
 
     private _setIdsHash(localIds: string[]) {
         const newHash = this._computeIdsHash(localIds);
-        console.log('HAAAAAAAASH', this._getDbIdsHash(), newHash);
         const dbHashInfo = this._getDbIdsHash();
         if (dbHashInfo.hash !== newHash) {
             this.emitIdsHash(newHash, localIds, dbHashInfo.ids);

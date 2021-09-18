@@ -4,7 +4,6 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { DifficultyCardModule } from '../../modules/difficulty-card/difficulty-card.module';
 import { LeaderboardModule } from '../../modules/leaderboard/leaderboard.module';
-import { PlayerStatsModule } from '../../modules/player-stats/player-stats.module';
 import { SongsDetailComponent } from './songs-detail.component';
 import { SongsDetailRounting } from './songs-detail.routing';
 
@@ -14,7 +13,6 @@ import { SongsDetailRounting } from './songs-detail.routing';
         SongsDetailRounting,
         CommonModule,
         SharedAppModule,
-        PlayerStatsModule,
         DifficultyCardModule,
         LeaderboardModule,
         ScrollPanelModule

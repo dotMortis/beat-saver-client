@@ -124,7 +124,9 @@ export class MainWindow extends EventEmitter {
             this.logger.debug('_createWindow prod ' + path);
             await window.loadFile(path);
             //TODO: index.html is missing on reload path -> WHY???
-            window.webContents.on('did-fail-load', () => window.loadURL(path));
+            window.webContents.on('did-fail-load', () => {
+                window.loadURL(path);
+            });
         }
         if (this._debug) window.webContents.openDevTools();
     }

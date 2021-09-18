@@ -93,4 +93,14 @@
             max-width: 280px;
         }
     }
+
+    .player-stats {
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        .char-label {
+            font-size: 13px;
+            min-width: 46px;
+        }
+    }
 }

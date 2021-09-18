@@ -1,5 +1,5 @@
 import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from '../api/api.models';
-import { TDifficultyIndex } from '../player/player-data.model';
+import { TDifficultyIndex, TLevelStatsData, TLevelStatsInfo } from '../player/player-data.model';
 
 export class ApiHelpers {
     public static getDifficultyLabel(difficulty?: EDifficulty): string {
@@ -22,6 +22,29 @@ export class ApiHelpers {
     public static getCharacteristicIcon(characteristic?: ECharacteristic): string | undefined {
         if (!characteristic) return undefined;
         return `assets/icons/${characteristic.toLowerCase()}.svg`;
+    }
+
+    public static getIndexFromDifficulty(diff?: EDifficulty): TDifficultyIndex | undefined {
+        switch (diff) {
+            case EDifficulty.Easy: {
+                return 0;
+            }
+            case EDifficulty.Normal: {
+                return 1;
+            }
+            case EDifficulty.Hard: {
+                return 2;
+            }
+            case EDifficulty.Expert: {
+                return 3;
+            }
+            case EDifficulty.ExpertPlus: {
+                return 4;
+            }
+            default: {
+                return undefined;
+            }
+        }
     }
 
     public static getDifficulyFromIndex(index?: TDifficultyIndex): EDifficulty | undefined {
@@ -59,6 +82,20 @@ export class ApiHelpers {
             }
         }
         return groupedDifs;
+    }
+
+    public static getPlayerLevelStatsGroupedByChar(
+        playerLevelStats: TLevelStatsInfo
+    ): Map<ECharacteristic, TLevelStatsData[]> {
+        const groupedStats = new Map<ECharacteristic, TLevelStatsData[]>();
+        for (const stat of playerLevelStats.levelStats) {
+            if (groupedStats.has(stat.beatmapCharacteristicName)) {
+                groupedStats.get(stat.beatmapCharacteristicName)?.push(stat);
+            } else {
+                groupedStats.set(stat.beatmapCharacteristicName, [stat]);
+            }
+        }
+        return groupedStats;
     }
 
     public static getDifficultyScoreSaberIndex(diff: EDifficulty): number {
