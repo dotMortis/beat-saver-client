@@ -20,7 +20,6 @@ import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
 import { logger } from '../models/winston.logger';
-import { cacheLoader } from './cache.loader';
 import { settings } from './settings.loader';
 
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
@@ -66,14 +65,12 @@ class InstalledMaps extends CommonLoader {
     private _loaded: BehaviorSubject<TFileLoaded>;
     private _loading: boolean;
     private _db: Database;
-    private _currentIdsHash: string;
     private _localMapsSyncing: boolean;
-    private _syncAgain: false | { hash: string; ids: string[] };
+    private _syncAgain: false | { hash: string; localIds: string[]; dbIds: string[] };
 
     constructor() {
         super();
         this._syncAgain = this._localMapsSyncing = false;
-        this._currentIdsHash = cacheLoader.readCache('ids_hash');
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._mapIds = new Set<string>();
@@ -82,15 +79,17 @@ class InstalledMaps extends CommonLoader {
         this._initLocalMapSync();
     }
 
-    onIdsHash(cb: (hash: string, ids: string[]) => void): this {
+    onIdsHash(cb: (hash: string, localIds: string[], dbIds: string[]) => void): this {
         return super.on('idsHash', cb);
     }
 
-    emitIdsHash(hash: string, ids: string[]): boolean {
-        return super.emit('idsHash', hash, ids);
+    emitIdsHash(hash: string, localIds: string[], dbIds: string[]): boolean {
+        return super.emit('idsHash', hash, localIds, dbIds);
     }
 
-    syncInstalledSongs(idsCount: number): void {
+    syncInstalledSongs(localIds: string[], dbIds: string[]): void {
+        this._deleteRemovedIds(localIds);
+        const idsCount = localIds.length;
         const files = readdirSync(this._filePath, { withFileTypes: true });
         const maps = new Array<LocalMapInfo>();
         let z = 0;
@@ -197,16 +196,14 @@ class InstalledMaps extends CommonLoader {
     }
 
     private _initLocalMapSync(): void {
-        this.onIdsHash((hash: string, ids: string[]) => {
+        this.onIdsHash((hash: string, localIds: string[], dbIds: string[]) => {
             if (this._localMapsSyncing) {
-                this._syncAgain = { hash, ids };
+                this._syncAgain = { hash, localIds, dbIds };
                 return;
             }
             this._localMapsSyncing = true;
             try {
-                this._deleteRemovedIds(ids);
-                this.syncInstalledSongs(ids.length);
-                cacheLoader.writeCache('ids_hash', hash);
+                this.syncInstalledSongs(localIds, dbIds);
             } catch (error: any) {
                 logger.error(error);
                 IpcHelerps.webContentsSend<TSendMapSyncStatus>(
@@ -215,27 +212,30 @@ class InstalledMaps extends CommonLoader {
                     {
                         status: 'ERROR',
                         error: error,
-                        sum: ids.length,
+                        sum: localIds.length,
                         currentCount: 0
                     }
                 );
             } finally {
                 this._localMapsSyncing = false;
                 if (this._syncAgain) {
-                    this.emitIdsHash(this._syncAgain.hash, this._syncAgain.ids);
+                    this.emitIdsHash(
+                        this._syncAgain.hash,
+                        this._syncAgain.localIds,
+                        this._syncAgain.dbIds
+                    );
                     this._syncAgain = false;
                 }
             }
         });
     }
 
-    private _setIdsHash(ids: string[]) {
-        const newHash = this._computeIdsHash(ids);
+    private _setIdsHash(localIds: string[]) {
+        const newHash = this._computeIdsHash(localIds);
         console.log('HAAAAAAAASH', this._getDbIdsHash(), newHash);
-
-        if (this._getDbIdsHash() !== newHash) {
-            this._currentIdsHash = newHash;
-            this.emitIdsHash(newHash, ids);
+        const dbHashInfo = this._getDbIdsHash();
+        if (dbHashInfo.hash !== newHash) {
+            this.emitIdsHash(newHash, localIds, dbHashInfo.ids);
         }
     }
 
@@ -248,9 +248,10 @@ class InstalledMaps extends CommonLoader {
         this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
     }
 
-    private _getDbIdsHash(): string {
+    private _getDbIdsHash(): { hash: string; ids: string[] } {
         const maps: { id: string }[] = this._db.prepare('SELECT id FROM maps').all();
-        return this._computeIdsHash(maps.map(map => map.id));
+        const ids = maps.map(map => map.id);
+        return { ids, hash: this._computeIdsHash(ids) };
     }
 
     private _insertMapInfos(mapInfos: LocalMapInfo[]): void {
