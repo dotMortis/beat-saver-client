@@ -6,7 +6,9 @@
             class="p-button-sm"
             pTooltip="Home"
             icon="pi pi-home"
-            (click)="onHome()"
+            [routerLink]="['/']"
+            routerLinkActive="active-route"
+            [routerLinkActiveOptions]="{ exact: true }"
         ></button>
     </div>
     <div class="col-auto nav-item-l">
@@ -14,9 +16,11 @@
             pButton
             pRipple
             class="p-button-sm"
-            pTooltip="Home"
-            icon="pi pi-star"
-            [routerLink]="['locals']"
+            pTooltip="Installed maps"
+            label="Installed"
+            [routerLink]="['/', 'locals']"
+            routerLinkActive="active-route"
+            [routerLinkActiveOptions]="{ exact: true }"
         ></button>
     </div>
     <div class="col-auto nav-item-l">
@@ -73,6 +77,9 @@
         pButton
         pRipple
         pBadge
+        pTooltip="Download queue"
+        [showDelay]="250"
+        [hideDelay]="250"
         severity="success"
         value="{{ dlService.dlSize }}"
         class="p-button-sm dl-list-btn"

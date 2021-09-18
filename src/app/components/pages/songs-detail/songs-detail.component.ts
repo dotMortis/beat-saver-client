@@ -17,7 +17,7 @@ import { ApiHelpers } from '../../../../models/maps/maps.helpers';
 import { LevelStatsData, TLevelStatsInfo } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
-import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
+import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { NotifyService } from '../../../services/root.provided/notify.service';
@@ -88,7 +88,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         public apiService: ApiService,
         public songPreviewService: SongPreviewService,
         public playerStatsService: PlayerStatsService,
-        public installedSongsService: InstalledSongsService,
+        public installedSongsService: LocalMapsService,
         public dlService: DlService,
         private _eleService: ElectronService,
         private _notify: NotifyService,

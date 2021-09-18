@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { delay, finalize, first, mergeMap, tap } from 'rxjs/operators';
 import {
     ECharacteristic,
     EDifficulty,
@@ -146,8 +146,15 @@ export class ApiService {
         );
     }
 
+    private _requests = 0;
     public getById(songId: string): Observable<TMapDetail> {
-        return this._http.get<TMapDetail>(this._computePath(['maps', 'id', songId]));
+        this._requests++;
+        return of(null).pipe(
+            first(),
+            delay((this._requests - 1) * 100),
+            mergeMap(() => this._http.get<TMapDetail>(this._computePath(['maps', 'id', songId]))),
+            finalize(() => this._requests--)
+        );
     }
 
     public downloadZip(path: string) {

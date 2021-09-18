@@ -1,5 +1,11 @@
 <div class="row mx-n2">
-    <div class="col-12">{{localMapsService.searchResult | json}}</div>
+    <app-song-card
+        #card
+        *ngFor="let localMapInfo of localMapsService.searchResult || [];"
+        class="col-12 col-lg-6 px-2 mb-3"
+        [localMapInfo]="localMapInfo"
+        [localMode]="true"
+    ></app-song-card>
     <div class="col-12">
         <button
             *ngIf="localMapsService.canLoadMore && localMapsService.searchResult && localMapsService.searchResult.length"

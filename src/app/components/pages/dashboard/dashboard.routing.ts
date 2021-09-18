@@ -16,7 +16,7 @@ const routes: Routes = [
                     import('./../local-maps/local-maps.module').then(m => m.LocalMapsModule)
             },
             {
-                path: ':songId',
+                path: 'song/:songId',
                 loadChildren: () =>
                     import('./../songs-detail/songs-detail.module').then(m => m.SongsDetailModule)
             }

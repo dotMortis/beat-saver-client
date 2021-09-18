@@ -110,7 +110,6 @@ class PlayedMaps extends CommonLoader {
     ): Promise<{ status: TFileLoaded; result: TLevelStatsInfo | undefined }> {
         logger.debug(`getPlayerSongStatsFromHash HASH: ${mapHash} PLAYER: ${playerName}`);
         return this._handleLoadPlayerStats<TLevelStatsInfo | undefined>(async () => {
-            if (!this._loaded) await this.loadPlayerStats();
             const playerData = this._playerData?.localPlayers.get(playerName);
             if (!playerData) {
                 throw new Error(`Player with name ${playerName} not found.`);

@@ -14,9 +14,11 @@ import {
     faDownload,
     faFileArchive,
     faGraduationCap,
+    faHeart,
     faLink,
     faPlayCircle,
     faStar,
+    faTrash,
     faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -64,7 +66,9 @@ export class AppModule {
             faChevronUp,
             faChevronDown,
             faChevronLeft,
-            faChevronRight
+            faChevronRight,
+            faHeart,
+            faTrash
         );
     }
 }

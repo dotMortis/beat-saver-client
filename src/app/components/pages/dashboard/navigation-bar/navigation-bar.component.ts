@@ -6,7 +6,7 @@ import { take, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { TSendError } from '../../../../../models/electron/send.channels';
 import { DlService } from '../../../../services/null.provided/dl.service';
-import { InstalledSongsService } from '../../../../services/null.provided/installed-songs.service';
+import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
 import { SettingsService } from '../../../../services/root.provided/settings.service';
@@ -30,7 +30,7 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         public electronService: ElectronService,
         public optService: SettingsService,
         public dlService: DlService,
-        private _installedSongsService: InstalledSongsService,
+        private _installedSongsService: LocalMapsService,
         private _playerStatsService: PlayerStatsService,
         private _dialogService: DialogService,
         private _router: Router
@@ -88,10 +88,6 @@ export class NavigationBarComponent extends UnsubscribeComponent {
                 ]
             }
         ];
-    }
-
-    onHome() {
-        this._router.navigate(['']);
     }
 
     async onReload(): Promise<void> {

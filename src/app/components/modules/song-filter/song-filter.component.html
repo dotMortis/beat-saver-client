@@ -61,11 +61,11 @@
         </div>
         <div class="col-12 col-md-4 col-sm-6 pb-2">
             <div class="row justify-content-between pt-1">
-                <h6 class="col-auto">NPS:</h6>
-                <h6 class="col-auto">
+                <span class="col-auto">NPS:</span>
+                <span class="col-auto">
                     {{ apiService.minNps + ' - ' + (apiService.maxNps === 16 ? '\u221E' :
                     apiService.maxNps) }}
-                </h6>
+                </span>
                 <p-slider
                     [(ngModel)]="apiService.npsRange"
                     [step]="0.01"

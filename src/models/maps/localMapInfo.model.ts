@@ -27,7 +27,6 @@ export interface ILocalMapInfo {
     difficulties: LocalDifficulty[] | null;
     hash: string;
 }
-
 export class LocalMapInfo implements ILocalMapInfo {
     id: string;
     folder_name: string;

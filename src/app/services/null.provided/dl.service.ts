@@ -5,15 +5,16 @@ import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
 import { TMapDetail, TMapVersion } from '../../../models/api/api.models';
 import { TInstalled, TSongDownloadInfo } from '../../../models/electron/download.model';
 import {
+    TInvokeDeleteSong,
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
 } from '../../../models/electron/invoke.channels';
 import { TSendError } from '../../../models/electron/send.channels';
-import { TSongHash } from '../../../models/maps/map-ids.model';
+import { TSongHash, TSongId } from '../../../models/maps/map-ids.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
-import { InstalledSongsService } from './installed-songs.service';
+import { LocalMapsService } from './local-maps.service';
 
 @Injectable({
     providedIn: null
@@ -62,7 +63,7 @@ export class DlService {
     constructor(
         private _apiService: ApiService,
         private _eleService: ElectronService,
-        private _installedSongsService: InstalledSongsService
+        private _installedSongsService: LocalMapsService
     ) {
         this._downloadFinished = new Subject<{
             blob?: Blob;
@@ -119,6 +120,18 @@ export class DlService {
         return Array.from(this._dlList.values()).filter(item =>
             item.mapDetail.name.toLowerCase().includes(q)
         );
+    }
+
+    async deleteSingle(id: TSongId): Promise<boolean | Error> {
+        return this._eleService
+            .invoke<TInvokeDeleteSong>('DELETE_SONG', { id })
+            .finally(async () => {
+                try {
+                    await this._installedSongsService.loadInstalledSongs();
+                } catch (error: any) {
+                    this._eleService.send<TSendError>('ERROR', error);
+                }
+            });
     }
 
     async installSingle(info: TSongDownloadInfo): Promise<void> {

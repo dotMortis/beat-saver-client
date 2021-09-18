@@ -4,6 +4,10 @@
 
     > .nav-item-l {
         padding: 0.25rem 0.5rem 0.25rem 0;
+
+        .active-route {
+            background-color: var(--success);
+        }
     }
     > .nav-item-r {
         padding: 0.25rem 0 0.25rem 0.5rem;

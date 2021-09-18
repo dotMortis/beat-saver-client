@@ -4,7 +4,7 @@ import { mergeMap, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { TSendDebug, TSendError } from '../../../../../models/electron/send.channels';
 import { TSettings } from '../../../../../models/settings.model';
-import { InstalledSongsService } from '../../../../services/null.provided/installed-songs.service';
+import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
 import { SettingsService } from '../../../../services/root.provided/settings.service';
@@ -93,7 +93,7 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
 
     constructor(
         public optService: SettingsService,
-        public installedSongsService: InstalledSongsService,
+        public installedSongsService: LocalMapsService,
         public playerStatsService: PlayerStatsService,
         private _eleService: ElectronService,
         private _tourService: TourService

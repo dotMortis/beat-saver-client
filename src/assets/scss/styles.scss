@@ -9,6 +9,22 @@ body {
     font-weight: 400;
     color: var(--text-color);
     -webkit-font-smoothing: antialiased;
+
+    .p-component,
+    .p-inputtext {
+        font-size: 0.95rem;
+        font-weight: normal;
+    }
+    .p-button-sm,
+    .p-button,
+    .p-multiselect-item {
+        font-weight: normal;
+    }
+
+    .p-tag-value {
+        font-size: 0.8rem;
+        line-height: 1;
+    }
 }
 
 hr {
@@ -37,6 +53,11 @@ hr {
             display: none !important;
         }
     }
+    &.custombar1-center {
+        .p-scrollpanel-content {
+            padding-right: 0;
+        }
+    }
 }
 
 .markdown {
@@ -61,5 +82,21 @@ hr {
 
     .p-progressbar-label {
         top: 50%;
+    }
+}
+
+.p-confirm-popup {
+    &.confirm-delete {
+        box-shadow: 0 0 3px 0 var(--danger);
+        background-color: var(--surface-a);
+        max-width: 350px;
+
+        &::before {
+            border-bottom-color: rgba(220, 53, 69, 0.2);
+        }
+
+        &::after {
+            border-bottom-color: var(--surface-a);
+        }
     }
 }

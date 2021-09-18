@@ -8,7 +8,6 @@ import { ApiHelpers } from '../../../../models/maps/maps.helpers';
     styleUrls: ['./difficulty-card.component.scss']
 })
 export class DifficultyCardComponent implements OnInit {
-    @Input() fontSize: string;
     private _groupedDifs?: Map<ECharacteristic, TMapDifficulty[]>;
     @Input()
     get groupedDifs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
@@ -75,7 +74,6 @@ export class DifficultyCardComponent implements OnInit {
 
     constructor() {
         this.selectable = false;
-        this.fontSize = '12px';
         this.selectedDiffChange = new EventEmitter<TMapDifficulty>();
         this._characteristics = new Array<{
             label: ECharacteristic;

@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
-import { InstalledSongsService } from '../../../services/null.provided/installed-songs.service';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { SharedAppModule } from '../../../shared/shared-app-module';
+import { SongCardService } from '../../modules/song-card/song-card.service';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRounting } from './dashboard.routing';
 import { DownloadItemModule } from './download-item/download-item.module';
@@ -33,10 +33,10 @@ import { UpdateAppModule } from './update-app/update-app.module';
     providers: [
         SongPreviewService,
         ApiService,
-        LocalMapsService,
         PlayerStatsService,
-        InstalledSongsService,
-        DlService
+        LocalMapsService,
+        DlService,
+        SongCardService
     ]
 })
 export class DashboardModule {}

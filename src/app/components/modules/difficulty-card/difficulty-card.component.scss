@@ -15,6 +15,8 @@
         white-space: nowrap; /* Chrome */
         display: flex;
         align-items: center;
+        max-width: 68px;
+        min-width: 68px;
     }
 
     .diffs-container {
@@ -50,8 +52,6 @@
             }
 
             .diff-stat-group {
-                min-width: 50px;
-
                 .diff-stat-item {
                     display: flex;
                     align-items: center;
@@ -62,7 +62,7 @@
                         margin-right: 0.25rem;
                     }
                     > span {
-                        font-size: 10px;
+                        font-size: 11px;
                     }
                 }
             }
@@ -72,7 +72,8 @@
                     height: 1rem;
                 }
                 .char-label {
-                    font-size: 15px;
+                    font-size: 13px;
+                    min-width: 46px;
                 }
             }
 
@@ -84,6 +85,12 @@
                 align-items: center;
                 font-size: 12px;
             }
+        }
+
+        .diff-stats {
+            justify-content: space-between;
+            display: flex;
+            max-width: 280px;
         }
     }
 }

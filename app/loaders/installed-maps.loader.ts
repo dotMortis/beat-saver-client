@@ -1,12 +1,14 @@
 import db, { Database } from 'better-sqlite3';
 import { createHash } from 'crypto';
 import { app } from 'electron';
-import { copyFileSync, Dirent, existsSync, readdir, readdirSync } from 'fs';
+import { copyFileSync, Dirent, existsSync, readdir, readdirSync, rmSync } from 'fs';
 import * as path from 'path';
+import { join } from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
 import { TFileLoaded } from '../../src/models/electron/file-loaded.model';
 import {
+    TInvokeDeleteSong,
     TInvokeFilterLocalMaps,
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
@@ -48,6 +50,13 @@ export const filterLocalMapsHandle = IpcHelerps.ipcMainHandle<TInvokeFilterLocal
     }
 );
 
+export const deleteSongHandle = IpcHelerps.ipcMainHandle<TInvokeDeleteSong>(
+    'DELETE_SONG',
+    async (event: Electron.IpcMainInvokeEvent, args: { id: TSongId }) => {
+        const { id } = args;
+        return isntalledMaps.deleteSong(id);
+    }
+);
 class InstalledMaps extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
@@ -120,6 +129,20 @@ class InstalledMaps extends CommonLoader {
             .map((info: TDBLocalMapInfo) => new LocalMapInfo(info));
     }
 
+    deleteSong(id: TSongId): true | Error {
+        try {
+            const folderName = this._getFolderName(id);
+            if (folderName) {
+                rmSync(join(this._filePath, folderName), { recursive: true, force: true });
+                this._deleteMapInfo(id);
+            }
+            return true;
+        } catch (error: any) {
+            logger.error(error);
+            return error;
+        }
+    }
+
     async loadInstalledMaps(): Promise<{ status: TFileLoaded }> {
         logger.debug('loadInstalledSongs');
         if (this._loading) return { status: 'LOADING' };
@@ -168,10 +191,9 @@ class InstalledMaps extends CommonLoader {
         mapId: TSongId
     ): Promise<{ status: TFileLoaded; result: boolean | undefined }> {
         logger.debug('mapIsInstalled ' + mapId);
-        return this._handleLoadInstalledSongs<boolean>(async () => {
-            if (!this._loaded) await this.loadInstalledMaps();
-            return this._mapIds?.has(mapId) || false;
-        });
+        return this._handleLoadInstalledSongs<boolean>(
+            async () => this._mapIds?.has(mapId) || false
+        );
     }
 
     private _initLocalMapSync(): void {
@@ -208,15 +230,27 @@ class InstalledMaps extends CommonLoader {
     }
 
     private _setIdsHash(ids: string[]) {
-        const newHash = createHash('sha1').update(ids.join(',')).digest('hex');
-        if (this._currentIdsHash !== newHash) {
+        const newHash = this._computeIdsHash(ids);
+        console.log('HAAAAAAAASH', this._getDbIdsHash(), newHash);
+
+        if (this._getDbIdsHash() !== newHash) {
             this._currentIdsHash = newHash;
             this.emitIdsHash(newHash, ids);
         }
     }
 
+    private _getFolderName(id: TSongId): string | undefined {
+        return this._db.prepare('SELECT folder_name FROM maps WHERE id = :id').get({ id })
+            ?.folder_name;
+    }
+
     private _deleteRemovedIds(availableIds: string[]): void {
         this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
+    }
+
+    private _getDbIdsHash(): string {
+        const maps: { id: string }[] = this._db.prepare('SELECT id FROM maps').all();
+        return this._computeIdsHash(maps.map(map => map.id));
     }
 
     private _insertMapInfos(mapInfos: LocalMapInfo[]): void {
@@ -228,6 +262,10 @@ class InstalledMaps extends CommonLoader {
             for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
         });
         return insertMany(mapInfos);
+    }
+
+    private _deleteMapInfo(id: TSongId): void {
+        this._db.prepare('DELETE FROM maps WHERE id = :id').run({ id });
     }
 
     private async _handleLoadInstalledSongs<RESULT = never>(
@@ -288,6 +326,10 @@ class InstalledMaps extends CommonLoader {
             copyFileSync(templatePath, filePath);
         }
         return filePath;
+    }
+
+    private _computeIdsHash(ids: string[]): string {
+        return createHash('sha1').update(ids.join(',')).digest('hex');
     }
 }
 
