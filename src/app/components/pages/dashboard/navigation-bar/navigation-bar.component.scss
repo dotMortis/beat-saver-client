@@ -6,7 +6,7 @@
         padding: 0.25rem 0.5rem 0.25rem 0;
 
         .active-route {
-            background-color: var(--success);
+            background-color: darken(#9fa8da, 15);
         }
     }
     > .nav-item-r {
