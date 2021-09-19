@@ -7,7 +7,7 @@
         'song-installed': isInstalledSong && !isFav && !localMode,
         'song-fav': isFav && (!isInstalledSong || localMode),
         'song-installed-fav': isFav && isInstalledSong && !localMode,
-        'song-deleted': isDeleted && !isFav,
+        'song-deleted': isDeleted && !isFav && !loading,
         'song-deleted-fav': isFav && isDeleted,
         'ranked': tMapDetail?.ranked,
         'qualified': tMapDetail?.qualified

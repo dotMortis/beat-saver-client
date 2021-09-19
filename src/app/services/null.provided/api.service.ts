@@ -13,7 +13,7 @@ import {
     TSearchResult
 } from '../../../models/api/api.models';
 import { TSongHash } from '../../../models/maps/map-ids.model';
-import { ApiHelpers } from '../../../models/maps/maps.helpers';
+import { MapsHelpers } from '../../../models/maps/maps.helpers';
 
 @Injectable({
     providedIn: null
@@ -131,11 +131,11 @@ export class ApiService {
         let queryParams = new HttpParams();
         queryParams = queryParams.append(
             'difficulty',
-            ApiHelpers.getDifficultyScoreSaberIndex(difficulty)
+            MapsHelpers.getDifficultyScoreSaberIndex(difficulty)
         );
         queryParams = queryParams.append(
             'gameMode',
-            ApiHelpers.getCharacteristicScoreSaberIndex(characteristic)
+            MapsHelpers.getCharacteristicScoreSaberIndex(characteristic)
         );
         return forkJoin(
             pages.map((page: number) => {

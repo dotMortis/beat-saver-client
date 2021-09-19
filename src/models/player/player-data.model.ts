@@ -107,6 +107,7 @@ export type TLevelStatsData = {
     maxRank: number;
     validScore: boolean;
     playCount: number;
+    percent?: number;
 };
 
 export type TLevelStatsInfo = {

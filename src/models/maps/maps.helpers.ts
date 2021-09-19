@@ -1,7 +1,13 @@
 import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from '../api/api.models';
 import { TDifficultyIndex, TLevelStatsData, TLevelStatsInfo } from '../player/player-data.model';
 
-export class ApiHelpers {
+export class MapsHelpers {
+    public static getScoreClass(score: number): string {
+        if (score >= 90) return 'score-90';
+        else if (score >= 80) return 'score-80';
+        return 'score-0';
+    }
+
     public static getDifficultyLabel(difficulty?: EDifficulty): string {
         switch (difficulty) {
             case EDifficulty.Easy:

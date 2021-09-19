@@ -1,5 +1,5 @@
 import { ECharacteristic, EDifficulty } from '../api/api.models';
-import { ApiHelpers } from './maps.helpers';
+import { MapsHelpers } from './maps.helpers';
 import { TDifficulyBeatmapSet, TRawMapInfo } from './rawMapInfo.model';
 
 export type TDBLocalMapInfo = {
@@ -114,7 +114,7 @@ export class LocalDifficulty implements ILocalDifficulty {
             for (const diff of beatmapSet._difficultyBeatmaps) {
                 const localDifficulty = new LocalDifficulty();
                 localDifficulty.characteristic = beatmapSet._beatmapCharacteristicName;
-                localDifficulty.difficulty = ApiHelpers.getDifficultyFromScoreSaberIndex(
+                localDifficulty.difficulty = MapsHelpers.getDifficultyFromScoreSaberIndex(
                     diff._difficultyRank
                 );
                 localDifficulties.push(localDifficulty);

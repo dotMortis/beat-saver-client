@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TMapDifficulty } from '../../../../models/api/api.models';
-import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 
 @Component({
     selector: 'app-difficulty-tag',
@@ -13,14 +13,14 @@ export class DifficultyTagComponent {
     get iconUrl(): string {
         if (!this._iconUrl) {
             this._iconUrl =
-                ApiHelpers.getCharacteristicIcon(this.tMapDifficulty?.characteristic) || '';
+                MapsHelpers.getCharacteristicIcon(this.tMapDifficulty?.characteristic) || '';
         }
         return this._iconUrl;
     }
     private _label: string;
     get label(): string {
         if (!this._label)
-            this._label = ApiHelpers.getDifficultyLabel(this.tMapDifficulty?.difficulty);
+            this._label = MapsHelpers.getDifficultyLabel(this.tMapDifficulty?.difficulty);
         return this._label;
     }
 

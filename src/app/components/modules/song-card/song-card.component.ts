@@ -15,7 +15,7 @@ import { TInvokeGetLocalCover } from '../../../../models/electron/invoke.channel
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
 import { ILocalMapInfo } from '../../../../models/maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
-import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
@@ -229,7 +229,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
         )[tMapDetail.versions.length - 1];
         if (this.latestVersion != null) {
-            this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
+            this.diffs = MapsHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
         }
         const hash = this.latestVersion?.hash || this.localMapInfo?.hash;
@@ -309,7 +309,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         });
         if (tLevelStatsInfo && tLevelStatsInfo.result) {
             this.isFav = tLevelStatsInfo.result.isFav;
-            this.tGroupedLevelStatsData = ApiHelpers.getPlayerLevelStatsGroupedByChar(
+            this.tGroupedLevelStatsData = MapsHelpers.getPlayerLevelStatsGroupedByChar(
                 tLevelStatsInfo.result
             );
         } else {

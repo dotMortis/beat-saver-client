@@ -14,7 +14,7 @@ import {
 import { TBoardIdent } from '../../../../models/api/leaderboard.model';
 import { TInstalled } from '../../../../models/electron/download.model';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
-import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
@@ -189,7 +189,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
             a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
         )[this.tMapDetail.versions.length - 1];
         if (this.latestVersion != null) {
-            this.diffs = ApiHelpers.getDifficultyGroupedByChar(this.latestVersion);
+            this.diffs = MapsHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);
             this._loadPlayerSongStats()
                 .catch(error => this._eleService.send<TSendError>('ERROR', error))
@@ -262,7 +262,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 meta: tLevelStatsInfo
             });
             if (tLevelStatsInfo && tLevelStatsInfo.result) {
-                this.groupedLevelStatsData = ApiHelpers.getPlayerLevelStatsGroupedByChar(
+                this.groupedLevelStatsData = MapsHelpers.getPlayerLevelStatsGroupedByChar(
                     tLevelStatsInfo.result
                 );
                 this.isFav = tLevelStatsInfo.result.isFav;

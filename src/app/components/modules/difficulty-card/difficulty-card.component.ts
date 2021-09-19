@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ECharacteristic, EDifficulty, TMapDifficulty } from '../../../../models/api/api.models';
-import { ApiHelpers } from '../../../../models/maps/maps.helpers';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 
 @Component({
@@ -39,9 +39,9 @@ export class DifficultyCardComponent implements OnInit {
         return this._selectedDiff;
     }
     set selectedDiff(val: TMapDifficulty | undefined) {
-        if (this._selectedDiffId !== ApiHelpers.computeDiffId(val)) {
+        if (this._selectedDiffId !== MapsHelpers.computeDiffId(val)) {
             this._selectedDiff = val;
-            this._selectedDiffId = val ? ApiHelpers.computeDiffId(val) : undefined;
+            this._selectedDiffId = val ? MapsHelpers.computeDiffId(val) : undefined;
             this._activeChar = val?.characteristic;
             this.selectedDiffChange.next(this._selectedDiff);
         }
@@ -49,7 +49,7 @@ export class DifficultyCardComponent implements OnInit {
     @Output() selectedDiffChange: EventEmitter<TMapDifficulty>;
 
     public isSelected(diff: TMapDifficulty): boolean {
-        return this._selectedDiffId === ApiHelpers.computeDiffId(diff);
+        return this._selectedDiffId === MapsHelpers.computeDiffId(diff);
     }
 
     private _characteristics: { label: ECharacteristic; icon: string; diffs: TMapDifficulty[] }[];
@@ -113,20 +113,29 @@ export class DifficultyCardComponent implements OnInit {
         }
     }
 
+    getScoreClass(score: number): string {
+        return MapsHelpers.getScoreClass(score);
+    }
+
     onDiffSelect(diff: TMapDifficulty): void {
         this.selectedDiff = diff;
     }
 
     getIconUrl(characteristic: ECharacteristic): string {
-        return ApiHelpers.getCharacteristicIcon(characteristic) || '';
+        return MapsHelpers.getCharacteristicIcon(characteristic) || '';
     }
 
     getLabel(tMapDifficulty: TMapDifficulty): string {
-        return ApiHelpers.getDifficultyLabel(tMapDifficulty?.difficulty);
+        return MapsHelpers.getDifficultyLabel(tMapDifficulty?.difficulty);
     }
 
-    getPlayerStatsData(diff: EDifficulty): TLevelStatsData | undefined {
-        const diffIndex = ApiHelpers.getIndexFromDifficulty(diff);
-        return this.activeLevelStatsData?.find(data => data.difficulty === diffIndex);
+    getPlayerStatsData(diff: EDifficulty, notes: number): TLevelStatsData | undefined {
+        const diffIndex = MapsHelpers.getIndexFromDifficulty(diff);
+        const levelStats = this.activeLevelStatsData?.find(data => data.difficulty === diffIndex);
+        if (levelStats) {
+            const maxScore = MapsHelpers.calculateMaxScore(notes);
+            levelStats.percent = MapsHelpers.calculateScorePercent(maxScore, levelStats.highScore);
+        }
+        return levelStats;
     }
 }

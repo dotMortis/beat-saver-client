@@ -94,7 +94,7 @@
             </div>
             <ng-container
                 [ngTemplateOutlet]="playerStats"
-                [ngTemplateOutletContext]="{stat: getPlayerStatsData(diff.difficulty)}"
+                [ngTemplateOutletContext]="{stat: getPlayerStatsData(diff.difficulty, diff.notes)}"
             ></ng-container>
         </div>
     </div>
@@ -111,7 +111,13 @@
                 <div class="col-auto">
                     <span pTooltip="Your high score" tooltipPosition="top">
                         <fa-icon [icon]="['fas', 'trophy']" class="mr-1"></fa-icon>
-                        <span class="char-label">{{ stat.highScore || 0 | number: '1.0-0' }}</span>
+                        <span class="char-label"
+                            >{{ stat.highScore || 0 | number: '1.0-0' }} (<span
+                                [className]="getScoreClass(stat.percent)"
+                            >
+                                {{stat.percent || 0 | number: '1.2-2'}}% </span
+                            >)</span
+                        >
                     </span>
                 </div>
                 <div class="col-auto">
