@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { DifficultyCardModule } from '../../modules/difficulty-card/difficulty-card.module';
@@ -15,7 +16,8 @@ import { SongsDetailRounting } from './songs-detail.routing';
         SharedAppModule,
         DifficultyCardModule,
         LeaderboardModule,
-        ScrollPanelModule
+        ScrollPanelModule,
+        ConfirmPopupModule
     ],
     exports: [SongsDetailComponent],
     providers: []

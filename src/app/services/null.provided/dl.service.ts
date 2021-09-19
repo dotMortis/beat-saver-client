@@ -148,7 +148,11 @@ export class DlService {
                             ) {
                                 await this._installSong(result.blob, result.info);
                             }
-                            return result.info.latestVersion.hash === info.latestVersion.hash;
+                            if (result.info.latestVersion.hash === info.latestVersion.hash) {
+                                this.remove(result.info.latestVersion);
+                                return true;
+                            }
+                            return false;
                         }),
                         takeWhile((result: boolean) => !result)
                     )

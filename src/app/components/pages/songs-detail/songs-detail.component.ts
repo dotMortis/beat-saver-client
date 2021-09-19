@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
@@ -26,7 +27,8 @@ import { SongPreviewService } from '../dashboard/song-preview/song-preview.servi
 @Component({
     selector: 'app-songs-detail',
     templateUrl: './songs-detail.component.html',
-    styleUrls: ['./songs-detail.component.scss']
+    styleUrls: ['./songs-detail.component.scss'],
+    providers: [ConfirmationService]
 })
 export class SongsDetailComponent extends UnsubscribeComponent implements OnInit {
     private _songId?: string;
@@ -46,7 +48,10 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
     }
 
     public groupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]> | undefined;
-    public isInstalledSong: { status: TInstalled };
+    private _isInstalledSong: { status: TInstalled };
+    get isInstalledSong(): boolean {
+        return this._isInstalledSong.status === 'INSTALLED';
+    }
     public latestVersion?: TMapVersion;
     public uploadTimeInfo?: string | Date;
 
@@ -84,7 +89,17 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
 
     public isFav: boolean;
 
-    boardIdent: BehaviorSubject<TBoardIdent | undefined>;
+    public boardIdent: BehaviorSubject<TBoardIdent | undefined>;
+
+    private _isDeleted: boolean;
+    get isDeleted(): boolean {
+        return this._isDeleted && !this._isInstalledSong;
+    }
+    set isDeleted(val: boolean) {
+        if (this._isDeleted !== val) {
+            this._isDeleted = val;
+        }
+    }
 
     constructor(
         public apiService: ApiService,
@@ -95,13 +110,15 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         private _eleService: ElectronService,
         private _notify: NotifyService,
         private _clipboard: Clipboard,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _confirmService: ConfirmationService
     ) {
         super();
         this.boardIdent = new BehaviorSubject<TBoardIdent | undefined>(undefined);
-        this.isInstalledSong = { status: false };
+        this._isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
         this.isFav = false;
+        this._isDeleted = false;
     }
 
     ngOnInit(): void {
@@ -126,9 +143,26 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
             if (this.dlService.has(this.latestVersion)) {
                 this.dlService.remove(this.latestVersion);
             } else {
-                this.dlService.add(this.tMapDetail, this.latestVersion, this.isInstalledSong);
+                this.dlService.add(this.tMapDetail, this.latestVersion, this._isInstalledSong);
             }
         }
+    }
+
+    async onUninstallSong(event: Event) {
+        this._confirmService.confirm({
+            target: <EventTarget>event.target,
+            message: 'Are you sure that you want to delete this amazing song?',
+            icon: 'pi pi-exclamation-triangle',
+            accept: async () => {
+                try {
+                    const id = this.tMapDetail?.id;
+                    if (id) await this.dlService.deleteSingle(id);
+                    this.isDeleted = true;
+                } catch (error: any) {
+                    this._notify.error(error);
+                }
+            }
+        });
     }
 
     onCopySRM() {
@@ -141,7 +175,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 const dlInfo = this.dlService.add(
                     this.tMapDetail,
                     this.latestVersion,
-                    this.isInstalledSong
+                    this._isInstalledSong
                 );
                 await this.dlService.installSingle(dlInfo);
             }
@@ -246,7 +280,7 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 .catch(error => {
                     this._eleService.send<TSendError>('ERROR', error);
                 });
-            this.isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
+            this._isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
         }
     }
 

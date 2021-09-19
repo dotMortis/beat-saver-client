@@ -107,7 +107,9 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
 
     private _isDeleted: boolean;
     get isDeleted(): boolean {
-        return this._isDeleted && !this._isInstalledSong?.status;
+        return (
+            (this._isDeleted && !this.isInstalledSong) || (!this.isInstalledSong && this.localMode)
+        );
     }
     set isDeleted(val: boolean) {
         if (this._isDeleted !== val) {
