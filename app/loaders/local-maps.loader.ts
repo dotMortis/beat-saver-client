@@ -1,15 +1,27 @@
 import db, { Database } from 'better-sqlite3';
 import { createHash } from 'crypto';
 import { app } from 'electron';
-import { copyFileSync, Dirent, existsSync, readdir, readdirSync, rmSync } from 'fs';
+import {
+    copyFileSync,
+    Dirent,
+    existsSync,
+    mkdirSync,
+    readdir,
+    readdirSync,
+    rmSync,
+    writeFileSync
+} from 'fs';
+import JSZip from 'jszip';
 import * as path from 'path';
-import { join } from 'path';
+import { join, sep } from 'path';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, takeWhile } from 'rxjs/operators';
+import { TMapDetail, TMapVersion } from '../../src/models/api/api.models';
 import { TFileLoaded } from '../../src/models/electron/file-loaded.model';
 import {
     TInvokeDeleteSong,
     TInvokeFilterLocalMaps,
+    TInvokeInstallSong,
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../src/models/electron/invoke.channels';
@@ -19,13 +31,14 @@ import { TSongId } from '../../src/models/maps/map-ids.model';
 import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 import MapHelpers from '../models/helpers/mapHelpers';
+import { sanitize } from '../models/helpers/sanitize.model';
 import { logger } from '../models/winston.logger';
 import { settings } from './settings.loader';
 
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
     'LOAD_INSTALLED_STATS',
     (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return isntalledMaps.loadInstalledMaps();
+        return localMaps.loadInstalledMaps();
     }
 );
 
@@ -33,7 +46,7 @@ export const mapIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled>
     'SONG_IS_INSTALLED',
     (event: Electron.IpcMainInvokeEvent, args: { mapId: TSongId }) => {
         const { mapId } = args;
-        return isntalledMaps.mapIsInstalled(mapId);
+        return localMaps.mapIsInstalled(mapId);
     }
 );
 
@@ -42,7 +55,7 @@ export const filterLocalMapsHandle = IpcHelerps.ipcMainHandle<TInvokeFilterLocal
     async (event: Electron.IpcMainInvokeEvent, args: { q: string | undefined; page: number }) => {
         try {
             const { q, page } = args;
-            return isntalledMaps.getFilteredLocalMaps(page, q);
+            return localMaps.getFilteredLocalMaps(page, q);
         } catch (error: any) {
             return error;
         }
@@ -53,13 +66,30 @@ export const deleteSongHandle = IpcHelerps.ipcMainHandle<TInvokeDeleteSong>(
     'DELETE_SONG',
     async (event: Electron.IpcMainInvokeEvent, args: { id: TSongId }) => {
         const { id } = args;
-        return isntalledMaps.deleteSong(id);
+        return localMaps.deleteSong(id);
     }
 );
-class InstalledMaps extends CommonLoader {
+
+export const installSongHandle = IpcHelerps.ipcMainHandle<TInvokeInstallSong>(
+    'INSTALL_SONG',
+    async (
+        event: Electron.IpcMainInvokeEvent,
+        args: { arrayBuffer: ArrayBuffer; mapDetail: TMapDetail; latestVersion: TMapVersion }
+    ) => {
+        return localMaps.installSong(args);
+    }
+);
+
+class LocalMaps extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
-        return tempPath ? path.join(tempPath, 'Beat Saber_Data', 'CustomLevels') : '';
+        if (!tempPath) {
+            throw new Error('Missing BS install path');
+        } else if (!existsSync(tempPath)) {
+            throw new Error('Invalid BS install path');
+        } else {
+            return path.join(tempPath, 'Beat Saber_Data', 'CustomLevels');
+        }
     }
     private _mapIds: Set<string>;
     private _loaded: BehaviorSubject<TFileLoaded>;
@@ -142,6 +172,34 @@ class InstalledMaps extends CommonLoader {
         }
     }
 
+    async installSong(info: {
+        arrayBuffer: ArrayBuffer;
+        mapDetail: TMapDetail;
+        latestVersion: TMapVersion;
+    }) {
+        try {
+            const zip = await JSZip.loadAsync(info.arrayBuffer);
+
+            const subFolder = sanitize(
+                `${info.mapDetail.id} (${info.mapDetail.metadata.songName} - ${info.mapDetail.metadata.levelAuthorName})`
+            );
+            for (const filename of Object.keys(zip.files)) {
+                const file = zip.files[filename];
+                if (file.name.endsWith(sep)) {
+                    this._createFolder(subFolder, file.name);
+                } else {
+                    const content = await file.async('nodebuffer');
+                    this._saveFile(subFolder, file.name, content);
+                }
+            }
+            const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
+            this._insertMapInfos([mapInfo]);
+            return { result: true };
+        } catch (error: any) {
+            return { result: error };
+        }
+    }
+
     async loadInstalledMaps(): Promise<{ status: TFileLoaded }> {
         logger.debug('loadInstalledSongs');
         if (this._loading) return { status: 'LOADING' };
@@ -193,6 +251,23 @@ class InstalledMaps extends CommonLoader {
         return this._handleLoadInstalledSongs<boolean>(
             async () => this._mapIds?.has(mapId) || false
         );
+    }
+
+    private _saveFile(folderName: string, filename: string, buffer: Buffer): void {
+        const folderPath = this._getFolderPath(folderName);
+        this._createFolder(folderName);
+        writeFileSync(path.join(folderPath, filename), buffer, { flag: 'w' });
+    }
+
+    private _createFolder(...folderNames: string[]): void {
+        const folderPath = this._getFolderPath(...folderNames);
+        if (!existsSync(folderPath)) {
+            mkdirSync(folderPath, { recursive: true });
+        }
+    }
+
+    private _getFolderPath(...folderNames: string[]): string {
+        return path.join(this._filePath, ...folderNames);
     }
 
     private _initLocalMapSync(): void {
@@ -333,5 +408,5 @@ class InstalledMaps extends CommonLoader {
     }
 }
 
-const isntalledMaps = new InstalledMaps();
-export default isntalledMaps;
+const localMaps = new LocalMaps();
+export default localMaps;

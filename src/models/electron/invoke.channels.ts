@@ -1,3 +1,4 @@
+import { TMapDetail, TMapVersion } from '../api/api.models';
 import { ILocalMapInfo } from '../maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../maps/map-ids.model';
 import { TLevelStatsInfo } from '../player/player-data.model';
@@ -55,7 +56,7 @@ export type TInvokeSetSettings = TInvoke<'SET_SETTINGS', TSettings, { result: TS
 //#region Install
 export type TInvokeInstallSong = TInvoke<
     'INSTALL_SONG',
-    { arrayBuffer: ArrayBuffer; mapId: TSongId; songName: string },
+    { arrayBuffer: ArrayBuffer; mapDetail: TMapDetail; latestVersion: TMapVersion },
     { result: boolean | Error }
 >;
 //#endregion
