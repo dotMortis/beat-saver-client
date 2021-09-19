@@ -163,7 +163,7 @@
                     class="pt-2 pb-1"
                 ></app-song-stats>
             </div>
-            <div class="mb-2 col">
+            <div class="mb-2 col trim">
                 <a
                     *ngIf="!loading; else songNameSkeleton"
                     [routerLink]="['/', 'song', tMapDetail?.id]"
