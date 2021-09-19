@@ -8,6 +8,7 @@ import {
     mkdirSync,
     readdir,
     readdirSync,
+    readFileSync,
     rmSync,
     writeFileSync
 } from 'fs';
@@ -21,6 +22,7 @@ import { TFileLoaded } from '../../src/models/electron/file-loaded.model';
 import {
     TInvokeDeleteSong,
     TInvokeFilterLocalMaps,
+    TInvokeGetLocalCover,
     TInvokeInstallSong,
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
@@ -80,6 +82,17 @@ export const installSongHandle = IpcHelerps.ipcMainHandle<TInvokeInstallSong>(
     }
 );
 
+export const getLocalCoverHandle = IpcHelerps.ipcMainHandle<TInvokeGetLocalCover>(
+    'GET_LOCAL_COVER',
+    async (event: Electron.IpcMainInvokeEvent, args: { id: TSongId }) => {
+        try {
+            return localMaps.getLocalMapCover(args.id);
+        } catch (error: any) {
+            return error;
+        }
+    }
+);
+
 class LocalMaps extends CommonLoader {
     private get _filePath(): string {
         const tempPath = settings.getOpts().bsInstallPath.value;
@@ -109,12 +122,9 @@ class LocalMaps extends CommonLoader {
         this._initLocalMapSync();
     }
 
-    onIdsHash(cb: (hash: string, localIds: string[], dbIds: string[]) => void): this {
-        return super.on('idsHash', cb);
-    }
-
-    emitIdsHash(hash: string, localIds: string[], dbIds: string[]): boolean {
-        return super.emit('idsHash', hash, localIds, dbIds);
+    getLocalMapCover(id: TSongId): string {
+        const coverUrl = this._getCoverUrl(id);
+        return readFileSync(coverUrl).toString('base64');
     }
 
     syncInstalledSongs(localIds: string[], dbIds: string[]): void {
@@ -253,6 +263,14 @@ class LocalMaps extends CommonLoader {
         );
     }
 
+    private _onIdsHash(cb: (hash: string, localIds: string[], dbIds: string[]) => void): this {
+        return super.on('idsHash', cb);
+    }
+
+    private _emitIdsHash(hash: string, localIds: string[], dbIds: string[]): boolean {
+        return super.emit('idsHash', hash, localIds, dbIds);
+    }
+
     private _saveFile(folderName: string, filename: string, buffer: Buffer): void {
         const folderPath = this._getFolderPath(folderName);
         this._createFolder(folderName);
@@ -271,7 +289,7 @@ class LocalMaps extends CommonLoader {
     }
 
     private _initLocalMapSync(): void {
-        this.onIdsHash((hash: string, localIds: string[], dbIds: string[]) => {
+        this._onIdsHash((hash: string, localIds: string[], dbIds: string[]) => {
             if (this._localMapsSyncing) {
                 this._syncAgain = { hash, localIds, dbIds };
                 return;
@@ -294,7 +312,7 @@ class LocalMaps extends CommonLoader {
             } finally {
                 this._localMapsSyncing = false;
                 if (this._syncAgain) {
-                    this.emitIdsHash(
+                    this._emitIdsHash(
                         this._syncAgain.hash,
                         this._syncAgain.localIds,
                         this._syncAgain.dbIds
@@ -309,13 +327,21 @@ class LocalMaps extends CommonLoader {
         const newHash = this._computeIdsHash(localIds);
         const dbHashInfo = this._getDbIdsHash();
         if (dbHashInfo.hash !== newHash) {
-            this.emitIdsHash(newHash, localIds, dbHashInfo.ids);
+            this._emitIdsHash(newHash, localIds, dbHashInfo.ids);
         }
     }
 
     private _getFolderName(id: TSongId): string | undefined {
         return this._db.prepare('SELECT folder_name FROM maps WHERE id = :id').get({ id })
             ?.folder_name;
+    }
+
+    private _getCoverUrl(id: TSongId): string {
+        const result = this._db
+            .prepare('SELECT folder_name, cover_image_filename FROM maps WHERE id = :id')
+            .get({ id });
+        if (!result) throw new Error('Error map info not found');
+        return join(this._filePath, result.folder_name, result.cover_image_filename);
     }
 
     private _deleteRemovedIds(availableIds: string[]): void {

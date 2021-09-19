@@ -44,6 +44,7 @@ export type TInvokeFilterLocalMaps = TInvoke<
     Error | ILocalMapInfo[]
 >;
 export type TInvokeDeleteSong = TInvoke<'DELETE_SONG', { id: TSongId }, Error | true>;
+export type TInvokeGetLocalCover = TInvoke<'GET_LOCAL_COVER', { id: TSongId }, Error | string>;
 //#endregion
 
 //#region SETTINGS

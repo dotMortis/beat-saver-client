@@ -72,6 +72,10 @@
             color: var(--success);
         }
 
+        .song-deleted-icon {
+            color: var(--danger);
+        }
+
         .song-col-1 {
             display: flex;
             flex-direction: column;
@@ -115,12 +119,14 @@
         .song-upload-date {
             font-size: 0.75rem;
         }
-
         .song-ranked-icon {
             color: var(--yellow-500);
         }
         .song-qiali-icon {
             color: var(--cyan-500);
+        }
+        .song-local-only-icon {
+            color: var(--danger);
         }
 
         .player-stats {
@@ -182,6 +188,34 @@
         }
         .in-queue {
             background-color: rgba(28, 255, 7, 0.1);
+        }
+    }
+    &.song-deleted {
+        .main-frame {
+            box-shadow: 0 0, 0 0 5px 0 #dc3545;
+            &:hover {
+                box-shadow: 0 0, 0 0 5px 2px #dc3545;
+            }
+        }
+    }
+    &.song-deleted-fav {
+        .main-frame {
+            box-shadow: 1px 1px 2px 0px #ed4981, -1px -1px 2px 0 #dc3545;
+            &:hover {
+                box-shadow: 2px 2px 3px 1px #ed4981, -2px -2px 3px 1px #dc3545;
+            }
+        }
+    }
+
+    &.ranked {
+        .song-cover {
+            box-shadow: 0 0 8px 0 #fbc02d !important;
+        }
+    }
+
+    &.qualified {
+        .song-cover {
+            box-shadow: 0 0 8px 0 #00bcd4 !important;
         }
     }
 }

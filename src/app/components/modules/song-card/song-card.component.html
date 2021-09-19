@@ -4,14 +4,18 @@
     (contextmenu)="onCardClick()"
     [ngClass]="{
         'song-card-container row no-gutters': true,
-        'song-installed': isInstalledSong.status && !isFav && !localMode,
-        'song-fav': isFav && (!isInstalledSong.status || localMode),
-        'song-installed-fav': isFav && isInstalledSong.status && !localMode
+        'song-installed': isInstalledSong && !isFav && !localMode,
+        'song-fav': isFav && (!isInstalledSong || localMode),
+        'song-installed-fav': isFav && isInstalledSong && !localMode,
+        'song-deleted': isDeleted && !isFav,
+        'song-deleted-fav': isFav && isDeleted,
+        'ranked': tMapDetail?.ranked,
+        'qualified': tMapDetail?.qualified
     }"
 >
     <div
         [ngClass]="{ 'col-12 p-2 main-frame': true,
-        'in-queue': inQueue }"
+        'in-queue': inQueue && (!localMode || (localMode && !isInstalledSong)) }"
     >
         <div class="row no-gutters">
             <div class="col-12 pb-2 d-flex">
@@ -24,10 +28,35 @@
                     <div class="row py-1 w-100">
                         <div class="col-auto">
                             <fa-icon
-                                *ngIf="isInstalledSong.status && !localMode"
+                                *ngIf="!tMapDetail && localMode"
+                                [icon]="['fas', 'ban']"
+                                class="mr-2 song-local-only-icon"
+                                pTooltip="{{id}} not found on BeatSaver"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="tMapDetail?.ranked"
+                                [icon]="['fas', 'trophy']"
+                                class="mr-2 song-ranked-icon"
+                                pTooltip="Ranked"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="tMapDetail?.qualified"
+                                [icon]="['fas', 'graduation-cap']"
+                                class="mr-2 song-qiali-icon"
+                                pTooltip="Qualified"
+                            ></fa-icon>
+                            <fa-icon
+                                *ngIf="isInstalledSong && !localMode"
                                 [icon]="['fas', 'check-circle']"
                                 class="mr-2 song-installed-icon"
                                 pTooltip="Installed"
+                            >
+                            </fa-icon>
+                            <fa-icon
+                                *ngIf="isDeleted"
+                                [icon]="['fas', 'trash']"
+                                class="mr-2 song-deleted-icon"
+                                pTooltip="Deleted"
                             >
                             </fa-icon>
                             <fa-icon
@@ -39,7 +68,7 @@
                         </div>
                         <div class="col-auto ml-auto d-flex flex-wrap">
                             <a
-                                *ngIf="isInstalledSong.status"
+                                *ngIf="isInstalledSong"
                                 pRipple
                                 class="mr-3 card-btn card-btn-danger"
                                 (click)="onUninstallSong($event)"
@@ -49,6 +78,7 @@
                             ></a>
                             <a
                                 pRipple
+                                *ngIf="tMapDetail"
                                 joyrideStep="{{tMapDetail?.id}}2"
                                 text="Download the song as zip file"
                                 class="mr-3 card-btn"
@@ -57,7 +87,7 @@
                                 ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
                             ></a>
                             <a
-                                *ngIf="!localMode"
+                                *ngIf="tMapDetail && (!localMode || (localMode && isDeleted))"
                                 pRipple
                                 joyrideStep="{{tMapDetail?.id}}3"
                                 text="Download and install the sond directly to your custom songs folder"
@@ -111,14 +141,19 @@
                         *ngIf="!loading; else coverSkeleton"
                         joyrideStep="{{tMapDetail?.id}}6"
                         text="Click the cover to preview the map as video"
-                        [src]="coverUrl"
+                        [src]="coverUrl | safe"
                         class="rounded float-start song-cover"
                         alt="{{ songName }}"
                     />
                     <ng-template #coverSkeleton>
                         <p-skeleton width="100px" height="100px" *ngIf="loading"></p-skeleton>
                     </ng-template>
-                    <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
+                    <div
+                        *ngIf="tMapDetail"
+                        (click)="onPlayPreview()"
+                        pRipple
+                        class="song-cover-hover"
+                    >
                         <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
                     </div>
                 </div>
@@ -135,18 +170,6 @@
                     routerLinkActive="router-link-active"
                     [title]="songName"
                 >
-                    <fa-icon
-                        *ngIf="tMapDetail?.ranked"
-                        [icon]="['fas', 'trophy']"
-                        class="song-ranked-icon"
-                        pTooltip="Ranked"
-                    ></fa-icon>
-                    <fa-icon
-                        *ngIf="tMapDetail?.qualified"
-                        [icon]="['fas', 'graduation-cap']"
-                        class="song-qiali-icon"
-                        pTooltip="Qualified"
-                    ></fa-icon>
                     {{ songNameShort }}</a
                 >
                 <ng-template #songNameSkeleton>
@@ -154,7 +177,7 @@
                 </ng-template>
 
                 <div *ngIf="!loading; else mapperNameSkeleton" class="pb-2">
-                    <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
+                    <a [routerLink]=""> {{ mapperName }} </a>
                     <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
                 </div>
                 <ng-template #mapperNameSkeleton>

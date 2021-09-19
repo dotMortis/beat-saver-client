@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { of } from 'rxjs';
 import { catchError, mergeMap, tap } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import {
     TMapVersion
 } from '../../../../models/api/api.models';
 import { TInstalled } from '../../../../models/electron/download.model';
+import { TInvokeGetLocalCover } from '../../../../models/electron/invoke.channels';
 import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
 import { ILocalMapInfo } from '../../../../models/maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
@@ -35,8 +36,12 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
     @Input() localMode: boolean;
     @Input() tMapDetail?: TMapDetail;
     @Input() localMapInfo?: ILocalMapInfo;
+    @Output() mapDeleted: EventEmitter<boolean>;
     public tGroupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]>;
-    public isInstalledSong: { status: TInstalled };
+    private _isInstalledSong: { status: TInstalled };
+    get isInstalledSong(): boolean {
+        return this._isInstalledSong.status === 'INSTALLED';
+    }
     public latestVersion?: TMapVersion;
     public uploadTimeInfo?: string | Date;
 
@@ -61,18 +66,27 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         return this._diffsArr;
     }
 
+    get localSongName(): string {
+        return this.localMapInfo
+            ? `${this.localMapInfo.song_name} ${this.localMapInfo.song_sub_name || ''} - ${
+                  this.localMapInfo.song_author_name
+              }`
+            : 'N/A';
+    }
+    get songName(): string {
+        return this.tMapDetail?.name || this.localSongName;
+    }
     private _songNameShort: string;
     get songNameShort(): string {
-        if (this._songNameShort === 'N/A' && this.tMapDetail?.name) {
+        if (this._songNameShort === 'N/A' && this.songName !== 'N/A') {
             this._songNameShort =
-                this.tMapDetail.name.length > 70
-                    ? `${this.tMapDetail?.name.slice(0, 70)}...`
-                    : this.tMapDetail?.name || 'N/A';
+                this.songName.length > 70 ? `${this.songName.slice(0, 70)}...` : this.songName;
         }
         return this._songNameShort;
     }
-    get songName(): string {
-        return this.tMapDetail?.name || 'N/A';
+
+    get mapperName(): string {
+        return this.tMapDetail?.uploader?.name || this.localMapInfo?.level_author_name || 'N/A';
     }
 
     get inQueue(): boolean {
@@ -80,13 +94,27 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         else return false;
     }
 
+    private _coverUrl: string;
     get coverUrl(): string {
-        return this.latestVersion?.coverURL || 'assets/bs-default.jpeg';
+        return this.latestVersion?.coverURL || this._coverUrl;
     }
 
     public isFav: boolean;
 
     public loading: boolean;
+
+    public id?: TSongId;
+
+    private _isDeleted: boolean;
+    get isDeleted(): boolean {
+        return this._isDeleted && !this._isInstalledSong?.status;
+    }
+    set isDeleted(val: boolean) {
+        if (this._isDeleted !== val) {
+            this._isDeleted = val;
+            this.mapDeleted.next(val);
+        }
+    }
 
     constructor(
         public songPreviewService: SongPreviewService,
@@ -102,12 +130,15 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         private _confirmService: ConfirmationService
     ) {
         super();
-        this.isInstalledSong = { status: false };
+        this.mapDeleted = new EventEmitter<boolean>();
+        this._isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
         this._expanded = this._songCardService.expandAll;
         this.localMode = false;
         this.loading = true;
         this.isFav = false;
+        this._isDeleted = false;
+        this._coverUrl = 'assets/bs-default.jpeg';
     }
 
     ngOnInit(): void {
@@ -149,13 +180,13 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             if (this.dlService.has(this.latestVersion)) {
                 this.dlService.remove(this.latestVersion);
             } else {
-                this.dlService.add(this.tMapDetail, this.latestVersion, this.isInstalledSong);
+                this.dlService.add(this.tMapDetail, this.latestVersion, this._isInstalledSong);
             }
         }
     }
 
     onCopySRM() {
-        this._clipboard.copy(`!bsr ${this.tMapDetail?.id}`);
+        this._clipboard.copy(`!bsr ${this.id}`);
     }
 
     async onDownloadSingle() {
@@ -164,7 +195,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 const dlInfo = this.dlService.add(
                     this.tMapDetail,
                     this.latestVersion,
-                    this.isInstalledSong
+                    this._isInstalledSong
                 );
                 await this.dlService.installSingle(dlInfo);
             }
@@ -182,6 +213,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 try {
                     const id = this.tMapDetail?.id || this.localMapInfo?.id;
                     if (id) await this.dlService.deleteSingle(id);
+                    this.isDeleted = true;
                 } catch (error: any) {
                     this._notify.error(error);
                 }
@@ -189,7 +221,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         });
     }
 
-    private _init(tMapDetail: TMapDetail | undefined): void {
+    private async _init(tMapDetail: TMapDetail | undefined): Promise<void> {
         this.tMapDetail = tMapDetail;
         this.latestVersion = tMapDetail?.versions.sort((a: TMapVersion, b: TMapVersion) =>
             a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
@@ -199,7 +231,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             this._setUploadTimeInfo(this.latestVersion.createdAt);
         }
         const hash = this.latestVersion?.hash || this.localMapInfo?.hash;
-        const id = tMapDetail?.id || this.localMapInfo?.id;
+        this.id = tMapDetail?.id || this.localMapInfo?.id;
         if (hash) {
             this._loadPlayerSongStats(hash)
                 .catch((error: any) => this._eleService.send<TSendError>('ERROR', error))
@@ -230,15 +262,15 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                     );
                 });
         }
-        if (id) {
-            this._initIsInstalledSong(id)
+        if (this.id) {
+            this._initIsInstalledSong(this.id)
                 .catch(error => this._eleService.send<TSendError>('ERROR', error))
                 .finally(() => {
                     this.addSub(
                         this.installedSongsService.installedSongsReloaded.pipe(
                             mergeMap(async () => {
                                 try {
-                                    await this._initIsInstalledSong(id);
+                                    if (this.id) await this._initIsInstalledSong(this.id);
                                 } catch (error: any) {
                                     this._eleService.send<TSendError>('ERROR', error);
                                 }
@@ -246,7 +278,19 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                         )
                     );
                 });
+            if (!tMapDetail) {
+                const imageBuffer = await this._eleService.invoke<TInvokeGetLocalCover>(
+                    'GET_LOCAL_COVER',
+                    { id: this.id }
+                );
+                if (imageBuffer instanceof Error) {
+                    this._eleService.send<TSendError>('ERROR', imageBuffer);
+                } else if (imageBuffer) {
+                    this._coverUrl = 'data:image/jpg;base64, ' + imageBuffer;
+                }
+            }
         }
+
         this.loading = false;
     }
 
@@ -276,7 +320,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         const result = await this.installedSongsService.songIsInstalled(id).catch(error => {
             this._eleService.send<TSendError>('ERROR', error);
         });
-        this.isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
+        this._isInstalledSong = { status: result && result.result ? 'INSTALLED' : false };
     }
 
     private _setUploadTimeInfo(isoString: string): void {

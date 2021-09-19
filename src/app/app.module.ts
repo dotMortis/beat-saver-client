@@ -5,10 +5,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faTwitch } from '@fortawesome/free-brands-svg-icons';
 import {
+    faBan,
     faCheckCircle,
     faChevronDown,
-    faChevronLeft,
-    faChevronRight,
     faChevronUp,
     faCloudDownloadAlt,
     faDownload,
@@ -66,11 +65,10 @@ export class AppModule {
             faGraduationCap,
             faChevronUp,
             faChevronDown,
-            faChevronLeft,
-            faChevronRight,
             faHeart,
             faTrash,
-            faPlay
+            faPlay,
+            faBan
         );
     }
 }
