@@ -4,7 +4,7 @@ import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.mod
 import { TSendReady } from '../../../../models/electron/send.channels';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { TourService } from '../../../services/root.provided/tour.service';
-import { ContentViewerComponent } from './better-navigation-bar/content-viewer.component';
+import { ContentViewerComponent } from './content-viewer/content-viewer.component';
 
 @Component({
     selector: 'app-dashboard',

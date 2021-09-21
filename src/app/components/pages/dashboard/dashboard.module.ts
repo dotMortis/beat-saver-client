@@ -6,7 +6,7 @@ import { LocalMapsService } from '../../../services/null.provided/local-maps.ser
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { SongCardService } from '../../modules/song-card/song-card.service';
-import { ContentViewerModule } from './better-navigation-bar/content-viewer.module';
+import { ContentViewerModule } from './content-viewer/content-viewer.module';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRounting } from './dashboard.routing';
 import { DownloadItemModule } from './download-item/download-item.module';
