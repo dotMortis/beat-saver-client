@@ -1,0 +1,10 @@
+.search-bar {
+    border-radius: 0.25rem;
+    background-color: var(--surface-b);
+    transition-duration: 0.2s; /* delays for 1 second */
+    -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
+    box-shadow: 0 0 4px -1px white;
+    &:hover {
+        box-shadow: 0 0 6px 1px white;
+    }
+}

@@ -1,16 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { JoyrideModule } from 'ngx-joyride';
 import { MarkdownModule } from 'ngx-markdown';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ScrollTopModule } from 'primeng/scrolltop';
 import { TieredMenuModule } from 'primeng/tieredmenu';
-import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { SharedAppModule } from '../../../../shared/shared-app-module';
 import { LocalMapsModule } from '../../local-maps/local-maps.module';
@@ -42,13 +39,10 @@ import { ViewTemplateModule } from './view-template/view-template.directive';
         JoyrideModule.forChild(),
         MarkdownModule.forChild(),
         ButtonModule,
-        ToggleButtonModule,
         BadgeModule,
         DynamicDialogModule,
-        DropdownModule,
         TieredMenuModule,
-        SongsDetailModule,
-        FormsModule
+        SongsDetailModule
     ],
     entryComponents: [],
     exports: [ContentViewerComponent],

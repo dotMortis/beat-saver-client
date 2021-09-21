@@ -99,12 +99,11 @@ export class LocalMapsService {
             this._page = 0;
             this._latestFilter = Object.assign({}, this._filter);
         }
-
         return new Observable<false | ILocalMapInfo[]>(
             (sub: Subscriber<false | ILocalMapInfo[]>) => {
                 this._eleService
                     .invoke<TInvokeFilterLocalMaps>('FILTER_LOCAL_MAPS', {
-                        q: this._latestFilter?.q,
+                        q: this._latestFilter ? `%${this._latestFilter.q}%` : undefined,
                         page: this._page
                     })
                     .then(result => {
