@@ -70,11 +70,11 @@ export class ViewContentComponent
         this._loaded = false;
         this._selected = false;
         this._selectedChange = new Subject<boolean>();
-        this._livetime = 0;
+        this._livetime = -1;
     }
 
     ngOnInit(): void {
-        if (this.livetime > 0) {
+        if (this.livetime >= 0) {
             this.addSub(
                 this._selectedChange.pipe(
                     switchMap((val: boolean) => {
