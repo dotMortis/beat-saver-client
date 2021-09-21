@@ -18,6 +18,7 @@ import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { ContentViewerService } from '../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
@@ -129,7 +130,8 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         private _songCardService: SongCardService,
         private _apiService: ApiService,
         private _localMapsService: LocalMapsService,
-        private _confirmService: ConfirmationService
+        private _confirmService: ConfirmationService,
+        private _cvService: ContentViewerService
     ) {
         super();
         this.mapDeleted = new EventEmitter<boolean>();
@@ -189,6 +191,11 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
 
     onCopySRM() {
         this._clipboard.copy(`!bsr ${this.id}`);
+    }
+
+    onOpenDetail() {
+        if (this.tMapDetail && this.latestVersion)
+            this._cvService.addSongDetailView(this.tMapDetail, this.latestVersion);
     }
 
     async onDownloadSingle() {

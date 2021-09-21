@@ -6,11 +6,11 @@ import { LocalMapsService } from '../../../services/null.provided/local-maps.ser
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
 import { SharedAppModule } from '../../../shared/shared-app-module';
 import { SongCardService } from '../../modules/song-card/song-card.service';
+import { ContentViewerModule } from './better-navigation-bar/content-viewer.module';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRounting } from './dashboard.routing';
 import { DownloadItemModule } from './download-item/download-item.module';
 import { DownloadListModule } from './download-list/download-list.module';
-import { NavigationBarModule } from './navigation-bar/navigation-bar.module';
 import { SettingsModule } from './settings/settings.module';
 import { SongPreviewModule } from './song-preview/song-preview.module';
 import { SongPreviewService } from './song-preview/song-preview.service';
@@ -24,10 +24,10 @@ import { UpdateAppModule } from './update-app/update-app.module';
         SharedAppModule,
         SettingsModule,
         DownloadItemModule,
-        NavigationBarModule,
         DownloadListModule,
         SongPreviewModule,
-        UpdateAppModule
+        UpdateAppModule,
+        ContentViewerModule
     ],
     exports: [DashboardComponent],
     providers: [

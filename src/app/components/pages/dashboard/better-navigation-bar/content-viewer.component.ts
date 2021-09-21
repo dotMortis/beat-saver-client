@@ -1,10 +1,17 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    QueryList,
+    ViewChildren
+} from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { TSendError } from '../../../../../models/electron/send.channels';
+import { TSongId } from '../../../../../models/maps/map-ids.model';
+import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
@@ -12,30 +19,52 @@ import { ElectronService } from '../../../../services/root.provided/electron.ser
 import { SettingsService } from '../../../../services/root.provided/settings.service';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { CoffeeComponent } from './coffee/coffee.component';
+import { ViewContentComponent } from './view-content/view-content.component';
 
 @Component({
-    selector: 'app-navigation-bar',
-    templateUrl: './navigation-bar.component.html',
-    styleUrls: ['./navigation-bar.component.scss'],
+    selector: 'app-content-viewer',
+    templateUrl: './content-viewer.component.html',
+    styleUrls: ['./content-viewer.component.scss'],
     providers: [DialogService]
 })
-export class NavigationBarComponent extends UnsubscribeComponent {
+export class ContentViewerComponent extends UnsubscribeComponent implements AfterViewInit {
+    @ViewChildren(ViewContentComponent) viewContents!: QueryList<ViewContentComponent>;
+
+    contents: ViewContentComponent[];
+
+    activeIndex?: number;
+
     private _ref?: DynamicDialogRef;
     private _communityMenuItems: MenuItem[];
     get communityMenuItems(): MenuItem[] {
         return this._communityMenuItems;
     }
 
+    private _selectedDetail?: string;
+    get selectedDetail(): string | undefined {
+        return this._selectedDetail;
+    }
+    set selectedDetail(val: string | undefined) {
+        if (val !== this._selectedDetail) {
+            this._selectedDetail = val;
+            if (val) this.onOpen(val);
+        }
+    }
+
+    activeId?: string;
+
     constructor(
-        public electronService: ElectronService,
         public optService: SettingsService,
         public dlService: DlService,
+        public electronService: ElectronService,
+        public cvService: ContentViewerService,
+        private _cd: ChangeDetectorRef,
         private _installedSongsService: LocalMapsService,
         private _playerStatsService: PlayerStatsService,
-        private _dialogService: DialogService,
-        private _router: Router
+        private _dialogService: DialogService
     ) {
         super();
+        this.contents = [];
         this._communityMenuItems = [
             {
                 label: 'Discords',
@@ -43,6 +72,11 @@ export class NavigationBarComponent extends UnsubscribeComponent {
                     {
                         label: 'Cube Community',
                         url: 'https://discord.gg/dwe8mbC',
+                        target: '_blank'
+                    },
+                    {
+                        label: 'BeatSaver',
+                        url: 'https://discord.gg/rjVDapkMmj',
                         target: '_blank'
                     },
                     {
@@ -90,6 +124,12 @@ export class NavigationBarComponent extends UnsubscribeComponent {
         ];
     }
 
+    ngAfterViewInit(): void {
+        this._initContents();
+        this.addSub(this.viewContents.changes.pipe(tap(() => this._initContents())));
+        this.addSub(this.cvService.onOpen.pipe(tap((next: TSongId) => this.onOpen(next))));
+    }
+
     async onReload(): Promise<void> {
         await Promise.all([
             this._playerStatsService
@@ -129,5 +169,56 @@ export class NavigationBarComponent extends UnsubscribeComponent {
             contentStyle: { 'max-height': '500px', overflow: 'auto' },
             baseZIndex: 10000
         });
+    }
+
+    onOpen(content: ViewContentComponent | string): void {
+        this.activeId = undefined;
+        const selectedContent = this._findSelectedContent();
+        if (selectedContent) selectedContent.selected = false;
+        if (content instanceof ViewContentComponent) {
+            content.selected = true;
+        } else {
+            const index = this._findContentIndex(content);
+
+            if (index > -1) {
+                this.activeId = content;
+                this.contents[index].selected = true;
+            }
+        }
+    }
+
+    private _initContents(): void {
+        this.contents = this.viewContents.toArray();
+        if (this.cvService.openNext) {
+            this.onOpen(this.cvService.openNext);
+            this.cvService.openNext = undefined;
+        } else {
+            const selectedContent = this._findSelectedContent();
+            if (!selectedContent && this.contents.length) {
+                this.contents[0].selected = true;
+                this.activeId = this.contents[0].id;
+            }
+        }
+        this._cd.detectChanges();
+    }
+
+    private _findSelectedContent(): ViewContentComponent | undefined {
+        for (const content of this.contents) {
+            if (content.selected) return content;
+        }
+        return;
+    }
+
+    private _findContentIndex(content: ViewContentComponent | string): number {
+        for (let i = 0; i < this.contents.length; i++) {
+            if (typeof content === 'string') {
+                if (this.contents[i].id === content) {
+                    return i;
+                }
+            } else if (this.contents[i] == content) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

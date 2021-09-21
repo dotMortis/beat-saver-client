@@ -1,6 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { BehaviorSubject } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
@@ -32,6 +31,7 @@ import { SongPreviewService } from '../dashboard/song-preview/song-preview.servi
 })
 export class SongsDetailComponent extends UnsubscribeComponent implements OnInit {
     private _songId?: string;
+    @Input()
     get songId(): string | undefined {
         return this._songId;
     }
@@ -110,7 +110,6 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         private _eleService: ElectronService,
         private _notify: NotifyService,
         private _clipboard: Clipboard,
-        private _route: ActivatedRoute,
         private _confirmService: ConfirmationService
     ) {
         super();
@@ -122,8 +121,6 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
     }
 
     ngOnInit(): void {
-        const { songId } = this._route.snapshot.params;
-        this.songId = songId;
         if (this.songId) {
             this.addSub(
                 this.apiService.getById(this.songId).pipe(

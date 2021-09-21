@@ -25,8 +25,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { JoyrideModule } from 'ngx-joyride';
 import { MarkdownModule } from 'ngx-markdown';
 import { MessageService } from 'primeng/api';
-import { ScrollPanelModule } from 'primeng/scrollpanel';
-import { ScrollTopModule } from 'primeng/scrolltop';
 import { ToastModule } from 'primeng/toast';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app.routing';
@@ -43,8 +41,6 @@ import { SharedAppModule } from './shared/shared-app-module';
         SharedAppModule,
         MarkdownModule.forRoot({ loader: HttpClient }),
         JoyrideModule.forRoot(),
-        ScrollPanelModule,
-        ScrollTopModule,
         ToastModule
     ],
     providers: [MessageService],

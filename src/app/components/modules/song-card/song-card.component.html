@@ -166,8 +166,8 @@
             <div class="mb-2 col trim">
                 <a
                     *ngIf="!loading; else songNameSkeleton"
-                    [routerLink]="['/', 'song', tMapDetail?.id]"
-                    routerLinkActive="router-link-active"
+                    [routerLink]=""
+                    (click)="onOpenDetail()"
                     [title]="songName"
                 >
                     {{ songNameShort }}</a

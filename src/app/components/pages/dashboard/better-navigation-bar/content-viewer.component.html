@@ -1,0 +1,112 @@
+<div class="content-viewer">
+    <div class="navigation-bar">
+        <app-detail-btn-panel
+            [activeId]="activeId"
+            (openNext)="onOpen($event)"
+        ></app-detail-btn-panel>
+        <div class="container">
+            <div class="row navigation-bar-content no-gutters">
+                <div class="col-auto nav-item-l">
+                    <button
+                        pButton
+                        pRipple
+                        [ngClass]="{'p-button-sm': true, 'active-route': songs.selected}"
+                        pTooltip="Home"
+                        icon="pi pi-home"
+                        (click)="onOpen(songs)"
+                    ></button>
+                </div>
+                <div class="col-auto nav-item-l">
+                    <button
+                        pButton
+                        pRipple
+                        [ngClass]="{'p-button-sm': true, 'active-route': locals.selected}"
+                        pTooltip="Installed maps"
+                        label="Installed"
+                        (click)="onOpen(locals)"
+                    ></button>
+                </div>
+                <div class="col-auto nav-item-l">
+                    <button
+                        pButton
+                        pRipple
+                        class="p-button-sm"
+                        label="Community"
+                        [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
+                        (click)="communityMenu.toggle($event)"
+                    ></button>
+                    <p-tieredMenu
+                        #communityMenu
+                        appendTo="body"
+                        [model]="communityMenuItems"
+                        [popup]="true"
+                    ></p-tieredMenu>
+                </div>
+                <div *ngIf="electronService.isElectron" class="col-auto ml-auto nav-item-r">
+                    <button
+                        pButton
+                        pRipple
+                        pTooltip="Reload user data"
+                        class="p-button-sm"
+                        icon="pi pi-refresh"
+                        (click)="onReload()"
+                    ></button>
+                </div>
+                <div *ngIf="electronService.isElectron" class="col-auto nav-item-r">
+                    <button
+                        pButton
+                        pRipple
+                        pTooltip="Settings"
+                        class="p-button-sm"
+                        icon="pi pi-cog"
+                        (click)="optService.visible = !optService.visible"
+                    ></button>
+                </div>
+                <div class="col-auto nav-item-r">
+                    <button
+                        pButton
+                        pRipple
+                        pTooltip="About"
+                        class="p-button-sm coffee-btn"
+                        icon="pi pi-heart"
+                        (click)="showCoffee()"
+                    ></button>
+                </div>
+                <button
+                    joyrideStep="dlQueue1"
+                    text="Open the download queue"
+                    stepPosition="right"
+                    pButton
+                    pRipple
+                    pBadge
+                    pTooltip="Download queue"
+                    [showDelay]="250"
+                    [hideDelay]="250"
+                    severity="success"
+                    value="{{ dlService.dlSize }}"
+                    class="p-button-sm dl-list-btn"
+                    icon="pi pi-download"
+                    (click)="dlService.visible = !dlService.visible"
+                ></button>
+            </div>
+        </div>
+    </div>
+    <app-view-content #songs>
+        <ng-template appViewTemplate>
+            <app-songs></app-songs>
+        </ng-template>
+    </app-view-content>
+    <app-view-content #locals>
+        <ng-template appViewTemplate>
+            <app-local-maps></app-local-maps>
+        </ng-template>
+    </app-view-content>
+    <app-view-content
+        [id]="details.mapDetail.id"
+        *ngFor="let details of cvService.songDetailViewArr"
+    >
+        <ng-template appViewTemplate>
+            <app-songs-detail [songId]="details.mapDetail.id"></app-songs-detail>
+        </ng-template>
+    </app-view-content>
+</div>
