@@ -102,6 +102,7 @@
         </ng-template>
     </app-view-content>
     <app-view-content
+        [livetime]="1000 * 60"
         [id]="details.mapDetail.id"
         *ngFor="let details of cvService.songDetailViewArr"
     >
