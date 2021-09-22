@@ -2,18 +2,19 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize, mergeMap, takeWhile, tap } from 'rxjs/operators';
-import { TMapDetail, TMapVersion } from '../../../models/api.models';
-import { TInstalled, TSongDownloadInfo } from '../../../models/download.model';
+import { TMapDetail, TMapVersion } from '../../../models/api/api.models';
+import { TInstalled, TSongDownloadInfo } from '../../../models/electron/download.model';
 import {
+    TInvokeDeleteSong,
     TInvokeInstallSong,
     TInvokeReadCache,
     TInvokeWriteCache
 } from '../../../models/electron/invoke.channels';
 import { TSendError } from '../../../models/electron/send.channels';
-import { TSongHash } from '../../../models/played-songs.model';
+import { TSongHash, TSongId } from '../../../models/maps/map-ids.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { ApiService } from './api.service';
-import { InstalledSongsService } from './installed-songs.service';
+import { LocalMapsService } from './local-maps.service';
 
 @Injectable({
     providedIn: null
@@ -62,7 +63,7 @@ export class DlService {
     constructor(
         private _apiService: ApiService,
         private _eleService: ElectronService,
-        private _installedSongsService: InstalledSongsService
+        private _installedSongsService: LocalMapsService
     ) {
         this._downloadFinished = new Subject<{
             blob?: Blob;
@@ -121,6 +122,18 @@ export class DlService {
         );
     }
 
+    async deleteSingle(id: TSongId): Promise<boolean | Error> {
+        return this._eleService
+            .invoke<TInvokeDeleteSong>('DELETE_SONG', { id })
+            .finally(async () => {
+                try {
+                    await this._installedSongsService.loadInstalledSongs();
+                } catch (error: any) {
+                    this._eleService.send<TSendError>('ERROR', error);
+                }
+            });
+    }
+
     async installSingle(info: TSongDownloadInfo): Promise<void> {
         return new Promise<void>(async (res, rej) => {
             try {
@@ -135,7 +148,13 @@ export class DlService {
                             ) {
                                 await this._installSong(result.blob, result.info);
                             }
-                            return result.info.latestVersion.hash === info.latestVersion.hash;
+                            if (result.info.latestVersion.hash === info.latestVersion.hash) {
+                                if (!result.info.error) {
+                                    this.remove(result.info.latestVersion);
+                                }
+                                return true;
+                            }
+                            return false;
                         }),
                         takeWhile((result: boolean) => !result)
                     )
@@ -244,11 +263,12 @@ export class DlService {
             const arrayBuffer = await blob.arrayBuffer();
             const result = await this._eleService.invoke<TInvokeInstallSong>('INSTALL_SONG', {
                 arrayBuffer,
-                songId: info.mapDetail.id,
-                songName: info.mapDetail.name
+                mapDetail: info.mapDetail,
+                latestVersion: info.latestVersion
             });
-            if (result && result.result instanceof Error) {
-                info.error = result.result;
+            if (result instanceof Error) {
+                info.error = result;
+                info.installed.status = false;
             } else {
                 info.installed.status = 'INSTALLED';
             }

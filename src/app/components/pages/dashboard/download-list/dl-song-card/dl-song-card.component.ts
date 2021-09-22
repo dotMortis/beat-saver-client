@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TMapDetail, TMapVersion } from '../../../../../../models/api.models';
-import { UnsubscribeComponent } from '../../../../../../models/unsubscribe.model';
+import { UnsubscribeComponent } from '../../../../../../models/angular/unsubscribe.model';
+import { TMapDetail, TMapVersion } from '../../../../../../models/api/api.models';
 import { DlService } from '../../../../../services/null.provided/dl.service';
 import { SongPreviewService } from '../../song-preview/song-preview.service';
 

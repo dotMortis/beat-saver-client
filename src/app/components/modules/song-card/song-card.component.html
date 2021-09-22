@@ -4,139 +4,185 @@
     (contextmenu)="onCardClick()"
     [ngClass]="{
         'song-card-container row no-gutters': true,
-        'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav,
-        'song-fav': tLevelStatsInfo?.isFav && !isInstalledSong.status,
-        'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status
+        'song-installed': isInstalledSong && !isFav && !localMode,
+        'song-fav': isFav && (!isInstalledSong || localMode),
+        'song-installed-fav': isFav && isInstalledSong && !localMode,
+        'song-deleted': isDeleted && !isFav && !loading,
+        'song-deleted-fav': isFav && isDeleted,
+        'ranked': tMapDetail?.ranked,
+        'qualified': tMapDetail?.qualified
     }"
 >
     <div
-        [ngClass]="{ 'col-12 p-2 main-frame': true, 'col-lg-6': expanded,
-        'in-queue': inQueue }"
+        [ngClass]="{ 'col-12 p-2 main-frame': true,
+        'in-queue': inQueue && (!localMode || (localMode && !isInstalledSong)) }"
     >
         <div class="row no-gutters">
-            <div class="col-12 pb-1 d-flex">
-                <div class="row py-1 w-100">
-                    <div class="col-auto">
-                        <fa-icon
-                            *ngIf="isInstalledSong.status"
-                            [icon]="['fas', 'check-circle']"
-                            class="mr-2 song-installed-icon"
-                            pTooltip="Installed"
-                        >
-                        </fa-icon>
-                        <fa-icon
-                            *ngIf="tLevelStatsInfo?.isFav"
-                            [icon]="['fas', 'star']"
-                            class="song-fav-icon"
-                            pTooltip="In your favorites"
-                        ></fa-icon>
-                    </div>
-                    <div class="col-auto ml-auto d-flex flex-wrap">
-                        <a
-                            pRipple
-                            joyrideStep="{{tMapDetail?.id}}2"
-                            text="Download the song as zip file"
-                            class="mr-3 card-btn"
-                            href="{{ latestVersion?.downloadURL }}"
-                            pTooltip="Download as zip file"
-                            ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
-                        ></a>
-                        <a
-                            pRipple
-                            joyrideStep="{{tMapDetail?.id}}3"
-                            text="Download and install the sond directly to your custom songs folder"
-                            class="mr-3 card-btn"
-                            (click)="onDownloadSingle()"
-                            [routerLink]=""
-                            pTooltip="Install song directly"
-                            ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
-                        ></a>
-                        <a
-                            pRipple
-                            joyrideStep="{{tMapDetail?.id}}4"
-                            class="card-btn"
-                            text="Copy the command for the song request manager for twitch"
-                            (click)="onCopySRM()"
-                            [routerLink]=""
-                            pTooltip="Copy song request command"
-                            ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
-                        ></a>
-                    </div>
-                </div>
-                <div class="row ml-0">
-                    <div class="col-auto d-flex align-items-stretch">
-                        <a
-                            joyrideStep="{{tMapDetail?.id}}5"
-                            text="Expand the card and display detailed map details"
-                            pRipple
-                            [routerLink]=""
-                            class="d-flex align-items-center expand-btn"
-                            pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
-                            (click)="expanded = !expanded"
-                            ><fa-icon
-                                *ngIf="!expanded && !isMobile"
-                                class="p-1"
-                                [icon]="['fas', 'chevron-right']"
+            <div class="col-12 pb-2 d-flex">
+                <p-skeleton
+                    height="2rem"
+                    class="w-100"
+                    *ngIf="loading; else controlContainer"
+                ></p-skeleton>
+                <ng-template #controlContainer>
+                    <div class="row py-1 w-100">
+                        <div class="col-auto">
+                            <fa-icon
+                                *ngIf="!tMapDetail && localMode"
+                                [icon]="['fas', 'ban']"
+                                class="mr-2 song-local-only-icon"
+                                pTooltip="{{id}} not found on BeatSaver"
                             ></fa-icon>
                             <fa-icon
-                                *ngIf="expanded && !isMobile"
-                                class="p-1"
-                                [icon]="['fas', 'chevron-left']"
+                                *ngIf="tMapDetail?.ranked"
+                                [icon]="['fas', 'trophy']"
+                                class="mr-2 song-ranked-icon"
+                                pTooltip="Ranked"
                             ></fa-icon>
                             <fa-icon
-                                *ngIf="!expanded && isMobile"
-                                class="p-1"
-                                [icon]="['fas', 'chevron-down']"
+                                *ngIf="tMapDetail?.qualified"
+                                [icon]="['fas', 'graduation-cap']"
+                                class="mr-2 song-qiali-icon"
+                                pTooltip="Qualified"
                             ></fa-icon>
                             <fa-icon
-                                *ngIf="expanded && isMobile"
-                                class="p-1"
-                                [icon]="['fas', 'chevron-up']"
+                                *ngIf="isInstalledSong && !localMode"
+                                [icon]="['fas', 'check-circle']"
+                                class="mr-2 song-installed-icon"
+                                pTooltip="Installed"
+                            >
+                            </fa-icon>
+                            <fa-icon
+                                *ngIf="isDeleted"
+                                [icon]="['fas', 'trash']"
+                                class="mr-2 song-deleted-icon"
+                                pTooltip="Deleted"
+                            >
+                            </fa-icon>
+                            <fa-icon
+                                *ngIf="isFav"
+                                [icon]="['fas', 'heart']"
+                                class="song-fav-icon"
+                                pTooltip="In your favorites"
                             ></fa-icon>
-                        </a>
+                        </div>
+                        <div class="col-auto ml-auto d-flex flex-wrap">
+                            <a
+                                *ngIf="isInstalledSong"
+                                pRipple
+                                class="mr-3 card-btn card-btn-danger"
+                                (click)="onUninstallSong($event)"
+                                [routerLink]=""
+                                pTooltip="Uninstall song"
+                                ><fa-icon [icon]="['fas', 'trash']"></fa-icon
+                            ></a>
+                            <a
+                                pRipple
+                                *ngIf="tMapDetail"
+                                joyrideStep="{{tMapDetail?.id}}2"
+                                text="Download the song as zip file"
+                                class="mr-3 card-btn"
+                                href="{{ latestVersion?.downloadURL }}"
+                                pTooltip="Download as zip file"
+                                ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
+                            ></a>
+                            <a
+                                *ngIf="tMapDetail && (!localMode || (localMode && isDeleted))"
+                                pRipple
+                                joyrideStep="{{tMapDetail?.id}}3"
+                                text="Download and install the sond directly to your custom songs folder"
+                                class="mr-3 card-btn"
+                                (click)="onDownloadSingle()"
+                                [routerLink]=""
+                                pTooltip="Install song directly"
+                                ><fa-icon [icon]="['fas', 'cloud-download-alt']"></fa-icon
+                            ></a>
+                            <a
+                                pRipple
+                                joyrideStep="{{tMapDetail?.id}}4"
+                                class="card-btn"
+                                text="Copy the command for the song request manager for twitch"
+                                (click)="onCopySRM()"
+                                [routerLink]=""
+                                pTooltip="Copy song request command"
+                                ><fa-icon [icon]="['fab', 'twitch']"></fa-icon
+                            ></a>
+                        </div>
                     </div>
-                </div>
+                    <div class="row ml-0" *ngIf="tMapDetail">
+                        <div class="col-auto d-flex align-items-stretch">
+                            <a
+                                joyrideStep="{{tMapDetail?.id}}5"
+                                text="Expand the card and display detailed map details"
+                                pRipple
+                                [routerLink]=""
+                                class="d-flex align-items-center expand-btn"
+                                pTooltip="{{expanded ? 'Collapse song' : 'Expand song'}}"
+                                (click)="expanded = !expanded"
+                            >
+                                <fa-icon
+                                    *ngIf="!expanded"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-down']"
+                                ></fa-icon>
+                                <fa-icon
+                                    *ngIf="expanded"
+                                    class="p-1"
+                                    [icon]="['fas', 'chevron-up']"
+                                ></fa-icon>
+                            </a>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
             <div class="mb-2 col-auto song-col-1">
                 <div class="song-cover-container">
                     <img
+                        *ngIf="!loading; else coverSkeleton"
                         joyrideStep="{{tMapDetail?.id}}6"
                         text="Click the cover to preview the map as video"
-                        [src]="latestVersion?.coverURL || 'assets/bs-default.jpeg'"
-                        [ngClass]="{
-                        'rounded float-start song-cover': true
-                    }"
+                        [src]="coverUrl | safe"
+                        class="rounded float-start song-cover"
                         alt="{{ songName }}"
                     />
-                    <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
+                    <ng-template #coverSkeleton>
+                        <p-skeleton width="100px" height="100px" *ngIf="loading"></p-skeleton>
+                    </ng-template>
+                    <div
+                        *ngIf="tMapDetail"
+                        (click)="onPlayPreview()"
+                        pRipple
+                        class="song-cover-hover"
+                    >
                         <fa-icon [icon]="['fas', 'play-circle']"></fa-icon>
                     </div>
                 </div>
-                <app-song-stats [tMapStats]="tMapDetail?.stats" class="pt-2 pb-1"></app-song-stats>
+                <app-song-stats
+                    *ngIf="tMapDetail"
+                    [tMapStats]="tMapDetail?.stats"
+                    class="pt-2 pb-1"
+                ></app-song-stats>
             </div>
-            <div class="mb-2 col">
+            <div class="mb-2 col trim">
                 <a
-                    [routerLink]="[tMapDetail?.id]"
-                    routerLinkActive="router-link-active"
+                    *ngIf="!loading; else songNameSkeleton"
+                    [routerLink]=""
+                    (click)="onOpenDetail()"
                     [title]="songName"
                 >
-                    <fa-icon
-                        *ngIf="tMapDetail?.ranked"
-                        [icon]="['fas', 'trophy']"
-                        class="song-ranked-icon"
-                        pTooltip="Ranked"
-                    ></fa-icon>
-                    <fa-icon
-                        *ngIf="tMapDetail?.qualified"
-                        [icon]="['fas', 'graduation-cap']"
-                        class="song-qiali-icon"
-                        pTooltip="Qualified"
-                    ></fa-icon>
                     {{ songNameShort }}</a
                 >
-                <br />
-                <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
-                <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                <ng-template #songNameSkeleton>
+                    <p-skeleton height="1.5rem" class="w-100" styleClass="mb-2"></p-skeleton>
+                </ng-template>
+
+                <div *ngIf="!loading; else mapperNameSkeleton" class="pb-2">
+                    <a [routerLink]=""> {{ mapperName }} </a>
+                    <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
+                </div>
+                <ng-template #mapperNameSkeleton>
+                    <p-skeleton height="1.5rem"></p-skeleton>
+                </ng-template>
                 <span
                     *ngFor="let groupedDif of diffsArr; let last = last"
                     [ngClass]="{ 'row no-gutters justify-content-start': true, 'pb-1': !last }"
@@ -148,20 +194,14 @@
                     ></app-difficulty-tag>
                 </span>
             </div>
-            <div
-                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
-                class="col-12 row no-gutters player-stats"
-            >
-                <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats; let last = last">
-                    <app-player-stats
-                        [ngClass]="{ 'col-12': true, 'player-stats-item-border': !last }"
-                        [stats]="statInfo"
-                    ></app-player-stats>
-                </ng-container>
-            </div>
         </div>
     </div>
-    <div *ngIf="expanded" class="col-12 expand-frame col-lg-6 p-2 row no-gutters">
-        <app-difficulty-card class="w-100" [groupedDifs]="diffs"></app-difficulty-card>
+    <div *ngIf="expanded && tMapDetail" class="col-12 expand-frame p-2 row no-gutters">
+        <app-difficulty-card
+            class="w-100"
+            [groupedDifs]="diffs"
+            [groupedLevelStatsData]="tGroupedLevelStatsData"
+        ></app-difficulty-card>
     </div>
 </div>
+<p-confirmPopup styleClass="confirm-delete"></p-confirmPopup>

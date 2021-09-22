@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { delay, tap } from 'rxjs/operators';
-import { UnsubscribeComponent } from '../../../../../models/unsubscribe.model';
+import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { SongPreviewService } from './song-preview.service';
 
 @Component({

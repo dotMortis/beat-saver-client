@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TSendReady } from '../../../../models/electron/send.channels';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { TourService } from '../../../services/root.provided/tour.service';
-import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
+import { ContentViewerComponent } from './content-viewer/content-viewer.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -12,7 +12,7 @@ import { NavigationBarComponent } from './navigation-bar/navigation-bar.componen
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent extends UnsubscribeComponent implements AfterViewInit, OnInit {
-    @ViewChild('nav') navBar?: NavigationBarComponent;
+    @ViewChild('cv') contentViewer?: ContentViewerComponent;
 
     private _isElectron?: boolean;
     get isElectron(): boolean {
@@ -32,7 +32,7 @@ export class DashboardComponent extends UnsubscribeComponent implements AfterVie
         if (version !== environment.version) {
             window.localStorage.setItem('version', environment.version);
             this._tourService.shown(false);
-            this.navBar?.showChangelog();
+            this.contentViewer?.showChangelog();
         }
         this._eleService.send<TSendReady>('READY', undefined);
     }

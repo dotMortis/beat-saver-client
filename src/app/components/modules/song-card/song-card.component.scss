@@ -16,9 +16,9 @@
         }
 
         .card-btn {
-            box-shadow: 0 0 2px 0 var(--primary);
             width: 2.5rem;
             min-width: 2.5rem;
+            font-size: 0.85rem;
             justify-content: center;
             display: flex;
             align-items: center;
@@ -26,10 +26,27 @@
             transition-duration: 0.2s; /* delays for 1 second */
             -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
 
-            &:hover {
-                box-shadow: 0 0 4px 0 var(--primary);
-                &:active {
-                    background-color: darken(#262626, 5);
+            &:not(.card-btn-danger) {
+                box-shadow: 0 0 2px 0 var(--primary);
+
+                &:hover {
+                    box-shadow: 0 0 4px 0 var(--primary);
+                    &:active {
+                        background-color: darken(#262626, 5);
+                    }
+                }
+            }
+
+            &.card-btn-danger {
+                box-shadow: 0 0 2px 0 var(--danger);
+                color: var(--danger);
+
+                &:hover {
+                    box-shadow: 0 0 4px 0 var(--danger);
+                    color: darken(#dc3545, 10);
+                    &:active {
+                        background-color: darken(#262626, 5);
+                    }
                 }
             }
         }
@@ -48,11 +65,15 @@
         }
 
         .song-fav-icon {
-            color: var(--yellow-400);
+            color: var(--pink-400);
         }
 
         .song-installed-icon {
             color: var(--success);
+        }
+
+        .song-deleted-icon {
+            color: var(--danger);
         }
 
         .song-col-1 {
@@ -60,11 +81,10 @@
             flex-direction: column;
             margin-right: 0.75rem;
             width: 100px;
-
             .song-cover-container {
                 position: relative;
 
-                img.song-cover {
+                .song-cover {
                     height: 100px;
                     width: 100%;
                     border-radius: 0.25rem !important;
@@ -96,14 +116,16 @@
         }
 
         .song-upload-date {
-            font-size: 0.6rem;
+            font-size: 0.75rem;
         }
-
         .song-ranked-icon {
             color: var(--yellow-500);
         }
         .song-qiali-icon {
             color: var(--cyan-500);
+        }
+        .song-local-only-icon {
+            color: var(--danger);
         }
 
         .player-stats {
@@ -134,7 +156,6 @@
         -webkit-transition-property: box-shadow; /* for Safari & Chrome */
         background-color: var(--surface-c);
         border-radius: 0.25rem;
-        overflow: hidden;
         &:hover {
             box-shadow: 0 0 5px 0 white;
         }
@@ -152,20 +173,48 @@
         }
     }
     &.song-fav .main-frame {
-        box-shadow: 0 0 5px 0px #fccc55, 0 0;
+        box-shadow: 0 0 5px 0px #ed4981, 0 0;
         &:hover {
-            box-shadow: 0 0 5px 2px #fccc55, 0 0;
+            box-shadow: 0 0 5px 2px #ed4981, 0 0;
         }
     }
     &.song-installed-fav {
         .main-frame {
-            box-shadow: 1px 1px 2px 0px #fccc55, -1px -1px 2px 0 #28a745;
+            box-shadow: 1px 1px 2px 0px #ed4981, -1px -1px 2px 0 #28a745;
             &:hover {
-                box-shadow: 2px 2px 3px 1px #fccc55, -2px -2px 3px 1px #28a745;
+                box-shadow: 2px 2px 3px 1px #ed4981, -2px -2px 3px 1px #28a745;
             }
         }
         .in-queue {
             background-color: rgba(28, 255, 7, 0.1);
+        }
+    }
+    &.song-deleted {
+        .main-frame {
+            box-shadow: 0 0, 0 0 5px 0 #dc3545;
+            &:hover {
+                box-shadow: 0 0, 0 0 5px 2px #dc3545;
+            }
+        }
+    }
+    &.song-deleted-fav {
+        .main-frame {
+            box-shadow: 1px 1px 2px 0px #ed4981, -1px -1px 2px 0 #dc3545;
+            &:hover {
+                box-shadow: 2px 2px 3px 1px #ed4981, -2px -2px 3px 1px #dc3545;
+            }
+        }
+    }
+
+    &.ranked {
+        .song-cover {
+            box-shadow: 0 0 8px 0 #fbc02d !important;
+        }
+    }
+
+    &.qualified {
+        .song-cover {
+            box-shadow: 0 0 8px 0 #00bcd4 !important;
         }
     }
 }

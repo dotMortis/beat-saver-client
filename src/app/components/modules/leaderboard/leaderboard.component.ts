@@ -2,10 +2,10 @@ import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { TLeaderboard, TScores } from '../../../../models/api.models';
-import { TBoardIdent } from '../../../../models/leaderboard.model';
-import { UnsubscribeComponent } from '../../../../models/unsubscribe.model';
+import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
+import { TLeaderboard, TScores } from '../../../../models/api/api.models';
+import { TBoardIdent } from '../../../../models/api/leaderboard.model';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { ApiService } from '../../../services/null.provided/api.service';
 
 @Component({
@@ -18,8 +18,8 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
     @Input()
     set boardIdent(val: TBoardIdent | undefined | null) {
         if (
-            ApiHelpers.computeDiffId(val?.difficulty) !==
-                ApiHelpers.computeDiffId(this._boardIdent?.difficulty) ||
+            MapsHelpers.computeDiffId(val?.difficulty) !==
+                MapsHelpers.computeDiffId(this._boardIdent?.difficulty) ||
             val?.hash !== this._boardIdent?.hash
         ) {
             this._boardIdent = val;
@@ -131,9 +131,7 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
     }
 
     getScoreClass(score: number): string {
-        if (score >= 90) return 'score-90';
-        else if (score >= 80) return 'score-80';
-        return 'score-0';
+        return MapsHelpers.getScoreClass(score);
     }
 
     onRefresh(): void {
@@ -145,8 +143,8 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
     private _calcScorePercent(scores: TScores[]): void {
         if (this._boardIdent && scores) {
             for (const score of scores) {
-                score.scorePercent = ApiHelpers.calculateScorePercent(
-                    ApiHelpers.calculateMaxScore(this._boardIdent.difficulty.notes),
+                score.scorePercent = MapsHelpers.calculateScorePercent(
+                    MapsHelpers.calculateMaxScore(this._boardIdent.difficulty.notes),
                     score.score
                 );
             }

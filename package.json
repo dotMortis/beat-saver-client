@@ -1,6 +1,6 @@
 {
     "name": "beat-saver-client",
-    "version": "0.6.0-alpha",
+    "version": "0.7.0-beta",
     "main": "dist/app/index.js",
     "description": "A BeatSaver desktop client",
     "author": {
@@ -19,6 +19,7 @@
         "ng:serve:dev": "ng serve -c development",
         "electron:tsc": "tsc -p tsconfig.electron.json",
         "electron:serve": "yarn clean && yarn copy && wait-on tcp:4200 && yarn electron:tsc && npx electron . --serve --debug",
+        "electron:serve:nf": "yarn clean && yarn copy && yarn electron:tsc && npx electron . --serve --debug",
         "prebuild": "yarn clean && yarn copy",
         "build": "yarn electron:tsc && ng build --configuration production",
         "build:prod": "yarn build -- -c production",
@@ -29,7 +30,8 @@
         "release:dev": "yarn build:prod && electron-builder build --win -p never",
         "clean": "rimraf dist && rimraf release",
         "copy": "copyfiles src/assets/splash.png app/html/**/*.html dist/",
-        "analyze": "webpack-bundle-analyzer dist/ui/stats.json"
+        "analyze": "webpack-bundle-analyzer dist/ui/stats.json",
+        "rebuild:sqlite": "./node_modules/.bin/electron-rebuild -f -w better-sqlite3"
     },
     "private": true,
     "dependencies": {
@@ -49,6 +51,7 @@
         "@fortawesome/free-regular-svg-icons": "^5.15.3",
         "@fortawesome/free-solid-svg-icons": "^5.15.3",
         "@ng-bootstrap/ng-bootstrap": "10",
+        "better-sqlite3": "^7.4.3",
         "bootstrap": "^4.5.0",
         "electron-updater": "^4.3.9",
         "jszip": "^3.7.1",
@@ -73,6 +76,7 @@
         "@angular-eslint/template-parser": "^12.0.0",
         "@angular/cli": "~12.2.3",
         "@angular/compiler-cli": "12",
+        "@types/better-sqlite3": "^7.4.0",
         "@types/jasmine": "~3.8.0",
         "@types/jszip": "^3.4.1",
         "@types/node": "^16.4.13",
@@ -83,6 +87,7 @@
         "copyfiles": "^2.4.1",
         "electron": "^13.1.8",
         "electron-builder": "^22.11.7",
+        "electron-rebuild": "^3.2.3",
         "eslint": "^7.26.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^3.4.0",

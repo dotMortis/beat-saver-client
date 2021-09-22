@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ApiHelpers } from '../../../../models/api.helpers';
-import { ECharacteristic, TMapDifficulty } from '../../../../models/api.models';
+import { ECharacteristic, EDifficulty, TMapDifficulty } from '../../../../models/api/api.models';
+import { MapsHelpers } from '../../../../models/maps/maps.helpers';
+import { TLevelStatsData } from '../../../../models/player/player-data.model';
 
 @Component({
     selector: 'app-difficulty-card',
@@ -8,7 +9,18 @@ import { ECharacteristic, TMapDifficulty } from '../../../../models/api.models';
     styleUrls: ['./difficulty-card.component.scss']
 })
 export class DifficultyCardComponent implements OnInit {
-    @Input() fontSize: string;
+    private _groupedLevelStatsData?: Map<ECharacteristic, TLevelStatsData[]>;
+    @Input()
+    get groupedLevelStatsData(): Map<ECharacteristic, TLevelStatsData[]> | undefined {
+        return this._groupedLevelStatsData;
+    }
+    set groupedLevelStatsData(val: Map<ECharacteristic, TLevelStatsData[]> | undefined) {
+        this._groupedLevelStatsData = val;
+    }
+    get activeLevelStatsData(): TLevelStatsData[] | undefined {
+        return this._activeChar ? this._groupedLevelStatsData?.get(this._activeChar) : undefined;
+    }
+
     private _groupedDifs?: Map<ECharacteristic, TMapDifficulty[]>;
     @Input()
     get groupedDifs(): Map<ECharacteristic, TMapDifficulty[]> | undefined {
@@ -17,25 +29,27 @@ export class DifficultyCardComponent implements OnInit {
     set groupedDifs(val: Map<ECharacteristic, TMapDifficulty[]> | undefined) {
         this._groupedDifs = val;
     }
-    @Input() selectable: boolean;
 
+    @Input() selectable: boolean;
     private _selectedDiffId?: string;
     private _selectedDiff?: TMapDifficulty;
+    private _activeChar?: ECharacteristic;
     @Input()
     get selectedDiff(): TMapDifficulty | undefined {
         return this._selectedDiff;
     }
     set selectedDiff(val: TMapDifficulty | undefined) {
-        if (this._selectedDiffId !== ApiHelpers.computeDiffId(val)) {
+        if (this._selectedDiffId !== MapsHelpers.computeDiffId(val)) {
             this._selectedDiff = val;
-            this._selectedDiffId = val ? ApiHelpers.computeDiffId(val) : undefined;
+            this._selectedDiffId = val ? MapsHelpers.computeDiffId(val) : undefined;
+            this._activeChar = val?.characteristic;
             this.selectedDiffChange.next(this._selectedDiff);
         }
     }
     @Output() selectedDiffChange: EventEmitter<TMapDifficulty>;
 
     public isSelected(diff: TMapDifficulty): boolean {
-        return this._selectedDiffId === ApiHelpers.computeDiffId(diff);
+        return this._selectedDiffId === MapsHelpers.computeDiffId(diff);
     }
 
     private _characteristics: { label: ECharacteristic; icon: string; diffs: TMapDifficulty[] }[];
@@ -75,7 +89,6 @@ export class DifficultyCardComponent implements OnInit {
 
     constructor() {
         this.selectable = false;
-        this.fontSize = '12px';
         this.selectedDiffChange = new EventEmitter<TMapDifficulty>();
         this._characteristics = new Array<{
             label: ECharacteristic;
@@ -100,15 +113,29 @@ export class DifficultyCardComponent implements OnInit {
         }
     }
 
+    getScoreClass(score: number): string {
+        return MapsHelpers.getScoreClass(score);
+    }
+
     onDiffSelect(diff: TMapDifficulty): void {
         this.selectedDiff = diff;
     }
 
     getIconUrl(characteristic: ECharacteristic): string {
-        return ApiHelpers.getCharacteristicIcon(characteristic) || '';
+        return MapsHelpers.getCharacteristicIcon(characteristic) || '';
     }
 
     getLabel(tMapDifficulty: TMapDifficulty): string {
-        return ApiHelpers.getDifficultyLabel(tMapDifficulty?.difficulty);
+        return MapsHelpers.getDifficultyLabel(tMapDifficulty?.difficulty);
+    }
+
+    getPlayerStatsData(diff: EDifficulty, notes: number): TLevelStatsData | undefined {
+        const diffIndex = MapsHelpers.getIndexFromDifficulty(diff);
+        const levelStats = this.activeLevelStatsData?.find(data => data.difficulty === diffIndex);
+        if (levelStats) {
+            const maxScore = MapsHelpers.calculateMaxScore(notes);
+            levelStats.percent = MapsHelpers.calculateScorePercent(maxScore, levelStats.highScore);
+        }
+        return levelStats;
     }
 }

@@ -1,0 +1,28 @@
+<div class="search-bar px-2 mb-4">
+    <div class="row pt-2 justify-content-between">
+        <div class="col-6 col-lg-4 pb-2">
+            <span class="p-input-icon-left w-100">
+                <i class="pi pi-search"></i>
+                <input
+                    class="p-inputtext-sm w-100"
+                    type="text"
+                    placeholder="Search"
+                    (keydown.enter)="onSearch()"
+                    pInputText
+                    [(ngModel)]="localMapsService.filter.q"
+                />
+            </span>
+        </div>
+
+        <div class="col-6 col-lg-2 pb-2">
+            <button
+                pButton
+                pRipple
+                type="button"
+                class="w-100"
+                label="search"
+                (click)="onSearch()"
+            ></button>
+        </div>
+    </div>
+</div>

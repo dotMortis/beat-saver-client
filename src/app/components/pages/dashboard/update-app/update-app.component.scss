@@ -8,6 +8,7 @@
     overflow: hidden;
     background-color: var(--info);
     max-width: 350px;
+    z-index: 3;
 }
 
 :host ::ng-deep {

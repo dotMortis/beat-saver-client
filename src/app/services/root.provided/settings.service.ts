@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../../models/electron/invoke.channels';
 import { TSettings } from '../../../models/settings.model';
 import { ElectronService } from './electron.service';
+import { NotifyService } from './notify.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +13,15 @@ export class SettingsService {
     private _visible: boolean;
     set visible(val: boolean) {
         if (this._visible !== val) {
+            if (
+                !val &&
+                (!this.settings?.bsInstallPath.value ||
+                    this.settings?.bsInstallPath.error ||
+                    !this.settings?.bsAppDataPath.value ||
+                    this.settings?.bsAppDataPath.error)
+            ) {
+                return;
+            }
             this._visible = val;
             this.visibleChange.next(val);
         }
@@ -38,7 +48,7 @@ export class SettingsService {
             : false;
     }
 
-    constructor(public eleService: ElectronService) {
+    constructor(public eleService: ElectronService, private _notify: NotifyService) {
         this._visible = false;
         this.visibleChange = new BehaviorSubject<boolean>(false);
         this.settingsChange = new EventEmitter<TSettings>();
@@ -60,7 +70,10 @@ export class SettingsService {
                 'SET_SETTINGS',
                 this._settings
             );
-            if (result) {
+            if (result instanceof Error) {
+                this._notify.error({ title: 'Settings Save Error', error: result });
+                throw result;
+            } else if (result) {
                 this._settings = result.result;
                 this.settingsChange.next(this._settings);
                 return result;
@@ -74,7 +87,10 @@ export class SettingsService {
             'GET_SETTINGS',
             undefined
         );
-        if (settings) {
+        if (settings instanceof Error) {
+            this._notify.error({ title: 'Settings Load Error', error: settings });
+            throw settings;
+        } else if (settings) {
             this._settings = settings.result;
             this.settingsChange.next(this._settings);
         }

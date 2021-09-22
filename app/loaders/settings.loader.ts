@@ -11,28 +11,38 @@ import {
 import * as path from 'path';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../src/models/electron/invoke.channels';
 import { TSettingCheck, TSettings, TSettingType } from '../../src/models/settings.model';
+import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 
 export const getSettingsHandle = IpcHelerps.ipcMainHandle<TInvokeGetSettings>(
     'GET_SETTINGS',
     async (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return { result: settings.getOpts() };
+        try {
+            return { result: settings.getOpts() };
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
 export const setSettingsHandle = IpcHelerps.ipcMainHandle<TInvokeSetSettings>(
     'SET_SETTINGS',
     async (event: Electron.IpcMainInvokeEvent, args: TSettings) => {
-        return { result: settings.setOpts(args) };
+        try {
+            return { result: settings.setOpts(args) };
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
-class Settings {
+class Settings extends CommonLoader {
     private _settings: TSettings;
     private _fullPath: string;
     private _folderPath: string;
 
     constructor() {
+        super();
         this._folderPath = path.join(app.getPath('appData'), app.getName());
         this._fullPath = path.join(this._folderPath, 'settings.json');
         this._settings = {
@@ -197,3 +207,4 @@ class Settings {
 }
 
 export const settings = new Settings();
+export default settings;

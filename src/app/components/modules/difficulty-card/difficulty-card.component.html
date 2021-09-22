@@ -3,6 +3,7 @@
         [options]="characteristics"
         [(ngModel)]="selectedCharacteristic"
         optionLabel="label"
+        styleClass="w-100"
     >
         <ng-template pTemplate="selectedItem">
             <div class="characteristic-item" *ngIf="selectedCharacteristic">
@@ -22,28 +23,26 @@
         <div
             *ngFor="let diff of selectedCharacteristic?.diffs; let last = last"
             [className]="diff.difficulty"
-            [ngClass]="{ 'row diff-item px-2 py-1 no-gutters': true, 'diff-item-border': !last, 'selectable': selectable, 'selected': isSelected(diff) }"
+            [ngClass]="{ 'row diff-item px-2 py-1 no-gutters justify-content-between': true, 'diff-item-border': !last, 'selectable': selectable, 'selected': isSelected(diff) }"
             (click)="onDiffSelect(diff)"
         >
             <div class="col characteristic-item">
-                <img [src]="selectedCharacteristic?.icon" class="char-icon mr-2" />
+                <img [src]="selectedCharacteristic?.icon" class="char-icon mr-1" />
                 <span class="char-label">{{ getLabel(diff) }}</span>
             </div>
             <div *ngIf="diff.stars" class="col ranked-item" pTooltip="Ranked stars">
                 <fa-icon [icon]="['fas', 'star']" class="mr-1"></fa-icon>
                 <span class="char-label">{{ diff.stars }}</span>
             </div>
-            <div class="col-auto row no-gutters">
-                <div class="col-auto px-1 diff-stat-group">
+            <div class="col-auto row no-gutters diff-stats flex-fill">
+                <div class="col-auto pr-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Parity errors">
                         <img
                             alt="Parity errors"
                             src="assets/icons/error.png"
                             class="diff-stat-img"
                         />
-                        <span [style]="{'font-size': fontSize}"
-                            >{{ diff.paritySummary.errors }}</span
-                        >
+                        <span>{{ diff.paritySummary.errors }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Parity warnings">
                         <img
@@ -51,15 +50,13 @@
                             src="assets/icons/warn.png"
                             class="diff-stat-img"
                         />
-                        <span [style]="{'font-size': fontSize}"
-                            >{{ diff.paritySummary.warns }}</span
-                        >
+                        <span>{{ diff.paritySummary.warns }}</span>
                     </div>
                 </div>
-                <div class="col-auto px-1 diff-stat-group">
+                <div class="col-auto pr-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Notes">
                         <img alt="Notes" src="assets/icons/notes.png" class="diff-stat-img" />
-                        <span [style]="{'font-size': fontSize}">{{ diff.notes }}</span>
+                        <span>{{ diff.notes }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Note jump speed">
                         <img
@@ -67,13 +64,13 @@
                             src="assets/icons/njs.png"
                             class="diff-stat-img"
                         />
-                        <span [style]="{'font-size': fontSize}">{{ diff.njs }}</span>
+                        <span>{{ diff.njs | number: '1.2-2' }}</span>
                     </div>
                 </div>
-                <div class="col-auto px-1 diff-stat-group">
+                <div class="col-auto pr-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Bombs">
                         <img alt="Bombs" src="assets/icons/bombs.png" class="diff-stat-img" />
-                        <span [style]="{'font-size': fontSize}">{{ diff.bombs }}</span>
+                        <span>{{ diff.bombs }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Notes per second">
                         <img
@@ -81,20 +78,55 @@
                             src="assets/icons/nps.png"
                             class="diff-stat-img"
                         />
-                        <span [style]="{'font-size': fontSize}">{{ diff.nps }}</span>
+                        <span>{{ diff.nps| number: '1.2-2' }}</span>
                     </div>
                 </div>
-                <div class="col-auto px-1 diff-stat-group">
+                <div class="col-auto pr-1 diff-stat-group">
                     <div class="diff-stat-item pb-1" pTooltip="Walls">
                         <img alt="Walls" src="assets/icons/walls.png" class="diff-stat-img" />
-                        <span [style]="{'font-size': fontSize}">{{ diff.obstacles }}</span>
+                        <span>{{ diff.obstacles }}</span>
                     </div>
                     <div class="diff-stat-item" pTooltip="Lights">
                         <img alt="Lights" src="assets/icons/lights.png" class="diff-stat-img" />
-                        <span [style]="{'font-size': fontSize}">{{ diff.events }}</span>
+                        <span>{{ diff.events }}</span>
                     </div>
                 </div>
             </div>
+            <ng-container
+                [ngTemplateOutlet]="playerStats"
+                [ngTemplateOutletContext]="{stat: getPlayerStatsData(diff.difficulty, diff.notes)}"
+            ></ng-container>
         </div>
     </div>
+
+    <ng-template #playerStats let-stat="stat">
+        <div *ngIf="stat" class="col-12 player-stats">
+            <div class="row justify-content-start">
+                <div class="col-auto">
+                    <span pTooltip="Your play count" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'play']" class="mr-1"></fa-icon>
+                        <span class="char-label">{{ stat.playCount || 0 | number: '1.0-0' }}</span>
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span pTooltip="Your high score" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'trophy']" class="mr-1"></fa-icon>
+                        <span class="char-label"
+                            >{{ stat.highScore || 0 | number: '1.0-0' }} (<span
+                                [className]="getScoreClass(stat.percent)"
+                            >
+                                {{stat.percent || 0 | number: '1.2-2'}}% </span
+                            >)</span
+                        >
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span pTooltip="Your max combo" tooltipPosition="top">
+                        <fa-icon [icon]="['fas', 'link']" class="mr-1"></fa-icon>
+                        <span class="char-label">{{ stat.maxCombo || 0 | number: '1.0-0' }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </div>

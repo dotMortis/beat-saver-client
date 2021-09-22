@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TMapStats } from '../../../../models/api.models';
+import { TMapStats } from '../../../../models/api/api.models';
 
 @Component({
     selector: 'app-song-stats',

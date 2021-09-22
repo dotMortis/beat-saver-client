@@ -1,0 +1,22 @@
+<div class="container detail-btn-panel" *ngIf="cvService.songDetailViews.size > 0">
+    <div class="row mx-n1 detail-btn-sub-panel">
+        <div
+            class="col-auto px-1 detail-btn-item-wrap"
+            [ngClass]="{active: activeId === details.mapDetail.id}"
+            *ngFor="let details of cvService.songDetailViewArr"
+        >
+            <div
+                (click)="openNext.next(details.mapDetail.id)"
+                class="detail-btn-item"
+                style="background-image: url({{details.latestVersion.coverURL}})"
+            >
+                <div pRipple class="detail-btn-content">
+                    <div>{{details.mapDetail.metadata.songName }}</div>
+                </div>
+                <div (click)="onCloseDetailTab(details.mapDetail)" pRipple class="detail-btn-close">
+                    <fa-icon [icon]="['fas', 'ban']"></fa-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

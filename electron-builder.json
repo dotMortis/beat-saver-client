@@ -24,7 +24,8 @@
         "allowToChangeInstallationDirectory": true,
         "allowElevation": false,
         "perMachine": true,
-        "differentialPackage": false
+        "differentialPackage": false,
+        "include": "build/installer.nsh"
     },
     "portable": {
         "splashImage": "assets/icons/splash.bmp",

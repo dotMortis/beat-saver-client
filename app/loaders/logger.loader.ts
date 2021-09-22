@@ -1,30 +1,33 @@
 import * as winston from 'winston';
 import { TSendDebug, TSendError, TSendInfo } from '../../src/models/electron/send.channels';
+import { CommonLoader } from '../models/CommonLoader.model';
 import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
+import { MainWindow } from '../models/main.window';
 
 export const loadDebugSender = IpcHelerps.ipcMainOn<TSendDebug>(
     'DEBUG',
     (event: Electron.IpcMainInvokeEvent, args: { msg: string; meta?: any }) => {
-        return _logger.debug(args.msg, args.meta);
+        return logger.debug(args.msg, args.meta);
     }
 );
 export const loadInfoSender = IpcHelerps.ipcMainOn<TSendInfo>(
     'INFO',
     (event: Electron.IpcMainInvokeEvent, args: { msg: string; meta?: any }) => {
-        return _logger.info(args.msg, args.meta);
+        return logger.info(args.msg, args.meta);
     }
 );
 export const loadErrorSender = IpcHelerps.ipcMainOn<TSendError>(
     'ERROR',
     (event: Electron.IpcMainInvokeEvent, args: string | Error) => {
-        return _logger.error(args);
+        return logger.error(args);
     }
 );
 
-class Logger {
-    private _logger: winston.Logger;
+class Logger extends CommonLoader {
+    private _logger!: winston.Logger;
 
-    constructor(logger: winston.Logger) {
+    init(window: MainWindow, logger: winston.Logger) {
+        super.init(window);
         this._logger = logger;
     }
 
@@ -41,11 +44,5 @@ class Logger {
     }
 }
 
-let _logger: Logger;
-export const appLogger = () => _logger;
-export const initLogger = (logger: winston.Logger) => {
-    if (!_logger) {
-        _logger = new Logger(logger);
-    }
-    return _logger;
-};
+export const logger = new Logger();
+export default logger;

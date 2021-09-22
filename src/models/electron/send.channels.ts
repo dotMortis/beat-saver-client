@@ -45,3 +45,14 @@ export type TSendUpdateDlProgress = TSend<'UPDATE_DL_PROGRESS', ProgressInfo>;
 export type TSendUpdateDownlaoded = TSend<'UPDATE_DOWNLOADED', UpdateInfo>;
 export type TSendUpdate = TSend<'UPDATE', void>;
 //#endregion
+
+//#region local maps sync
+export type TSendMapSyncStatus = TSend<'MAP_SYNC_STATUS', TMapSyncStatus>;
+export type TMapSyncStatus = {
+    status: 'SYNCING' | 'FINISH' | 'ERROR';
+    error?: Error;
+    currentCount: number;
+    sum: number;
+};
+export type TSendMapsCount = TSend<'MAPS_COUNT', number>;
+//#endregion

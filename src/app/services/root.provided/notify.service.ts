@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { TFileLoaded } from '../../../models/types';
+import { TFileLoaded } from '../../../models/electron/file-loaded.model';
 
 @Injectable({
     providedIn: 'root'

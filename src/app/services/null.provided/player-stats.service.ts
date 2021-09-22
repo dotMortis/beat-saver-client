@@ -2,15 +2,15 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, reduce, takeWhile } from 'rxjs/operators';
 import { v4 } from 'uuid';
+import { TFileLoaded } from '../../../models/electron/file-loaded.model';
 import {
     TInvokeGetPlayerNames,
     TInvokeGetPlayerSongStats,
     TInvokeLoadPlayedSongs
 } from '../../../models/electron/invoke.channels';
 import { TSendDebug } from '../../../models/electron/send.channels';
-import { TSongHash } from '../../../models/played-songs.model';
-import { TLevelStatsInfo } from '../../../models/player-data.model';
-import { TFileLoaded } from '../../../models/types';
+import { TSongHash } from '../../../models/maps/map-ids.model';
+import { TLevelStatsInfo } from '../../../models/player/player-data.model';
 import { ElectronService } from '../root.provided/electron.service';
 import { NotifyService } from '../root.provided/notify.service';
 
@@ -77,8 +77,12 @@ export class PlayerStatsService {
                     } else {
                         const result = await this._eleService.invoke<TInvokeGetPlayerSongStats>(
                             'GET_PLAYER_SONG_STATS',
-                            { playerName: selectedPlayer.name, songHash }
+                            { playerName: selectedPlayer.name, mapHash: songHash }
                         );
+                        if (result instanceof Error) {
+                            this._notify.error({ error: result, title: 'Get Player Song Stats' });
+                            throw result;
+                        }
                         this._notify.errorFileHandle(result, 'BS AppData');
                         return result;
                     }
@@ -120,6 +124,13 @@ export class PlayerStatsService {
                                 'GET_PLAYER_NAMES',
                                 undefined
                             );
+                            if (ipcResult instanceof Error) {
+                                this._notify.error({
+                                    error: ipcResult,
+                                    title: 'Load Player Names'
+                                });
+                                throw result;
+                            }
                             if (ipcResult !== false && ipcResult.result instanceof Array) {
                                 this.playerNames = ipcResult.result;
                                 this.selectedPlayer = { name: this.playerNames[0] };
@@ -162,6 +173,13 @@ export class PlayerStatsService {
                 'LOAD_PLAYER_STATS',
                 undefined
             );
+            if (result instanceof Error) {
+                this._notify.error({
+                    error: result,
+                    title: 'Load Player Stats'
+                });
+                throw result;
+            }
             this._notify.errorFileHandle(result, 'BS AppData');
             if (this._playerNamesLoaded) {
                 await this.loadPlayerNames().toPromise();

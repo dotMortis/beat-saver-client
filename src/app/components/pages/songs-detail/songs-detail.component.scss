@@ -7,9 +7,9 @@
         border-radius: 0.25rem;
 
         .card-btn {
-            box-shadow: 0 0 2px 0 var(--primary);
             width: 2.5rem;
             min-width: 2.5rem;
+            font-size: 0.85rem;
             justify-content: center;
             display: flex;
             align-items: center;
@@ -17,16 +17,33 @@
             transition-duration: 0.2s; /* delays for 1 second */
             -webkit-transition-duration: 0.2s; /* for Safari & Chrome */
 
-            &:hover {
-                box-shadow: 0 0 4px 0 var(--primary);
-                &:active {
-                    background-color: darken(#262626, 5);
+            &:not(.card-btn-danger) {
+                box-shadow: 0 0 2px 0 var(--primary);
+
+                &:hover {
+                    box-shadow: 0 0 4px 0 var(--primary);
+                    &:active {
+                        background-color: darken(#262626, 5);
+                    }
+                }
+            }
+
+            &.card-btn-danger {
+                box-shadow: 0 0 2px 0 var(--danger);
+                color: var(--danger);
+
+                &:hover {
+                    box-shadow: 0 0 4px 0 var(--danger);
+                    color: darken(#dc3545, 10);
+                    &:active {
+                        background-color: darken(#262626, 5);
+                    }
                 }
             }
         }
 
         .song-fav-icon {
-            color: var(--yellow-400);
+            color: var(--pink-400);
         }
 
         .song-installed-icon {
@@ -135,11 +152,11 @@
         }
     }
     &.song-fav .header-frame {
-        box-shadow: 0 0 5px 0px #fccc55, 0 0;
+        box-shadow: 0 0 5px 0px #ed4981, 0 0;
     }
     &.song-installed-fav {
         .header-frame {
-            box-shadow: 1px 1px 2px 0px #fccc55, -1px -1px 2px 0 #28a745;
+            box-shadow: 1px 1px 2px 0px #ed4981, -1px -1px 2px 0 #28a745;
         }
         .in-queue {
             background-color: rgba(28, 255, 7, 0.1);

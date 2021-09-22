@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Calendar } from 'primeng/calendar';
 import { EMPTY } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { EListSortOrder, IListOptions, ListOptions } from '../../../../models/api.models';
+import { EListSortOrder, IListOptions, ListOptions } from '../../../../models/api/api.models';
 import { TSendError } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';

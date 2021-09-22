@@ -2,9 +2,9 @@
     (contextmenu)="onCardClick()"
     [ngClass]="{
     'song-detail-container row no-gutters': true,
-    'song-installed': isInstalledSong.status && !tLevelStatsInfo?.isFav,
-    'song-fav': tLevelStatsInfo?.isFav && !isInstalledSong.status,
-    'song-installed-fav': tLevelStatsInfo?.isFav && isInstalledSong.status
+    'song-installed': isInstalledSong && !isFav,
+    'song-fav': isFav && !isInstalledSong,
+    'song-installed-fav': isFav && isInstalledSong
 }"
 >
     <div
@@ -14,20 +14,29 @@
         <div class="row no-gutters">
             <div class="col-auto">
                 <fa-icon
-                    *ngIf="isInstalledSong.status"
+                    *ngIf="isInstalledSong"
                     [icon]="['fas', 'check-circle']"
                     class="mr-2 song-installed-icon"
                     pTooltip="Installed"
                 >
                 </fa-icon>
                 <fa-icon
-                    *ngIf="tLevelStatsInfo?.isFav"
-                    [icon]="['fas', 'star']"
+                    *ngIf="isFav"
+                    [icon]="['fas', 'heart']"
                     class="song-fav-icon"
                     pTooltip="In your favorites"
                 ></fa-icon>
             </div>
             <div class="col-auto ml-auto d-flex flex-wrap">
+                <a
+                    *ngIf="isInstalledSong"
+                    pRipple
+                    class="mr-3 card-btn card-btn-danger"
+                    (click)="onUninstallSong($event)"
+                    [routerLink]=""
+                    pTooltip="Uninstall song"
+                    ><fa-icon [icon]="['fas', 'trash']"></fa-icon
+                ></a>
                 <a
                     pRipple
                     class="mr-3 card-btn"
@@ -57,7 +66,7 @@
     <div class="col-12 p-2 mb-2 main-frame">
         <div class="row no-gutters">
             <div class="col-12 mb-2">
-                <h5>
+                <h5 class="trim">
                     <fa-icon
                         *ngIf="tMapDetail?.ranked"
                         [icon]="['fas', 'trophy']"
@@ -98,23 +107,13 @@
     </div>
     <div class="col-12 diff-frame">
         <div class="row mx-n1 inner-diff-frame">
-            <div
-                *ngIf="tLevelStatsInfo?.levelStats?.length || 0 > 0"
-                class="col-12 px-1 mb-2 row no-gutters player-stats"
-            >
-                <div class="diff-item">
-                    <ng-container *ngFor="let statInfo of tLevelStatsInfo?.levelStats">
-                        <app-player-stats [stats]="statInfo"></app-player-stats>
-                    </ng-container>
-                </div>
-            </div>
             <div class="col-12 px-1 col-xl-4 mb-2 mb-lg-0">
                 <div class="row">
                     <div class="col-12 pb-2">
                         <div class="mapper-stats">
                             <div class="d-flex justify-content-between">
                                 <div>Mapper</div>
-                                <a [routerLink]="">
+                                <a class="trim" [routerLink]="">
                                     {{ tMapDetail?.uploader?.name || 'N/A' }}
                                     ({{tMapDetail?.metadata?.levelAuthorName}})
                                 </a>
@@ -133,13 +132,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 pb-2">
                         <app-difficulty-card
                             [selectable]="true"
-                            fontSize="10px"
                             *ngIf="diffs"
                             class="diff-item"
                             [groupedDifs]="diffs"
+                            [groupedLevelStatsData]="groupedLevelStatsData"
                             (selectedDiffChange)="onDiffSelected($event)"
                         ></app-difficulty-card>
                     </div>
@@ -151,3 +150,4 @@
         </div>
     </div>
 </div>
+<p-confirmPopup styleClass="confirm-delete"></p-confirmPopup>

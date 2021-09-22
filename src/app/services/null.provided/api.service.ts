@@ -1,8 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { ApiHelpers } from '../../../models/api.helpers';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { delay, finalize, first, mergeMap, tap } from 'rxjs/operators';
 import {
     ECharacteristic,
     EDifficulty,
@@ -12,8 +11,9 @@ import {
     TLeaderboard,
     TMapDetail,
     TSearchResult
-} from '../../../models/api.models';
-import { TSongHash } from '../../../models/played-songs.model';
+} from '../../../models/api/api.models';
+import { TSongHash } from '../../../models/maps/map-ids.model';
+import { MapsHelpers } from '../../../models/maps/maps.helpers';
 
 @Injectable({
     providedIn: null
@@ -131,11 +131,11 @@ export class ApiService {
         let queryParams = new HttpParams();
         queryParams = queryParams.append(
             'difficulty',
-            ApiHelpers.getDifficultyScoreSaberIndex(difficulty)
+            MapsHelpers.getDifficultyScoreSaberIndex(difficulty)
         );
         queryParams = queryParams.append(
             'gameMode',
-            ApiHelpers.getCharacteristicScoreSaberIndex(characteristic)
+            MapsHelpers.getCharacteristicScoreSaberIndex(characteristic)
         );
         return forkJoin(
             pages.map((page: number) => {
@@ -146,8 +146,15 @@ export class ApiService {
         );
     }
 
+    private _requests = 0;
     public getById(songId: string): Observable<TMapDetail> {
-        return this._http.get<TMapDetail>(this._computePath(['maps', 'id', songId]));
+        this._requests++;
+        return of(null).pipe(
+            first(),
+            delay((this._requests - 1) * 100),
+            mergeMap(() => this._http.get<TMapDetail>(this._computePath(['maps', 'id', songId]))),
+            finalize(() => this._requests--)
+        );
     }
 
     public downloadZip(path: string) {
