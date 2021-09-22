@@ -27,7 +27,9 @@ export class LocalMapsComponent extends UnsubscribeComponent implements OnInit {
             )
         );
         this._setCardSettings(this._settingsService.settings);
-        if (!this.localMapsService.searchResult || !this.localMapsService.searchResult.length)
+        console.log(this.localMapsService.searchResult);
+
+        if (!this.localMapsService.searchResult || this.localMapsService.searchResult.length === 0)
             this.onSearch(false);
     }
 

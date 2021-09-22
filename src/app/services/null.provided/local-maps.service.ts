@@ -103,7 +103,10 @@ export class LocalMapsService {
             (sub: Subscriber<false | ILocalMapInfo[]>) => {
                 this._eleService
                     .invoke<TInvokeFilterLocalMaps>('FILTER_LOCAL_MAPS', {
-                        q: this._latestFilter ? `%${this._latestFilter.q}%` : undefined,
+                        q:
+                            this._latestFilter != null && this._latestFilter.q
+                                ? `%${this._latestFilter.q}%`
+                                : undefined,
                         page: this._page
                     })
                     .then(result => {
