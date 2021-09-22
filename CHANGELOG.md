@@ -3,6 +3,7 @@
 ## [0.7.0] - Soon
 
 ### Added
+- move to beta versions
 - local songs search page
 - local songs filter
 - local songs counter
