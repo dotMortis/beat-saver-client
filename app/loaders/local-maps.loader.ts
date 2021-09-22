@@ -2,7 +2,6 @@ import db, { Database } from 'better-sqlite3';
 import { createHash } from 'crypto';
 import { app } from 'electron';
 import {
-    copyFileSync,
     Dirent,
     existsSync,
     mkdirSync,
@@ -40,16 +39,24 @@ import { settings } from './settings.loader';
 
 export const loadInstalledSongsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadInstalledSongs>(
     'LOAD_INSTALLED_STATS',
-    (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return localMaps.loadInstalledMaps();
+    async (event: Electron.IpcMainInvokeEvent, args: void) => {
+        try {
+            return await localMaps.loadInstalledMaps();
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
 export const mapIsInstalledHandle = IpcHelerps.ipcMainHandle<TInvokeIsInstalled>(
     'SONG_IS_INSTALLED',
-    (event: Electron.IpcMainInvokeEvent, args: { mapId: TSongId }) => {
-        const { mapId } = args;
-        return localMaps.mapIsInstalled(mapId);
+    async (event: Electron.IpcMainInvokeEvent, args: { mapId: TSongId }) => {
+        try {
+            const { mapId } = args;
+            return await localMaps.mapIsInstalled(mapId);
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
@@ -68,8 +75,12 @@ export const filterLocalMapsHandle = IpcHelerps.ipcMainHandle<TInvokeFilterLocal
 export const deleteSongHandle = IpcHelerps.ipcMainHandle<TInvokeDeleteSong>(
     'DELETE_SONG',
     async (event: Electron.IpcMainInvokeEvent, args: { id: TSongId }) => {
-        const { id } = args;
-        return localMaps.deleteSong(id);
+        try {
+            const { id } = args;
+            return localMaps.deleteSong(id);
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
@@ -79,7 +90,11 @@ export const installSongHandle = IpcHelerps.ipcMainHandle<TInvokeInstallSong>(
         event: Electron.IpcMainInvokeEvent,
         args: { arrayBuffer: ArrayBuffer; mapDetail: TMapDetail; latestVersion: TMapVersion }
     ) => {
-        return localMaps.installSong(args);
+        try {
+            return await localMaps.installSong(args);
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
@@ -125,7 +140,7 @@ class LocalMaps extends CommonLoader {
         this._loaded = new BehaviorSubject<TFileLoaded>(false);
         this._loading = false;
         this._mapIds = new Set<string>();
-        const dbFilePath = this._ensureDbFile();
+        const dbFilePath = path.resolve(app.getPath('cache'), app.getName(), 'db.sqlite3');
         this._db = new db(dbFilePath, { fileMustExist: true, verbose: logger.debug });
         this._initLocalMapSync();
     }
@@ -176,46 +191,37 @@ class LocalMaps extends CommonLoader {
             .map((info: TDBLocalMapInfo) => new LocalMapInfo(info));
     }
 
-    deleteSong(id: TSongId): true | Error {
-        try {
-            const folderName = this._getFolderName(id);
-            if (folderName) {
-                rmSync(join(this._filePath, folderName), { recursive: true, force: true });
-                this._deleteMapInfo(id);
-            }
-            return true;
-        } catch (error: any) {
-            logger.error(error);
-            return error;
+    deleteSong(id: TSongId): true {
+        const folderName = this._getFolderName(id);
+        if (folderName) {
+            rmSync(join(this._filePath, folderName), { recursive: true, force: true });
+            this._deleteMapInfo(id);
         }
+        return true;
     }
 
     async installSong(info: {
         arrayBuffer: ArrayBuffer;
         mapDetail: TMapDetail;
         latestVersion: TMapVersion;
-    }) {
-        try {
-            const zip = await JSZip.loadAsync(info.arrayBuffer);
+    }): Promise<{ result: true }> {
+        const zip = await JSZip.loadAsync(info.arrayBuffer);
 
-            const subFolder = sanitize(
-                `${info.mapDetail.id} (${info.mapDetail.metadata.songName} - ${info.mapDetail.metadata.levelAuthorName})`
-            );
-            for (const filename of Object.keys(zip.files)) {
-                const file = zip.files[filename];
-                if (file.name.endsWith(sep)) {
-                    this._createFolder(subFolder, file.name);
-                } else {
-                    const content = await file.async('nodebuffer');
-                    this._saveFile(subFolder, file.name, content);
-                }
+        const subFolder = sanitize(
+            `${info.mapDetail.id} (${info.mapDetail.metadata.songName} - ${info.mapDetail.metadata.levelAuthorName})`
+        );
+        for (const filename of Object.keys(zip.files)) {
+            const file = zip.files[filename];
+            if (file.name.endsWith(sep)) {
+                this._createFolder(subFolder, file.name);
+            } else {
+                const content = await file.async('nodebuffer');
+                this._saveFile(subFolder, file.name, content);
             }
-            const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
-            this._insertMapInfos([mapInfo]);
-            return { result: true };
-        } catch (error: any) {
-            return { result: error };
         }
+        const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
+        this._insertMapInfos([mapInfo]);
+        return { result: true };
     }
 
     async loadInstalledMaps(): Promise<{ status: TFileLoaded }> {
@@ -434,15 +440,6 @@ class LocalMaps extends CommonLoader {
                     logger.debug('_handleLoadInstalledSongs UNSUBSCRIBED');
                 });
         });
-    }
-
-    private _ensureDbFile(): string {
-        const filePath = path.resolve(app.getPath('cache'), app.getName(), 'db.sqlite3');
-        if (!existsSync(filePath)) {
-            const templatePath = path.resolve('assets', 'db', 'db.sqlite3');
-            copyFileSync(templatePath, filePath);
-        }
-        return filePath;
     }
 
     private _computeIdsHash(ids: string[]): string {

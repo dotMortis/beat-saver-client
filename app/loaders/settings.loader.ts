@@ -17,14 +17,22 @@ import { IpcHelerps } from '../models/helpers/ipc-main.helpers';
 export const getSettingsHandle = IpcHelerps.ipcMainHandle<TInvokeGetSettings>(
     'GET_SETTINGS',
     async (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return { result: settings.getOpts() };
+        try {
+            return { result: settings.getOpts() };
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
 export const setSettingsHandle = IpcHelerps.ipcMainHandle<TInvokeSetSettings>(
     'SET_SETTINGS',
     async (event: Electron.IpcMainInvokeEvent, args: TSettings) => {
-        return { result: settings.setOpts(args) };
+        try {
+            return { result: settings.setOpts(args) };
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 

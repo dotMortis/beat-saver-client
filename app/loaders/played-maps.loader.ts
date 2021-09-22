@@ -17,23 +17,35 @@ import { settings } from './settings.loader';
 
 export const loadPlayerStatsHandle = IpcHelerps.ipcMainHandle<TInvokeLoadPlayedSongs>(
     'LOAD_PLAYER_STATS',
-    (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return playedMaps.loadPlayerStats();
+    async (event: Electron.IpcMainInvokeEvent, args: void) => {
+        try {
+            return await playedMaps.loadPlayerStats();
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
 export const getPlayerSongStatsHandle = IpcHelerps.ipcMainHandle<TInvokeGetPlayerSongStats>(
     'GET_PLAYER_SONG_STATS',
-    (event: Electron.IpcMainInvokeEvent, args) => {
-        const { playerName, mapHash } = args;
-        return playedMaps.getPlayerSongStatsFromHash(mapHash, playerName);
+    async (event: Electron.IpcMainInvokeEvent, args) => {
+        try {
+            const { playerName, mapHash } = args;
+            return await playedMaps.getPlayerSongStatsFromHash(mapHash, playerName);
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
 export const getPlayerNamesHandle = IpcHelerps.ipcMainHandle<TInvokeGetPlayerNames>(
     'GET_PLAYER_NAMES',
-    (event: Electron.IpcMainInvokeEvent, args: void) => {
-        return playedMaps.getAvailablePlayers();
+    async (event: Electron.IpcMainInvokeEvent, args: void) => {
+        try {
+            return await playedMaps.getAvailablePlayers();
+        } catch (error: any) {
+            return error;
+        }
     }
 );
 
