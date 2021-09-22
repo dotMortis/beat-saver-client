@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.0] - Soon
+## [0.7.0-beta] - 22.09.2021
 
 ### Added
 - move to beta versions
@@ -12,6 +12,7 @@
 - sqlite local songs cache
 - BeatSaver community discord
 - detail page is unloaded if not selected for 60 seconds
+- custom install script
 
 ### Updated
 - rewritten song cards
@@ -19,18 +20,20 @@
 - rewritten navigation
 - detail page tweaks
 - tour
+- on success, remove single installtion from queue
 
 ### Fixed
 - a bunch of visual tweaks
+- error handling
 
-## [0.6.0] - 09.09.2021
+## [0.6.0-alpha] - 09.09.2021
 
 ### Added
 - song detail page
 - song leaderboard
 - persistent filter (on navigate)
 
-## [0.5.0] - 29.08.2021
+## [0.5.0-alpha] - 29.08.2021
 
 ### Added
 - community menu button
@@ -39,7 +42,7 @@
 ### Fixed
 - default settings not loaded on first start
 
-## [0.4.0] - 29.08.2021
+## [0.4.0-alpha] - 29.08.2021
 ### Added
 - daily rotate logs
 - Changelog panel
@@ -51,7 +54,7 @@
 ### Fixed
 - property changed wasn't called on ipc events
 
-## [0.3.0] - 25.08.2021
+## [0.3.0-alpha] - 25.08.2021
 ### Added
 - Functions tour
 - Custom splash screen
