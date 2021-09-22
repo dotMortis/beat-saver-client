@@ -11,7 +11,6 @@
 - sqlite local songs cache
 - BeatSaver community discord
 - detail page is unloaded if not selected for 60 seconds
-- 
 
 ### Updated
 - rewritten song cards
