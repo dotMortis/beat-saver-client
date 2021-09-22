@@ -22,6 +22,8 @@
 - tour
 - on success, remove single installtion from queue
 - setting sidebar not closebale on missing settings
+- angular 12
+- primeng 11 (primeng 12 is a buggy hell)
 
 ### Fixed
 - a bunch of visual tweaks
