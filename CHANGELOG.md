@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.7.0] - Soon
+
+### Added
+- local songs search page
+- local songs filter
+- local songs counter
+- detail page tabs
+- persistent pages on navigate (quality of life)
+- sqlite local songs cache
+- BeatSaver community discord
+- detail page is unloaded if not selected for 60 seconds
+- 
+
+### Updated
+- rewritten song cards
+- rewritten difficulty card 
+- rewritten navigation
+- detail page tweaks
+- tour
+
+### Fixed
+- a bunch of visual tweaks
+
 ## [0.6.0] - 09.09.2021
 
 ### Added
