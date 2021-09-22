@@ -13,6 +13,15 @@ export class SettingsService {
     private _visible: boolean;
     set visible(val: boolean) {
         if (this._visible !== val) {
+            if (
+                !val &&
+                (!this.settings?.bsInstallPath.value ||
+                    this.settings?.bsInstallPath.error ||
+                    !this.settings?.bsAppDataPath.value ||
+                    this.settings?.bsAppDataPath.error)
+            ) {
+                return;
+            }
             this._visible = val;
             this.visibleChange.next(val);
         }
