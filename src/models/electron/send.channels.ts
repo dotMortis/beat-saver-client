@@ -54,4 +54,5 @@ export type TMapSyncStatus = {
     currentCount: number;
     sum: number;
 };
+export type TSendMapsCount = TSend<'MAPS_COUNT', number>;
 //#endregion

@@ -2,6 +2,7 @@ import {
     AfterViewInit,
     ChangeDetectorRef,
     Component,
+    OnInit,
     QueryList,
     ViewChildren
 } from '@angular/core';
@@ -9,7 +10,8 @@ import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { take, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
-import { TSendError } from '../../../../../models/electron/send.channels';
+import { TInvokeMapsCount } from '../../../../../models/electron/invoke.channels';
+import { TSendError, TSendMapsCount } from '../../../../../models/electron/send.channels';
 import { TSongId } from '../../../../../models/maps/map-ids.model';
 import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../services/null.provided/dl.service';
@@ -27,7 +29,7 @@ import { ViewContentComponent } from './view-content/view-content.component';
     styleUrls: ['./content-viewer.component.scss'],
     providers: [DialogService]
 })
-export class ContentViewerComponent extends UnsubscribeComponent implements AfterViewInit {
+export class ContentViewerComponent extends UnsubscribeComponent implements AfterViewInit, OnInit {
     @ViewChildren(ViewContentComponent) viewContents!: QueryList<ViewContentComponent>;
 
     contents: ViewContentComponent[];
@@ -52,6 +54,8 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     }
 
     activeId?: string;
+
+    installedCount: number;
 
     constructor(
         public optService: SettingsService,
@@ -122,6 +126,18 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
                 ]
             }
         ];
+        this.installedCount = 0;
+    }
+
+    ngOnInit(): void {
+        this.addSub(
+            this.electronService
+                .on<TSendMapsCount>('MAPS_COUNT')
+                .pipe(tap((count: number) => (this.installedCount = count)))
+        );
+        this.electronService
+            .invoke<TInvokeMapsCount>('MAPS_COUNT', undefined)
+            .then((count: number | false) => (this.installedCount = count != false ? count : 0));
     }
 
     ngAfterViewInit(): void {

@@ -31,20 +31,19 @@ import { ViewTemplateModule } from './view-template/view-template.directive';
     imports: [
         CommonModule,
         SharedAppModule,
+        JoyrideModule.forChild(),
+        MarkdownModule.forChild(),
         ScrollPanelModule,
         ScrollTopModule,
         ViewTemplateModule,
         SongsModule,
         LocalMapsModule,
-        JoyrideModule.forChild(),
-        MarkdownModule.forChild(),
-        ButtonModule,
         BadgeModule,
+        ButtonModule,
         DynamicDialogModule,
         TieredMenuModule,
         SongsDetailModule
     ],
-    entryComponents: [],
     exports: [ContentViewerComponent],
     providers: [ContentViewerService]
 })

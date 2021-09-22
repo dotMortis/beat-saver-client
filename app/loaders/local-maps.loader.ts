@@ -25,9 +25,10 @@ import {
     TInvokeGetLocalCover,
     TInvokeInstallSong,
     TInvokeIsInstalled,
-    TInvokeLoadInstalledSongs
+    TInvokeLoadInstalledSongs,
+    TInvokeMapsCount
 } from '../../src/models/electron/invoke.channels';
-import { TSendMapSyncStatus } from '../../src/models/electron/send.channels';
+import { TSendMapsCount, TSendMapSyncStatus } from '../../src/models/electron/send.channels';
 import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/maps/localMapInfo.model';
 import { TSongId } from '../../src/models/maps/map-ids.model';
 import { CommonLoader } from '../models/CommonLoader.model';
@@ -90,6 +91,13 @@ export const getLocalCoverHandle = IpcHelerps.ipcMainHandle<TInvokeGetLocalCover
         } catch (error: any) {
             return error;
         }
+    }
+);
+
+export const countMapsHandle = IpcHelerps.ipcMainHandle<TInvokeMapsCount>(
+    'MAPS_COUNT',
+    async (event: Electron.IpcMainInvokeEvent) => {
+        return localMaps.getCurrentMapsCount();
     }
 );
 
@@ -263,6 +271,11 @@ class LocalMaps extends CommonLoader {
         );
     }
 
+    getCurrentMapsCount(): number {
+        const count: { c: number } = this._db.prepare('SELECT COUNT(*) as c FROM maps').get();
+        return count.c;
+    }
+
     private _onIdsHash(cb: (hash: string, localIds: string[], dbIds: string[]) => void): this {
         return super.on('idsHash', cb);
     }
@@ -344,10 +357,6 @@ class LocalMaps extends CommonLoader {
         return join(this._filePath, result.folder_name, result.cover_image_filename);
     }
 
-    private _deleteRemovedIds(availableIds: string[]): void {
-        this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
-    }
-
     private _getDbIdsHash(): { hash: string; ids: string[] } {
         const maps: { id: string }[] = this._db.prepare('SELECT id FROM maps').all();
         const ids = maps.map(map => map.id);
@@ -362,11 +371,18 @@ class LocalMaps extends CommonLoader {
         const insertMany = this._db.transaction((mapInfos: LocalMapInfo[]) => {
             for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
         });
-        return insertMany(mapInfos);
+        insertMany(mapInfos);
+        this._pushLocalSongsCount();
     }
 
     private _deleteMapInfo(id: TSongId): void {
         this._db.prepare('DELETE FROM maps WHERE id = :id').run({ id });
+        this._pushLocalSongsCount();
+    }
+
+    private _deleteRemovedIds(availableIds: string[]): void {
+        this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
+        this._pushLocalSongsCount();
     }
 
     private async _handleLoadInstalledSongs<RESULT = never>(
@@ -431,6 +447,11 @@ class LocalMaps extends CommonLoader {
 
     private _computeIdsHash(ids: string[]): string {
         return createHash('sha1').update(ids.join(',')).digest('hex');
+    }
+
+    private _pushLocalSongsCount(): void {
+        const count = this.getCurrentMapsCount();
+        IpcHelerps.webContentsSend<TSendMapsCount>(this.browserWindow, 'MAPS_COUNT', count);
     }
 }
 

@@ -8,23 +8,30 @@
             <div class="row navigation-bar-content no-gutters">
                 <div class="col-auto nav-item-l">
                     <button
+                        joyrideStep="beatSaverBtn"
+                        text="Browse all BeatSaver maps"
                         pButton
                         pRipple
-                        [ngClass]="{'p-button-sm': true, 'active-route': songs.selected}"
+                        type="button"
+                        class="p-button-sm"
+                        [ngClass]="{'active-route': songs.selected}"
                         pTooltip="Home"
                         icon="pi pi-home"
                         (click)="onOpen(songs)"
                     ></button>
                 </div>
-                <div class="col-auto nav-item-l">
-                    <button
-                        pButton
-                        pRipple
-                        [ngClass]="{'p-button-sm': true, 'active-route': locals.selected}"
+                <div
+                    joyrideStep="localMapsBtn"
+                    text="Browse all installed maps"
+                    class="col-auto nav-item-l"
+                >
+                    <p-button
+                        styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
                         pTooltip="Installed maps"
                         label="Installed"
-                        (click)="onOpen(locals)"
-                    ></button>
+                        (onClick)="onOpen(locals)"
+                        badge="{{installedCount}}"
+                    ></p-button>
                 </div>
                 <div class="col-auto nav-item-l">
                     <button
@@ -32,6 +39,7 @@
                         pRipple
                         class="p-button-sm"
                         label="Community"
+                        type="button"
                         [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
                         (click)="communityMenu.toggle($event)"
                     ></button>
@@ -44,6 +52,8 @@
                 </div>
                 <div *ngIf="electronService.isElectron" class="col-auto ml-auto nav-item-r">
                     <button
+                        joyrideStep="reloadUserData"
+                        text="Reload user stats and sync installed songs"
                         pButton
                         pRipple
                         pTooltip="Reload user data"
