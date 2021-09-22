@@ -18,6 +18,7 @@ import { DlService } from '../../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 import { SettingsService } from '../../../../services/root.provided/settings.service';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { CoffeeComponent } from './coffee/coffee.component';
@@ -65,7 +66,8 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         private _cd: ChangeDetectorRef,
         private _installedSongsService: LocalMapsService,
         private _playerStatsService: PlayerStatsService,
-        private _dialogService: DialogService
+        private _dialogService: DialogService,
+        private _notify: NotifyService
     ) {
         super();
         this.contents = [];
@@ -137,7 +139,11 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         );
         this.electronService
             .invoke<TInvokeMapsCount>('MAPS_COUNT', undefined)
-            .then((count: number | false) => (this.installedCount = count != false ? count : 0));
+            .then((count: number | false | Error) => {
+                if (count instanceof Error) {
+                    this._notify.error({ title: 'Get Local Maps Count', error: count });
+                } else this.installedCount = count != false ? count : 0;
+            });
     }
 
     ngAfterViewInit(): void {

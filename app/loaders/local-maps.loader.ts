@@ -117,12 +117,10 @@ export const countMapsHandle = IpcHelerps.ipcMainHandle<TInvokeMapsCount>(
 );
 
 class LocalMaps extends CommonLoader {
-    private get _filePath(): string {
+    private get _filePath(): string | null {
         const tempPath = settings.getOpts().bsInstallPath.value;
-        if (!tempPath) {
-            throw new Error('Missing BS install path');
-        } else if (!existsSync(tempPath)) {
-            throw new Error('Invalid BS install path');
+        if (!tempPath || !existsSync(tempPath)) {
+            return null;
         } else {
             return path.join(tempPath, 'Beat Saber_Data', 'CustomLevels');
         }
@@ -153,6 +151,7 @@ class LocalMaps extends CommonLoader {
     syncInstalledSongs(localIds: string[], dbIds: string[]): void {
         this._deleteRemovedIds(localIds);
         const idsCount = localIds.length;
+        if (!this._filePath) return;
         const files = readdirSync(this._filePath, { withFileTypes: true });
         const maps = new Array<LocalMapInfo>();
         let z = 0;
@@ -194,6 +193,7 @@ class LocalMaps extends CommonLoader {
     deleteSong(id: TSongId): true {
         const folderName = this._getFolderName(id);
         if (folderName) {
+            if (!this._filePath) return true;
             rmSync(join(this._filePath, folderName), { recursive: true, force: true });
             this._deleteMapInfo(id);
         }
@@ -205,6 +205,8 @@ class LocalMaps extends CommonLoader {
         mapDetail: TMapDetail;
         latestVersion: TMapVersion;
     }): Promise<{ result: true }> {
+        if (!this._filePath) throw new Error('BS install path not found');
+
         const zip = await JSZip.loadAsync(info.arrayBuffer);
 
         const subFolder = sanitize(
@@ -228,14 +230,11 @@ class LocalMaps extends CommonLoader {
         logger.debug('loadInstalledSongs');
         if (this._loading) return { status: 'LOADING' };
         this._loading = true;
-        if (!this._filePath) {
-            this._loaded.next('NO_PATH');
-            this._loaded.next(false);
-            this._loading = false;
-            return { status: 'NO_PATH' };
-        }
         this._loaded.next('LOADING');
         return new Promise<{ status: TFileLoaded }>(res => {
+            if (!this._filePath) {
+                return res({ status: 'NO_PATH' });
+            }
             readdir(
                 this._filePath,
                 { withFileTypes: true },
@@ -292,18 +291,20 @@ class LocalMaps extends CommonLoader {
 
     private _saveFile(folderName: string, filename: string, buffer: Buffer): void {
         const folderPath = this._getFolderPath(folderName);
+        if (!folderPath) return;
         this._createFolder(folderName);
         writeFileSync(path.join(folderPath, filename), buffer, { flag: 'w' });
     }
 
     private _createFolder(...folderNames: string[]): void {
         const folderPath = this._getFolderPath(...folderNames);
-        if (!existsSync(folderPath)) {
+        if (folderPath && !existsSync(folderPath)) {
             mkdirSync(folderPath, { recursive: true });
         }
     }
 
-    private _getFolderPath(...folderNames: string[]): string {
+    private _getFolderPath(...folderNames: string[]): string | null {
+        if (!this._filePath) return null;
         return path.join(this._filePath, ...folderNames);
     }
 
@@ -360,6 +361,7 @@ class LocalMaps extends CommonLoader {
             .prepare('SELECT folder_name, cover_image_filename FROM maps WHERE id = :id')
             .get({ id });
         if (!result) throw new Error('Error map info not found');
+        if (!this._filePath) throw new Error('BS install path not found');
         return join(this._filePath, result.folder_name, result.cover_image_filename);
     }
 

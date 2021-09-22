@@ -149,7 +149,9 @@ export class DlService {
                                 await this._installSong(result.blob, result.info);
                             }
                             if (result.info.latestVersion.hash === info.latestVersion.hash) {
-                                this.remove(result.info.latestVersion);
+                                if (!result.info.error) {
+                                    this.remove(result.info.latestVersion);
+                                }
                                 return true;
                             }
                             return false;
@@ -264,8 +266,9 @@ export class DlService {
                 mapDetail: info.mapDetail,
                 latestVersion: info.latestVersion
             });
-            if (result && result.result instanceof Error) {
-                info.error = result.result;
+            if (result instanceof Error) {
+                info.error = result;
+                info.installed.status = false;
             } else {
                 info.installed.status = 'INSTALLED';
             }

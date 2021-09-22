@@ -79,6 +79,10 @@ export class PlayerStatsService {
                             'GET_PLAYER_SONG_STATS',
                             { playerName: selectedPlayer.name, mapHash: songHash }
                         );
+                        if (result instanceof Error) {
+                            this._notify.error({ error: result, title: 'Get Player Song Stats' });
+                            throw result;
+                        }
                         this._notify.errorFileHandle(result, 'BS AppData');
                         return result;
                     }
@@ -120,6 +124,13 @@ export class PlayerStatsService {
                                 'GET_PLAYER_NAMES',
                                 undefined
                             );
+                            if (ipcResult instanceof Error) {
+                                this._notify.error({
+                                    error: ipcResult,
+                                    title: 'Load Player Names'
+                                });
+                                throw result;
+                            }
                             if (ipcResult !== false && ipcResult.result instanceof Array) {
                                 this.playerNames = ipcResult.result;
                                 this.selectedPlayer = { name: this.playerNames[0] };
@@ -162,6 +173,13 @@ export class PlayerStatsService {
                 'LOAD_PLAYER_STATS',
                 undefined
             );
+            if (result instanceof Error) {
+                this._notify.error({
+                    error: result,
+                    title: 'Load Player Stats'
+                });
+                throw result;
+            }
             this._notify.errorFileHandle(result, 'BS AppData');
             if (this._playerNamesLoaded) {
                 await this.loadPlayerNames().toPromise();

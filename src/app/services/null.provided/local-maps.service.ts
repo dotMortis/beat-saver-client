@@ -66,6 +66,10 @@ export class LocalMapsService {
         const result = await this._eleService.invoke<TInvokeIsInstalled>('SONG_IS_INSTALLED', {
             mapId: songId
         });
+        if (result instanceof Error) {
+            this._notify.error({ error: result, title: 'Check Song is Installed' });
+            throw result;
+        }
         this._notify.errorFileHandle(result, 'BS Installation');
         return result;
     }
@@ -78,6 +82,10 @@ export class LocalMapsService {
             'LOAD_INSTALLED_STATS',
             undefined
         );
+        if (result instanceof Error) {
+            this._notify.error({ error: result, title: 'Load Installed Songs' });
+            throw result;
+        }
         this._notify.errorFileHandle(result, 'BS Installation');
         this.installedSongsReloaded.next();
         return result;
