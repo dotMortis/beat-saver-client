@@ -20,12 +20,11 @@
                         (click)="onOpen(songs)"
                     ></button>
                 </div>
-                <div
-                    joyrideStep="localMapsBtn"
-                    text="Browse all installed maps"
-                    class="col-auto nav-item-l"
-                >
+                <div class="col-auto nav-item-l">
                     <p-button
+                        joyrideStep="localMapsBtn"
+                        text="Browse all installed maps"
+                        class="d-block"
                         styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
                         pTooltip="Installed maps"
                         label="Installed"

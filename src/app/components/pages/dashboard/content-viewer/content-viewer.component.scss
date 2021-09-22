@@ -1,55 +1,57 @@
-.content-viewer {
-    position: relative;
-    > .navigation-bar {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: 0;
-        z-index: 2;
-        background-color: var(--surface-b);
-
-        .navigation-bar-content {
-            padding: 0.25rem 0;
-            border-radius: 0 0 0.25rem 0.25rem;
-            position: relative;
+:host ::ng-deep {
+    .content-viewer {
+        position: relative;
+        > .navigation-bar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 2;
             background-color: var(--surface-b);
 
-            .nav-item-l {
-                padding: 0.25rem 0.5rem 0.25rem 0;
+            .navigation-bar-content {
+                padding: 0.25rem 0;
+                border-radius: 0 0 0.25rem 0.25rem;
+                position: relative;
+                background-color: var(--surface-b);
 
-                .active-route {
-                    background-color: darken(#9fa8da, 15);
+                .nav-item-l {
+                    padding: 0.25rem 0.5rem 0.25rem 0;
+
+                    .active-route {
+                        background-color: darken(#9fa8da, 15);
+                    }
                 }
-            }
 
-            > .nav-item-r {
-                padding: 0.25rem 0 0.25rem 0.5rem;
-            }
-
-            > .dl-list-btn {
-                transition-property: box-shadow, left;
-                overflow: visible;
-                transition-duration: 0.5s; /* delays for 1 second */
-                -webkit-transition-duration: 0.5s; /* for Safari & Chrome */
-                position: fixed;
-                left: -2rem;
-                top: 25%;
-                z-index: 1;
-                box-shadow: 0 0 4px -1px white;
-                border-radius: 0 0.25rem 0.25rem 0;
-                &:hover {
-                    box-shadow: 0 0 6px 1px white;
-                    left: 0;
+                > .nav-item-r {
+                    padding: 0.25rem 0 0.25rem 0.5rem;
                 }
-            }
 
-            .coffee-btn {
-                color: white;
-                background-color: #dc3545;
-                &:hover {
-                    background-color: darken(#dc3545, 5);
-                    &:active {
-                        background-color: darken(#dc3545, 10);
+                > .dl-list-btn {
+                    transition-property: box-shadow, left;
+                    overflow: visible;
+                    transition-duration: 0.5s; /* delays for 1 second */
+                    -webkit-transition-duration: 0.5s; /* for Safari & Chrome */
+                    position: fixed;
+                    left: -2rem;
+                    top: 25%;
+                    z-index: 1;
+                    box-shadow: 0 0 4px -1px white;
+                    border-radius: 0 0.25rem 0.25rem 0;
+                    &:hover {
+                        box-shadow: 0 0 6px 1px white;
+                        left: 0;
+                    }
+                }
+
+                .coffee-btn {
+                    color: white;
+                    background-color: #dc3545;
+                    &:hover {
+                        background-color: darken(#dc3545, 5);
+                        &:active {
+                            background-color: darken(#dc3545, 10);
+                        }
                     }
                 }
             }
