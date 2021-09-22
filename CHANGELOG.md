@@ -21,6 +21,7 @@
 - detail page tweaks
 - tour
 - on success, remove single installtion from queue
+- setting sidebar not closebale on missing settings
 
 ### Fixed
 - a bunch of visual tweaks

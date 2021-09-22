@@ -1,4 +1,10 @@
-<p-sidebar [(visible)]="optService.visible" position="right" appendTo="body" [closeOnEscape]="true">
+<p-sidebar
+    [visible]="optService.visible"
+    (onHide)="optService.visible = false"
+    position="right"
+    appendTo="body"
+    [closeOnEscape]="true"
+>
     <p-scrollPanel [style]="{ width: '100%', height: '100%' }" styleClass="custombar1 hide-x">
         <div class="row justify-content-between py-2">
             <div class="col-auto pb-4">
