@@ -101,6 +101,11 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
                 label: 'Websites',
                 items: [
                     {
+                        label: 'BeatSaver',
+                        url: 'https://beatsaver.com/',
+                        target: '_blank'
+                    },
+                    {
                         label: 'BeastSaber',
                         url: 'https://bsaber.com/',
                         target: '_blank'
