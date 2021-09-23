@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.8.0-beta] - 23.09.2021
+
+### Added
+- search by song id function
+- BeatSaver to community sites
+
+### Updated
+- detail tab style
+
 ## [0.7.0-beta] - 22.09.2021
 
 ### Added
