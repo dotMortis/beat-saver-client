@@ -1,7 +1,7 @@
 <div class="container detail-btn-panel" *ngIf="cvService.songDetailViews.size > 0">
-    <div class="row mx-n1 detail-btn-sub-panel">
+    <div class="row mx-2 no-gutters detail-btn-sub-panel">
         <div
-            class="col-auto px-1 detail-btn-item-wrap"
+            class="pr-1 detail-btn-item-wrap"
             [ngClass]="{active: activeId === details.mapDetail.id}"
             *ngFor="let details of cvService.songDetailViewArr"
         >
