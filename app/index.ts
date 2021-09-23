@@ -1,11 +1,13 @@
 import { app, BrowserWindow } from 'electron';
 import { join, resolve, sep } from 'path';
+import { EventEmitter } from 'stream';
 import { args } from './models/args.model';
 import { CommonLoader } from './models/CommonLoader.model';
 import { MainWindow } from './models/main.window';
 import { SplashWindow } from './models/splash.window';
 import { Updater } from './models/updater';
 import { logger } from './models/winston.logger';
+EventEmitter.captureRejections = true;
 class IndexElectron {
     private _app: typeof app;
     private _window?: BrowserWindow | null;
@@ -26,9 +28,8 @@ class IndexElectron {
         logger.debug('finish construct app');
     }
 
-    public async init(): Promise<void> {
+    public init(): void {
         logger.debug('init app');
-        await this._loadLoaders();
         this._startApp();
         logger.debug('finish init app');
     }
@@ -45,10 +46,11 @@ class IndexElectron {
 
     private _startApp(): void {
         logger.debug('_startApp');
-        this._app.on('ready', () => {
+        this._app.on('ready', async () => {
             try {
                 logger.debug('_startApp ready');
                 this._splashWindow = new SplashWindow();
+                await this._loadLoaders();
                 this._mainWindow = new MainWindow(logger, { debug: args.debug });
                 this._initLoaders(this._mainWindow);
                 this._updater = new Updater(this._mainWindow);
@@ -112,11 +114,9 @@ const electronApp = new IndexElectron(app, [
     join(loaderRootDir, 'local-maps.loader')
 ]);
 
-electronApp
-    .init()
-    .then(() => {
-        logger.debug('Electron started');
-    })
-    .catch(error => {
-        logger.error(error);
-    });
+try {
+    electronApp.init();
+    logger.debug('Electron started');
+} catch (error: any) {
+    logger.error(error);
+}
