@@ -1,4 +1,10 @@
-import { ECharacteristic, EDifficulty, TMapDifficulty, TMapVersion } from '../api/api.models';
+import {
+    ECharacteristic,
+    EDifficulty,
+    TMapDetail,
+    TMapDifficulty,
+    TMapVersion
+} from '../api/api.models';
 import { TDifficultyIndex, TLevelStatsData, TLevelStatsInfo } from '../player/player-data.model';
 
 export class MapsHelpers {
@@ -6,6 +12,12 @@ export class MapsHelpers {
         if (score >= 90) return 'score-90';
         else if (score >= 80) return 'score-80';
         return 'score-0';
+    }
+
+    public static getLatestVersion(mapDetail: TMapDetail): TMapVersion {
+        return mapDetail.versions.sort((a: TMapVersion, b: TMapVersion) =>
+            a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
+        )[mapDetail.versions.length - 1];
     }
 
     public static getDifficultyLabel(difficulty?: EDifficulty): string {

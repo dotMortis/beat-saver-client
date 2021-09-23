@@ -232,9 +232,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
 
     private async _init(tMapDetail: TMapDetail | undefined): Promise<void> {
         this.tMapDetail = tMapDetail;
-        this.latestVersion = tMapDetail?.versions.sort((a: TMapVersion, b: TMapVersion) =>
-            a.createdAt < b.createdAt ? -1 : a.createdAt === b.createdAt ? 0 : 1
-        )[tMapDetail.versions.length - 1];
+        this.latestVersion = tMapDetail ? MapsHelpers.getLatestVersion(tMapDetail) : undefined;
         if (this.latestVersion != null) {
             this.diffs = MapsHelpers.getDifficultyGroupedByChar(this.latestVersion);
             this._setUploadTimeInfo(this.latestVersion.createdAt);

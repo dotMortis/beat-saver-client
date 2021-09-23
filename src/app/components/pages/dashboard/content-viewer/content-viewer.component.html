@@ -22,9 +22,23 @@
                 </div>
                 <div class="col-auto nav-item-l">
                     <p-button
+                        joyrideStep="searchSongId"
+                        pTooltip="Find by song id"
+                        class="d-block"
+                        (onClick)="searchById.toggle($event)"
+                        text="Find a map by its ID"
+                        styleClass="p-button-sm button-icon-only"
+                    >
+                        <ng-template pTemplate="content">
+                            <fa-icon class="px-1" [icon]="['fas', 'binoculars']"></fa-icon>
+                        </ng-template>
+                    </p-button>
+                </div>
+                <div class="col-auto nav-item-l">
+                    <p-button
+                        class="d-block"
                         joyrideStep="localMapsBtn"
                         text="Browse all installed maps"
-                        class="d-block"
                         styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
                         pTooltip="Installed maps"
                         label="Installed"
@@ -120,3 +134,22 @@
         </ng-template>
     </app-view-content>
 </div>
+<p-overlayPanel #searchById (onHide)="songIdSearch = ''">
+    <ng-template pTemplate>
+        <input
+            [(ngModel)]="songIdSearch"
+            type="text"
+            class="p-inputtext-sm mr-1"
+            placeholder="Song ID"
+            pInputText
+        />
+        <button
+            [disabled]="!songIdSearch?.length"
+            (click)="onSearchById(songIdSearch)"
+            type="button"
+            pRipple
+            pButton
+            icon="pi pi-search"
+        ></button>
+    </ng-template>
+</p-overlayPanel>

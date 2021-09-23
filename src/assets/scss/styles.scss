@@ -23,6 +23,10 @@ body {
     .p-button,
     .p-multiselect-item {
         font-weight: normal;
+
+        &.button-icon-only {
+            min-width: auto;
+        }
     }
 
     .p-tag-value {

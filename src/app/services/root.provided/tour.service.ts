@@ -33,7 +33,7 @@ export class TourService {
         if (this.isShown) return;
         const cardStepCount = 6;
         const steps = new Array<string>();
-        steps.push('beatSaverBtn', 'localMapsBtn', 'reloadUserData');
+        steps.push('beatSaverBtn', 'searchSongId', 'localMapsBtn', 'reloadUserData');
         for (let z = 1; z <= cardStepCount; z++) {
             steps.push(`${songId}${z}`);
         }

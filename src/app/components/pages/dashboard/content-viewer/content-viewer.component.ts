@@ -8,11 +8,15 @@ import {
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { take, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, take, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
+import { TMapDetail } from '../../../../../models/api/api.models';
 import { TInvokeMapsCount } from '../../../../../models/electron/invoke.channels';
 import { TSendError, TSendMapsCount } from '../../../../../models/electron/send.channels';
 import { TSongId } from '../../../../../models/maps/map-ids.model';
+import { MapsHelpers } from '../../../../../models/maps/maps.helpers';
+import { ApiService } from '../../../../services/null.provided/api.service';
 import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
@@ -58,6 +62,8 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
 
     installedCount: number;
 
+    songIdSearch: string;
+
     constructor(
         public optService: SettingsService,
         public dlService: DlService,
@@ -67,7 +73,8 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         private _installedSongsService: LocalMapsService,
         private _playerStatsService: PlayerStatsService,
         private _dialogService: DialogService,
-        private _notify: NotifyService
+        private _notify: NotifyService,
+        private _apiService: ApiService
     ) {
         super();
         this.contents = [];
@@ -134,6 +141,7 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
             }
         ];
         this.installedCount = 0;
+        this.songIdSearch = '';
     }
 
     ngOnInit(): void {
@@ -212,6 +220,24 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
                 this.contents[index].selected = true;
             }
         }
+    }
+
+    onSearchById(id: TSongId): void {
+        this.addSub(
+            this._apiService.getById(id).pipe(
+                tap((mapDetail: TMapDetail) => {
+                    const latestVersion = MapsHelpers.getLatestVersion(mapDetail);
+                    this.cvService.addSongDetailView(mapDetail, latestVersion);
+                }),
+                catchError(err => {
+                    this._notify.error({
+                        title: 'Song ID not found',
+                        error: new Error('Song ID not found')
+                    });
+                    return of(null);
+                })
+            )
+        );
     }
 
     private _initContents(): void {

@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { JoyrideModule } from 'ngx-joyride';
 import { MarkdownModule } from 'ngx-markdown';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ScrollTopModule } from 'primeng/scrolltop';
 import { TieredMenuModule } from 'primeng/tieredmenu';
@@ -42,7 +45,10 @@ import { ViewTemplateModule } from './view-template/view-template.directive';
         ButtonModule,
         DynamicDialogModule,
         TieredMenuModule,
-        SongsDetailModule
+        SongsDetailModule,
+        OverlayPanelModule,
+        InputTextModule,
+        FormsModule
     ],
     exports: [ContentViewerComponent],
     providers: [ContentViewerService]

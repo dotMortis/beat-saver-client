@@ -6,6 +6,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faTwitch } from '@fortawesome/free-brands-svg-icons';
 import {
     faBan,
+    faBinoculars,
     faCheckCircle,
     faChevronDown,
     faChevronUp,
@@ -64,7 +65,8 @@ export class AppModule {
             faHeart,
             faTrash,
             faPlay,
-            faBan
+            faBan,
+            faBinoculars
         );
     }
 }
