@@ -6,12 +6,22 @@
 
 ## Screenshots
 
-### Song card (collapsed/expanded)
-<img title="Song cards" src="https://i.imgur.com/s8vrUUQ.png" width="49%"/> <img title="Expanded song card" src="https://i.imgur.com/C1cPXe7.png" width="49%"/>
-### Download Queue + Settings
-<img title="Download queue" src="https://i.imgur.com/iIeVlbj.png" width="49%"/> <img title="Settings" src="https://i.imgur.com/IFrg6vm.png" width="49%"/>
-### Map detail view
-<img title="Map detail view" src="https://i.imgur.com/TCEM4R0.png" width="49%"/> 
+
+|       Landing page (BeatSaver)       |       Installed songs (Local)        |
+| :----------------------------------: | :----------------------------------: |
+| ![](https://i.imgur.com/asBZIfP.png) | ![](https://i.imgur.com/uJoY8VJ.png) |
+
+|        Song card (collapsed)         |         Song card (expanded)         |
+| :----------------------------------: | :----------------------------------: |
+| ![](https://i.imgur.com/KyUjo4w.png) | ![](https://i.imgur.com/WNKqBPP.png) |
+
+Song detail page                    |
+:----------------------------------:|
+![](https://i.imgur.com/gaVon8i.png)|
+
+|            Download queue            |               Settings               |
+| :----------------------------------: | :----------------------------------: |
+| ![](https://i.imgur.com/wnpQpzt.png) | ![](https://i.imgur.com/luAHQ6C.png) |
 
 ## Dev
 ### Development server
