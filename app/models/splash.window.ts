@@ -6,8 +6,8 @@ export class SplashWindow {
 
     constructor() {
         this._window = new BrowserWindow({
-            width: 415,
-            height: 250,
+            width: 400,
+            height: 226,
             center: true,
             resizable: false,
             transparent: true,

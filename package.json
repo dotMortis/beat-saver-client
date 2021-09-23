@@ -29,7 +29,7 @@
         "release:pub": "yarn build:prod && electron-builder build --win -p onTagOrDraft",
         "release:dev": "yarn build:prod && electron-builder build --win -p never",
         "clean": "rimraf dist && rimraf release",
-        "copy": "copyfiles src/assets/splash.png app/html/**/*.html dist/",
+        "copy": "copyfiles src/assets/splash.webm app/html/**/*.html dist/",
         "analyze": "webpack-bundle-analyzer dist/ui/stats.json",
         "rebuild:sqlite": "./node_modules/.bin/electron-rebuild -f -w better-sqlite3"
     },

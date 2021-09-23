@@ -28,7 +28,7 @@
         "include": "build/installer.nsh"
     },
     "portable": {
-        "splashImage": "assets/icons/splash.bmp",
+        "splashImage": "assets/images/splash.bmp",
         "artifactName": "BeatSaverClient-v${version}-Portable.exe"
     }
 }
