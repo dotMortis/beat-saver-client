@@ -28,6 +28,10 @@ Song detail page                    |
 
 Run `yarn start:dev` for a dev server.
 
+or
+
+Run `yarn ng:serve:dev` for the frontend and `yarn electron:serve` for the electron client in different consoles.
+
 ### Build client
 
-Run `yarn release` to build the client.
+Run `yarn release:dev` to build the client.
