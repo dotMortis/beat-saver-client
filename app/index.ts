@@ -56,13 +56,15 @@ class IndexElectron {
                 this._updater = new Updater(this._mainWindow);
                 this._mainWindow.onReady(() => {
                     logger.debug('ON_READY');
-                    if (this._mainWindow) this._mainWindow.show();
                     if (this._splashWindow) this._splashWindow.close();
                     setTimeout(() => {
-                        this._updater
-                            ?.checkForUpdatesAndNotify()
-                            .catch(error => logger.error(error));
-                    }, 1000);
+                        if (this._mainWindow) this._mainWindow.show();
+                        setTimeout(() => {
+                            this._updater
+                                ?.checkForUpdatesAndNotify()
+                                .catch(error => logger.error(error));
+                        }, 1000);
+                    }, 200);
                 });
                 this._mainWindow.init().catch(error => {
                     logger.error(error);
