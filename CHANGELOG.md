@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.1-beta] - 25.09.2021
+
+### Updated
+- splash screen
+- start up sequence
+
 ## [0.8.0-beta] - 23.09.2021
 
 ### Added
