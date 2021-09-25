@@ -166,7 +166,15 @@ class LocalMaps extends CommonLoader {
                         sum: idsCount
                     }
                 );
-                maps.push(MapHelpers.getLocalMapInfo(this._filePath, file.name));
+                try {
+                    const localMapInfo = MapHelpers.getLocalMapInfo(this._filePath, file.name);
+                    maps.push(localMapInfo);
+                } catch (error: any) {
+                    logger.error(error, { customSongFolderName: file.name });
+                    const id = file.name.split(' ')[0];
+                    const dummyLocalMapInfo = LocalMapInfo.getDummyData(id, file.name);
+                    maps.push(dummyLocalMapInfo);
+                }
             }
         }
         this._insertMapInfos(maps);

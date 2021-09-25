@@ -92,6 +92,21 @@ export class LocalMapInfo implements ILocalMapInfo {
         localMapInfo.hash = hash;
         return localMapInfo;
     }
+
+    public static getDummyData(id: string, folderName: string): LocalMapInfo {
+        const localMapInfo = new LocalMapInfo();
+        localMapInfo.id = id;
+        localMapInfo.folder_name = folderName;
+        localMapInfo.song_name = 'Error';
+        localMapInfo.song_sub_name = 'Error';
+        localMapInfo.song_author_name = 'Error';
+        localMapInfo.level_author_name = 'Error';
+        localMapInfo.bpm = 0;
+        localMapInfo.cover_image_filename = '';
+        localMapInfo.difficulties = null;
+        localMapInfo.hash = id;
+        return localMapInfo;
+    }
 }
 
 export interface ILocalDifficulty {
