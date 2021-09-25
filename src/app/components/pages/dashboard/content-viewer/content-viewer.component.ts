@@ -101,6 +101,11 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
                         label: 'BSMG',
                         url: 'https://discord.gg/beatsabermods',
                         target: '_blank'
+                    },
+                    {
+                        label: 'Challange Community',
+                        url: 'https://discord.gg/bscc',
+                        target: '_blank'
                     }
                 ]
             },
