@@ -3,6 +3,12 @@
     "appId": "com.beatsaver.client",
     "productName": "BeatSaver",
     "files": ["dist/**/*"],
+    "extraFiles": [
+        {
+            "from": "./build/db.sqlite3",
+            "to": "."
+        }
+    ],
     "directories": {
         "output": "release/"
     },
