@@ -6,7 +6,7 @@
 - Challange Community Discord
 
 ### Fixed
-- missing db.sqlite3 after installtion
+- missing db.sqlite3 after installation
 
 ## [0.8.1-beta] - 25.09.2021
 
