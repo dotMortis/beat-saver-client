@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9.0-beta] - Soon
+
+### Added
+- Challange Community Discord
+
 ## [0.8.1-beta] - 25.09.2021
 
 ### Updated
