@@ -65,12 +65,16 @@ export class ViewContentComponent
     @Input()
     id?: string;
 
+    @Input()
+    scrollPanel: boolean;
+
     constructor() {
         super();
         this._loaded = false;
         this._selected = false;
         this._selectedChange = new Subject<boolean>();
         this._livetime = -1;
+        this.scrollPanel = true;
     }
 
     ngOnInit(): void {

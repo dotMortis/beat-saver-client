@@ -23,6 +23,7 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         default?: string | number;
     }[];
     loading: boolean;
+    currentPage: number;
 
     constructor(private _apiService: ApiService, private _cdr: ChangeDetectorRef) {
         super();
@@ -40,22 +41,23 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         ];
         this.mappers = new Array<TMapperListResult>();
         this.loading = false;
+        this.currentPage = 0;
     }
 
     ngOnInit(): void {
-        this._apiService.test();
+        return;
     }
 
     loadScoresLazy(event: LazyLoadEvent): void {
-        return;
         console.log(event);
-
+        this.currentPage = event.first ? event.first / 20 : 0;
         this.loading = true;
+        this._cdr.detectChanges();
         this.addSub(
-            this._apiService.getMapppersList(0).pipe(
+            this._apiService.getMapppersList(this.currentPage).pipe(
                 tap((mappers: TMapperListResult[]) => {
-                    this.mappers = mappers;
-                    this._cdr.detectChanges();
+                    this.mappers = [...mappers];
+                    console.log(this.mappers);
                 }),
                 finalize(() => (this.loading = false))
             )
@@ -63,8 +65,13 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
     }
 
     getCellValue(field: string, obj: any, defaultVal: string | number): any {
+        console.log('getCellValue');
+
         const fields = field.split('.');
         const tempVal = obj[fields[0]];
+        if (obj instanceof Array) {
+            return obj.map((tempVal: any) => this.getCellValue(field, tempVal, defaultVal));
+        }
         if (fields.length === 1) {
             if (tempVal == null || (tempVal instanceof Array && tempVal.length === 0))
                 return defaultVal || tempVal;
@@ -72,7 +79,7 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         } else {
             const newFields = fields.splice(0, 1).join('.');
             if (tempVal instanceof Array) {
-                return tempVal.map((tempVal: any[]) =>
+                return tempVal.map((tempVal: any) =>
                     this.getCellValue(newFields, tempVal, defaultVal)
                 );
             } else {

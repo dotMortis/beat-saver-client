@@ -118,7 +118,7 @@ export class MainWindow extends EventEmitter {
     private async _loadContent(window: BrowserWindow): Promise<void> {
         if (this._serve) {
             this.logger.debug('_createWindow serve');
-            await window.loadURL('http://localhost:4200');
+            await window.loadURL('https://localhost:4200');
         } else {
             const path = resolve(__dirname, '..', '..', 'ui', 'index.html');
             this.logger.debug('_createWindow prod ' + path);

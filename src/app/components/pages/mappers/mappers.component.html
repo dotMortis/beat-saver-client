@@ -2,79 +2,24 @@
     [value]="mappers"
     [lazy]="true"
     (onLazyLoad)="loadScoresLazy($event)"
-    [paginator]="true"
     [rows]="20"
+    [paginator]="true"
     [totalRecords]="totalRecords"
     [loading]="loading"
 >
-    <ng-template pTemplate="caption">
-        <div class="w-100 d-flex">
-            <div class="ml-auto">
-                <button
-                    pRipple
-                    type="button"
-                    pButton
-                    pTooltip="Refresh"
-                    icon="pi-refresh pi"
-                    class="p-button-sm"
-                    style="height: 1.5rem; width: 1.5rem"
-                    (click)="onRefresh()"
-                ></button>
-            </div>
-        </div>
-    </ng-template>
-
-    <ng-template pTemplate="colgroup" let-columns>
-        <colgroup>
-            <col
-                *ngFor="let col of columns"
-                [style]="{'width': col.width, 'min-width': col['min-width'] || 0}"
-            />
-        </colgroup>
-    </ng-template>
-    <ng-template pTemplate="header" let-columns>
+    <ng-template pTemplate="header">
         <tr>
-            <ng-container *ngFor="let col of columns; first as first">
-                <th
-                    [style]="{'min-width': col['min-width'] || 0}"
-                    pResizableColumn
-                    *ngIf="!first;else notResizable"
-                >
-                    {{col.header}}
-                </th>
-                <ng-template #notResizable>
-                    <th [style]="{'min-width': col['min-width'] || 0}" [class]="col.headerClass">
-                        {{col.header}}
-                    </th>
-                </ng-template>
-            </ng-container>
+            <th>#</th>
+            <th>Mapper</th>
+            <th>BPM</th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <ng-template pTemplate="body" let-car>
         <tr>
-            <ng-template ngFor let-col [ngForOf]="columns">
-                <td
-                    [style]="{'min-width': col['min-width'] || 0}"
-                    [class]="col.class"
-                    *ngIf="!isNumber(getCellValue(col.field, rowData, col.default)); else numberField"
-                >
-                    {{getCellValue(col.field, rowData, col.default)}}
-                </td>
-                <ng-template #numberField>
-                    <td [style]="{'min-width': col['min-width'] || 0}" [class]="col.class">
-                        {{getCellValue(col.field, rowData, col.default) | number : '1.2-2'}}
-                    </td>
-                </ng-template>
-            </ng-template>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="loadingbody" let-columns="columns">
-        <tr style="height: 41px">
-            <td *ngFor="let col of columns">
-                <p-skeleton
-                    [ngStyle]="{'width': '100%', 'min-width': col['min-width'] || 0}"
-                ></p-skeleton>
-            </td>
+            <td>{{car.id}}</td>
+            <td>{{car.name}}</td>
+            <td>{{car.stats.avgBpm}}</td>
         </tr>
     </ng-template>
 </p-table>
+<p-scrollTop target="parent" [threshold]="200"></p-scrollTop>

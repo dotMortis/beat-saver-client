@@ -30,9 +30,21 @@
                         styleClass="p-button-sm button-icon-only"
                     >
                         <ng-template pTemplate="content">
-                            <fa-icon class="px-1" [icon]="['fas', 'binoculars']"></fa-icon>
+                            <fa-icon [icon]="['fas', 'binoculars']"></fa-icon>
                         </ng-template>
                     </p-button>
+                </div>
+                <div class="col-auto nav-item-l">
+                    <p-button
+                        class="d-block"
+                        joyrideStep="mappersBtn"
+                        text="Browse mappers"
+                        styleClass="p-button-sm {{mappers.selected ? 'active-route' : ''}}"
+                        pTooltip="Mappers"
+                        iconPos="left"
+                        icon="pi pi-users"
+                        (onClick)="onOpen(mappers)"
+                    ></p-button>
                 </div>
                 <div class="col-auto nav-item-l">
                     <p-button
@@ -41,19 +53,10 @@
                         text="Browse all installed maps"
                         styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
                         pTooltip="Installed maps"
-                        label="Installed"
+                        icon="pi pi-save"
+                        iconPos="left"
                         (onClick)="onOpen(locals)"
                         badge="{{installedCount}}"
-                    ></p-button>
-                </div>
-                <div class="col-auto nav-item-l">
-                    <p-button
-                        class="d-block"
-                        joyrideStep="mappersBtn"
-                        text="Browse mappers"
-                        styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
-                        label="Mappers"
-                        (onClick)="onOpen(mappers)"
                     ></p-button>
                 </div>
                 <div class="col-auto nav-item-l">
@@ -134,7 +137,7 @@
             <app-local-maps></app-local-maps>
         </ng-template>
     </app-view-content>
-    <app-view-content #mappers>
+    <app-view-content #mappers [scrollPanel]="true">
         <ng-template appViewTemplate>
             <app-mappers></app-mappers>
         </ng-template>
