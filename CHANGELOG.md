@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.3-beta] - 25.09.2021
+
+### Added
+- Corrupted song file handling (Thanks to Spryte)
+
+### Fixed
+- typo
+
 ## [0.8.2-beta] - 25.09.2021
 
 ### Added
