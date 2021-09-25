@@ -1,9 +1,12 @@
 # Changelog
 
-## [0.9.0-beta] - Soon
+## [0.8.2-beta] - 25.09.2021
 
 ### Added
 - Challange Community Discord
+
+### Fixed
+- missing db.sqlite3 after installation
 
 ## [0.8.1-beta] - 25.09.2021
 
