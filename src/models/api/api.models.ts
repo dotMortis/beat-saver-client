@@ -101,7 +101,7 @@ export enum EListSortOrder {
     'RATING' = 'Rating'
 }
 
-export type TSearchResult = {
+export type TMapSearchResult = {
     docs: Array<TMapDetail>;
     redirect: string;
     user: TUserDetail;
@@ -261,4 +261,48 @@ export type TScores = {
     rank: number;
     score: number;
     scorePercent: number;
+};
+
+export type TMapperListResult = {
+    id: number;
+    avatar?: string;
+    name: string;
+    type: string;
+    uniqueSet: boolean;
+    stats: TMapperStatsList;
+};
+
+export type TMapperStatsList = {
+    avgBpm: number;
+    avgDuration: number;
+    avgScore: number;
+    firstUpload: string;
+    lastUpload: string;
+    rankedMaps: number;
+    totalDownvotes: number;
+    totalMaps: number;
+    totalUpvotes: number;
+};
+
+export type TMapperResult = {
+    id: number;
+    hash: string;
+    avatar?: string;
+    name: string;
+    type: string;
+    uniqueSet: boolean;
+    stats: TMapperStats;
+};
+
+export type TMapperStats = TMapperStatsList & {
+    diffStats: TMapperDiffStats;
+};
+
+export type TMapperDiffStats = {
+    easy: number;
+    expert: number;
+    expertPlus: number;
+    hard: number;
+    normal: number;
+    total: number;
 };

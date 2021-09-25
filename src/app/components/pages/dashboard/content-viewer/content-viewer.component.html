@@ -47,6 +47,16 @@
                     ></p-button>
                 </div>
                 <div class="col-auto nav-item-l">
+                    <p-button
+                        class="d-block"
+                        joyrideStep="mappersBtn"
+                        text="Browse mappers"
+                        styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
+                        label="Mappers"
+                        (onClick)="onOpen(mappers)"
+                    ></p-button>
+                </div>
+                <div class="col-auto nav-item-l">
                     <button
                         pButton
                         pRipple
@@ -122,6 +132,11 @@
     <app-view-content #locals>
         <ng-template appViewTemplate>
             <app-local-maps></app-local-maps>
+        </ng-template>
+    </app-view-content>
+    <app-view-content #mappers>
+        <ng-template appViewTemplate>
+            <app-mappers></app-mappers>
         </ng-template>
     </app-view-content>
     <app-view-content

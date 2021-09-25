@@ -36,19 +36,19 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
             )
         );
         this.addSub(
-            this.apiService.tSearchResultChange.pipe(
+            this.apiService.tMapSearchResultChange.pipe(
                 tap(r => {
                     if (r?.docs.length) this._tourService.startCardTour(r.docs[0].id);
                 })
             )
         );
         this._setCardSettings(this._settingsService.settings);
-        if (!this.apiService.tSearchResult) this.onSearch();
+        if (!this.apiService.tMapSearchResult) this.onSearch();
     }
 
     onSearch(more: boolean = false): void {
         this.apiService
-            .getList(more)
+            .getMapList(more)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     this._eleService.send<TSendError>('ERROR', error);

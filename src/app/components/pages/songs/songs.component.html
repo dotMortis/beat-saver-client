@@ -2,7 +2,7 @@
 <div class="row mx-n2">
     <app-song-card
         #card
-        *ngFor="let doc of apiService.tSearchResult?.docs;"
+        *ngFor="let doc of apiService.tMapSearchResult?.docs;"
         class="col-12 col-lg-6 px-2 mb-3"
         [tMapDetail]="doc"
         [localMode]="false"
@@ -10,7 +10,7 @@
 
     <div class="col-12">
         <button
-            *ngIf="apiService.canLoadMore && apiService.tSearchResult?.docs?.length"
+            *ngIf="apiService.canLoadMoreMaps && apiService.tMapSearchResult?.docs?.length"
             pButton
             pRipple
             pTooltip="Load more maps"

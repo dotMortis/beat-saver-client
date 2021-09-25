@@ -82,10 +82,6 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
         );
     }
 
-    isNumber(value: any): boolean {
-        return typeof value === 'number';
-    }
-
     loadScoresLazy(event: LazyLoadEvent): void {
         const pages = new Array<number>();
         const tableFirst = event.first || 0;

@@ -20,4 +20,8 @@ export abstract class UnsubscribeComponent implements OnDestroy {
             sub.unsubscribe();
         }
     }
+
+    isNumber(value: any): boolean {
+        return typeof value === 'number';
+    }
 }

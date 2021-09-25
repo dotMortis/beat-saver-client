@@ -91,7 +91,7 @@ export class SongFilterComponent {
 
     onSearch(): void {
         this.apiService
-            .getList(false)
+            .getMapList(false)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     this._eleService.send<TSendError>('ERROR', error);
