@@ -14,6 +14,7 @@ import { TieredMenuModule } from 'primeng/tieredmenu';
 import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { SharedAppModule } from '../../../../shared/shared-app-module';
 import { LocalMapsModule } from '../../local-maps/local-maps.module';
+import { MapperDetailModule } from '../../mapper-detail/mapper-detail.module';
 import { MappersModule } from '../../mappers/mappers.module';
 import { SongsDetailModule } from '../../songs-detail/songs-detail.module';
 import { SongsModule } from '../../songs/songs.module';
@@ -48,6 +49,7 @@ import { ViewTemplateModule } from './view-template/view-template.directive';
         DynamicDialogModule,
         TieredMenuModule,
         SongsDetailModule,
+        MapperDetailModule,
         OverlayPanelModule,
         InputTextModule,
         FormsModule

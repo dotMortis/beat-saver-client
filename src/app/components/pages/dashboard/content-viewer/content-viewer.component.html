@@ -151,6 +151,14 @@
             <app-songs-detail [songId]="details.mapDetail.id"></app-songs-detail>
         </ng-template>
     </app-view-content>
+    <app-view-content
+        [id]="{id: details.mapperDetail.id, type: 'mapper'}"
+        *ngFor="let details of cvService.mapperDetailViewArr"
+    >
+        <ng-template appViewTemplate>
+            <app-mapper-detail [mapperId]="details.mapperDetail.id"></app-mapper-detail>
+        </ng-template>
+    </app-view-content>
 </div>
 <p-overlayPanel #searchById (onHide)="songIdSearch = ''">
     <ng-template pTemplate>

@@ -1,21 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { TMapDetail, TMapVersion } from '../../../models/api/api.models';
+import { TMapDetail, TMapperListResult, TMapVersion } from '../../../models/api/api.models';
 import { TSongId } from '../../../models/maps/map-ids.model';
-import { TOpenId } from '../../../models/openEvent.model';
+import { TOpenId, TOpenIdType } from '../../../models/openEvent.model';
 
 @Injectable({
     providedIn: null
 })
 export class ContentViewerService {
+    //#region SongDetailView
     private _songDetailViews: Map<TSongId, { mapDetail: TMapDetail; latestVersion: TMapVersion }>;
     get songDetailViews(): Map<TSongId, { mapDetail: TMapDetail; latestVersion: TMapVersion }> {
         return this._songDetailViews;
     }
-
     get songDetailViewArr(): Array<{ mapDetail: TMapDetail; latestVersion: TMapVersion }> {
         return Array.from(this._songDetailViews.values());
     }
+    //#endregion
+
+    //#region MapperDetailView
+    private _mapperDetailViews: Map<number, { mapperDetail: TMapperListResult }>;
+    get mapperDetailViews(): Map<number, { mapperDetail: TMapperListResult }> {
+        return this._mapperDetailViews;
+    }
+    get mapperDetailViewArr(): Array<{ mapperDetail: TMapperListResult }> {
+        return Array.from(this._mapperDetailViews.values());
+    }
+    //#endregion
 
     public openNext?: TOpenId;
     public onOpen: Subject<TOpenId>;
@@ -25,6 +36,7 @@ export class ContentViewerService {
             TSongId,
             { mapDetail: TMapDetail; latestVersion: TMapVersion }
         >();
+        this._mapperDetailViews = new Map<number, { mapperDetail: TMapperListResult }>();
         this.onOpen = new Subject<TOpenId>();
     }
 
@@ -37,11 +49,46 @@ export class ContentViewerService {
         }
     }
 
-    delSongDetailView(id: TSongId): void {
-        if (this._songDetailViews.has(id)) this._songDetailViews.delete(id);
+    addMapperDetailView(mapperDetail: TMapperListResult): void {
+        if (!this._mapperDetailViews.has(mapperDetail.id)) {
+            this._mapperDetailViews.set(mapperDetail.id, { mapperDetail });
+            this.openNext = { type: 'mapper', id: mapperDetail.id };
+        } else {
+            this.onOpen.next({ type: 'mapper', id: mapperDetail.id });
+        }
     }
 
-    clearSongDetailViews(): void {
-        this._songDetailViews.clear();
+    delDetailView(id: TOpenId): void {
+        switch (id.type) {
+            case 'map': {
+                if (this._songDetailViews.has(id.id)) this._songDetailViews.delete(id.id);
+                break;
+            }
+            case 'mapper': {
+                if (this._mapperDetailViews.has(id.id)) this._mapperDetailViews.delete(id.id);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
+    clearDetailViews(types: TOpenIdType[]): void {
+        for (const type of types) {
+            switch (type) {
+                case 'map': {
+                    this._songDetailViews.clear();
+                    break;
+                }
+                case 'mapper': {
+                    this._mapperDetailViews.clear();
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 }

@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { finalize, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TMapperListResult } from '../../../../models/api/api.models';
 import { TSendEmitDownload } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { ContentViewerService } from '../../../services/null.provided/content-viewer.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { TMapperColumn } from './mapper-column.model';
 
@@ -13,7 +14,7 @@ import { TMapperColumn } from './mapper-column.model';
     templateUrl: './mappers.component.html',
     styleUrls: ['./mappers.component.scss']
 })
-export class MappersComponent extends UnsubscribeComponent implements OnInit {
+export class MappersComponent extends UnsubscribeComponent {
     totalRecords: number;
     mappers: TMapperListResult[];
     columns: TMapperColumn[];
@@ -30,7 +31,8 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
     constructor(
         private _apiService: ApiService,
         private _cdr: ChangeDetectorRef,
-        private _eleService: ElectronService
+        private _eleService: ElectronService,
+        private _cvService: ContentViewerService
     ) {
         super();
         this.totalRecords = Infinity;
@@ -66,7 +68,7 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 resizable: true,
                 class: 'text-center',
                 hrefClick: (val: TMapperListResult) => {
-                    console.log(val);
+                    this.onOpenDetail(val);
                 }
             },
             {
@@ -190,10 +192,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         this.currentPage = 0;
     }
 
-    ngOnInit(): void {
-        return;
-    }
-
     loadScoresLazy(event: LazyLoadEvent): void {
         this.currentPage = event.first ? event.first / 20 : 0;
         this.loading = true;
@@ -235,5 +233,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         this.mappers = [];
         this.loadScoresLazy({ first: 0, rows: 20 });
         this._cdr.detectChanges();
+    }
+
+    onOpenDetail(mapper: TMapperListResult) {
+        this._cvService.addMapperDetailView(mapper);
     }
 }

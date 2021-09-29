@@ -27,17 +27,6 @@ export class DetailBtnPanelComponent {
     }
 
     onCloseDetailTab(id: TOpenId): void {
-        switch (id.type) {
-            case 'map': {
-                this.cvService.delSongDetailView(id.id);
-                break;
-            }
-            case 'mapper': {
-                break;
-            }
-            default: {
-                break;
-            }
-        }
+        this.cvService.delDetailView(id);
     }
 }
