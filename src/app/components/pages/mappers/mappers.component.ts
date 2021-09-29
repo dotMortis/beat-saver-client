@@ -34,7 +34,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'index',
                 field: '',
                 header: '#',
-                width: '45px',
                 'min-width': '45px',
                 'max-width': '45px',
                 class: 'text-center',
@@ -48,7 +47,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'avatar',
                 field: 'avatar',
                 header: 'Avatar',
-                width: '50px',
                 'min-width': '50px',
                 'max-width': '50px',
                 resizable: false
@@ -58,8 +56,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'string',
                 field: 'name',
                 header: 'Mapper',
-                width: '50%',
-                'min-width': '50px',
                 resizable: true
             },
             {
@@ -140,8 +136,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'date',
                 field: 'stats.firstUpload',
                 header: 'First',
-                width: '50%',
-                'min-width': '50px',
                 resizable: true
             },
             {
@@ -149,8 +143,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'date',
                 field: 'stats.lastUpload',
                 header: 'Last',
-                width: '50%',
-                'min-width': '50px',
                 resizable: true
             }
         ];
