@@ -4,6 +4,7 @@ import { finalize, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TMapperListResult } from '../../../../models/api/api.models';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { TMapperColumn } from './mapper-column.model';
 
 @Component({
     selector: 'app-mappers',
@@ -13,15 +14,14 @@ import { ApiService } from '../../../services/null.provided/api.service';
 export class MappersComponent extends UnsubscribeComponent implements OnInit {
     totalRecords: number;
     mappers: TMapperListResult[];
-    columns: {
-        field: string;
-        header: string;
-        class?: string;
-        headerClass?: string;
-        'min-width'?: string;
-        width?: string;
-        default?: string | number;
-    }[];
+    columns: TMapperColumn[];
+    private _selectedColumns: TMapperColumn[];
+    get selectedColumns(): TMapperColumn[] {
+        return this._selectedColumns;
+    }
+    set selectedColumns(val: TMapperColumn[]) {
+        this._selectedColumns = val.sort((a, b) => a.rank - b.rank);
+    }
     loading: boolean;
     currentPage: number;
 
@@ -30,15 +30,131 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
         this.totalRecords = Infinity;
         this.columns = [
             {
-                field: 'id',
+                rank: 1,
+                type: 'index',
+                field: '',
                 header: '#',
-                width: '50px',
+                width: '45px',
+                'min-width': '45px',
+                'max-width': '45px',
                 class: 'text-center',
-                headerClass: 'text-center'
+                headerClass: 'text-center',
+                resizable: false
             },
-            { field: 'name', header: 'Mapper', width: '200px', 'min-width': '100px' },
-            { field: 'stats.avgBpm', header: 'Score', 'min-width': '100px', width: '100px' }
+            {
+                rank: 2,
+                headerIcon: 'pi-image',
+                iconType: 'pi',
+                type: 'avatar',
+                field: 'avatar',
+                header: 'Avatar',
+                width: '50px',
+                'min-width': '50px',
+                'max-width': '50px',
+                resizable: false
+            },
+            {
+                rank: 3,
+                type: 'string',
+                field: 'name',
+                header: 'Mapper',
+                width: '50%',
+                'min-width': '50px',
+                resizable: true
+            },
+            {
+                rank: 4,
+                headerIcon: ['fas', 'tachometer-alt'],
+                iconType: 'fa',
+                type: 'number',
+                field: 'stats.avgBpm',
+                header: 'Score',
+                resizable: true
+            },
+            {
+                rank: 5,
+                headerIcon: ['fas', 'clock'],
+                iconType: 'fa',
+                type: 'date',
+                field: '',
+                header: 'Dura',
+                transformer: (val: TMapperListResult) => {
+                    return val.stats.avgDuration * 1000;
+                },
+                pipeFormat: 'mm:ss',
+                resizable: true
+            },
+            {
+                rank: 6,
+                type: 'number',
+                headerIcon: ['fas', 'thumbs-up'],
+                iconType: 'fa',
+                field: 'stats.totalUpvotes',
+                header: 'TUP',
+                resizable: true
+            },
+            {
+                rank: 7,
+                headerIcon: ['fas', 'thumbs-down'],
+                iconType: 'fa',
+                type: 'number',
+                field: 'stats.totalDownvotes',
+                header: 'TDOWN',
+                resizable: true
+            },
+            {
+                rank: 8,
+                headerIcon: ['fas', 'percent'],
+                iconType: 'fa',
+                type: 'number',
+                field: '',
+                header: 'Ratio',
+                transformer: (val: TMapperListResult) => {
+                    return (
+                        (100 / (val.stats.totalUpvotes + val.stats.totalDownvotes)) *
+                        val.stats.totalUpvotes
+                    );
+                },
+                resizable: true
+            },
+            {
+                rank: 9,
+                headerIcon: ['fas', 'map-marked'],
+                iconType: 'fa',
+                type: 'number',
+                field: 'stats.totalMaps',
+                header: 'TotalMaps',
+                resizable: true
+            },
+            {
+                headerIcon: ['fas', 'star'],
+                iconType: 'fa',
+                rank: 10,
+                type: 'number',
+                field: 'stats.rankedMaps',
+                header: 'RankedMaps',
+                resizable: true
+            },
+            {
+                rank: 11,
+                type: 'date',
+                field: 'stats.firstUpload',
+                header: 'First',
+                width: '50%',
+                'min-width': '50px',
+                resizable: true
+            },
+            {
+                rank: 12,
+                type: 'date',
+                field: 'stats.lastUpload',
+                header: 'Last',
+                width: '50%',
+                'min-width': '50px',
+                resizable: true
+            }
         ];
+        this._selectedColumns = [...this.columns];
         this.mappers = new Array<TMapperListResult>();
         this.loading = false;
         this.currentPage = 0;
@@ -65,8 +181,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
     }
 
     getCellValue(field: string, obj: any, defaultVal: string | number): any {
-        console.log('getCellValue');
-
         const fields = field.split('.');
         const tempVal = obj[fields[0]];
         if (obj instanceof Array) {
@@ -77,7 +191,8 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 return defaultVal || tempVal;
             return tempVal;
         } else {
-            const newFields = fields.splice(0, 1).join('.');
+            fields.shift();
+            const newFields = fields.join('.');
             if (tempVal instanceof Array) {
                 return tempVal.map((tempVal: any) =>
                     this.getCellValue(newFields, tempVal, defaultVal)

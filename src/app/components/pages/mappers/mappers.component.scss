@@ -2,19 +2,4 @@
     .p-paginator-last {
         display: none !important;
     }
-    .p-datatable-thead > tr > th {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 0.25rem;
-
-        &::after {
-            content: "";
-            background-color: var(--surface-b);
-            height: 0.25rem;
-            position: absolute;
-            top: -0.25rem;
-            width: 100%;
-            left: 0;
-        }
-    }
 }

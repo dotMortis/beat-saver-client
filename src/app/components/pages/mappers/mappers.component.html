@@ -1,25 +1,129 @@
-<p-table
-    [value]="mappers"
-    [lazy]="true"
-    (onLazyLoad)="loadScoresLazy($event)"
-    [rows]="20"
-    [paginator]="true"
-    [totalRecords]="totalRecords"
-    [loading]="loading"
+<p-scrollPanel
+    #scrollPanel
+    [style]="{ width: '100vw', height: 'calc(100vh - 5.5rem)' }"
+    styleClass="custombar1 custombar1-center "
 >
-    <ng-template pTemplate="header">
-        <tr>
-            <th>#</th>
-            <th>Mapper</th>
-            <th>BPM</th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-car>
-        <tr>
-            <td>{{car.id}}</td>
-            <td>{{car.name}}</td>
-            <td>{{car.stats.avgBpm}}</td>
-        </tr>
-    </ng-template>
-</p-table>
-<p-scrollTop target="parent" [threshold]="200"></p-scrollTop>
+    <div class="container pt-1 pb-1">
+        <p-table
+            [value]="mappers"
+            [columns]="selectedColumns"
+            [lazy]="true"
+            (onLazyLoad)="loadScoresLazy($event); scrollPanel.scrollTop(0)"
+            [rows]="20"
+            [paginator]="true"
+            [totalRecords]="totalRecords"
+            [loading]="loading"
+            [resizableColumns]="true"
+            styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+            columnResizeMode="expand"
+            [rowHover]="true"
+        >
+            <ng-template pTemplate="caption">
+                <p-multiSelect
+                    [options]="columns"
+                    [(ngModel)]="selectedColumns"
+                    optionLabel="header"
+                    selectedItemsLabel="{0} columns selected"
+                    [style]="{minWidth: '200px'}"
+                    placeholder="Choose Columns"
+                ></p-multiSelect>
+            </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                    <col
+                        *ngFor="let col of columns"
+                        [style]="{'width': col.width, display: 'block', 'min-width': col['min-width'] || 0}"
+                    />
+                </colgroup>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <ng-container *ngFor="let col of columns">
+                        <th
+                            pResizableColumn
+                            *ngIf="col.resizable;else notResizable"
+                            [style]="{'width': col['max-width'] || 'auto', 'min-width': col['min-width'] || 0}"
+                            [class]="col.headerClass"
+                            class="text-center"
+                        >
+                            <ng-container
+                                [ngTemplateOutlet]="col.iconType === 'pi' ? headerIconPi  : col.iconType === 'fa' ? headerIconFa : headerText"
+                                [ngTemplateOutletContext]="{col:col}"
+                            >
+                            </ng-container>
+                        </th>
+                        <ng-template #notResizable>
+                            <th
+                                [class]="col.headerClass"
+                                [style]="{'width': col['max-width'] || 'auto', 'min-width': col['min-width'] || 0}"
+                                class="text-center"
+                            >
+                                <ng-container
+                                    [ngTemplateOutlet]="col.iconType === 'pi' ? headerIconPi  : col.iconType === 'fa' ? headerIconFa : headerText"
+                                    [ngTemplateOutletContext]="{col:col}"
+                                >
+                                </ng-container>
+                            </th>
+                        </ng-template>
+                    </ng-container>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                <tr>
+                    <ng-template ngFor let-col [ngForOf]="columns">
+                        <ng-container [ngSwitch]="col.type">
+                            <td *ngSwitchCase="'index'" [pTooltip]="col.header" [class]="col.class">
+                                {{ rowIndex + 1 }}
+                            </td>
+                            <td
+                                *ngSwitchCase="'avatar'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                <p-avatar
+                                    shape="circle"
+                                    [image]="getCellValue(col.field, rowData,
+                                col.default)"
+                                ></p-avatar>
+                            </td>
+                            <td
+                                *ngSwitchCase="'string'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                {{col.rowIndex ? rowIndex + 1 : col.transformer ?
+                                col.transformer(rowData) : getCellValue(col.field, rowData,
+                                col.default)}}
+                            </td>
+                            <td *ngSwitchCase="'date'" [pTooltip]="col.header" [class]="col.class">
+                                {{(col.transformer ? col.transformer(rowData) :
+                                getCellValue(col.field, rowData, col.default)) |
+                                date:col.pipeFormat}}
+                            </td>
+                            <td
+                                *ngSwitchCase="'number'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                {{(col.transformer ? col.transformer(rowData) :
+                                getCellValue(col.field, rowData, col.default)) |
+                                number:col.pipeFormat}}
+                            </td>
+                        </ng-container>
+                    </ng-template>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-scrollTop target="parent" class="scrolltop" [threshold]="200"> </p-scrollTop>
+</p-scrollPanel>
+<ng-template #headerText let-col="col">
+    <span>{{col.header}}</span>
+</ng-template>
+<ng-template #headerIconPi let-col="col">
+    <i [pTooltip]="col.header" [class]="'pi ' + col.headerIcon"></i>
+</ng-template>
+<ng-template #headerIconFa let-col="col">
+    <fa-icon [icon]="col.headerIcon" [pTooltip]="col.header"></fa-icon>
+</ng-template>
