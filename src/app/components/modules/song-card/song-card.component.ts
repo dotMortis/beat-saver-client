@@ -12,7 +12,11 @@ import {
 } from '../../../../models/api/api.models';
 import { TInstalled } from '../../../../models/electron/download.model';
 import { TInvokeGetLocalCover } from '../../../../models/electron/invoke.channels';
-import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
+import {
+    TSendDebug,
+    TSendEmitDownload,
+    TSendError
+} from '../../../../models/electron/send.channels';
 import { ILocalMapInfo } from '../../../../models/maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
@@ -208,6 +212,18 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 );
                 await this.dlService.installSingle(dlInfo);
             }
+        } catch (error: any) {
+            this._notify.error(error);
+        }
+    }
+
+    onDownloadZip() {
+        try {
+            if (this.latestVersion)
+                this._eleService.send<TSendEmitDownload>(
+                    'EMIT_DOWNLOAD',
+                    this.latestVersion.downloadURL
+                );
         } catch (error: any) {
             this._notify.error(error);
         }

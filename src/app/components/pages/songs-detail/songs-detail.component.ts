@@ -12,7 +12,11 @@ import {
 } from '../../../../models/api/api.models';
 import { TBoardIdent } from '../../../../models/api/leaderboard.model';
 import { TInstalled } from '../../../../models/electron/download.model';
-import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
+import {
+    TSendDebug,
+    TSendEmitDownload,
+    TSendError
+} from '../../../../models/electron/send.channels';
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
@@ -176,6 +180,18 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                 );
                 await this.dlService.installSingle(dlInfo);
             }
+        } catch (error: any) {
+            this._notify.error(error);
+        }
+    }
+
+    onDownloadZip() {
+        try {
+            if (this.latestVersion)
+                this._eleService.send<TSendEmitDownload>(
+                    'EMIT_DOWNLOAD',
+                    this.latestVersion.downloadURL
+                );
         } catch (error: any) {
             this._notify.error(error);
         }

@@ -82,7 +82,8 @@
                                 joyrideStep="{{tMapDetail?.id}}2"
                                 text="Download the song as zip file"
                                 class="mr-3 card-btn"
-                                href="{{ latestVersion?.downloadURL }}"
+                                [routerLink]=""
+                                (click)="onDownloadZip()"
                                 pTooltip="Download as zip file"
                                 ><fa-icon [icon]="['fas', 'file-archive']"></fa-icon
                             ></a>
