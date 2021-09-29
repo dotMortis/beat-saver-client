@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
-import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, of } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TLeaderboard, TScores } from '../../../../models/api/api.models';
 import { TBoardIdent } from '../../../../models/api/leaderboard.model';
@@ -13,7 +13,7 @@ import { ApiService } from '../../../services/null.provided/api.service';
     templateUrl: './leaderboard.component.html',
     styleUrls: ['./leaderboard.component.scss']
 })
-export class LeaderboardComponent extends UnsubscribeComponent implements OnInit {
+export class LeaderboardComponent extends UnsubscribeComponent {
     private _boardIdent?: TBoardIdent | null;
     @Input()
     set boardIdent(val: TBoardIdent | undefined | null) {
@@ -37,6 +37,8 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
 
     private _boardIdentChange: BehaviorSubject<TBoardIdent | undefined>;
 
+    private _isInit: boolean;
+
     scores: TScores[];
     columns: {
         field: string;
@@ -51,6 +53,7 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
 
     constructor(private _apiService: ApiService, private _cdr: ChangeDetectorRef) {
         super();
+        this._isInit = false;
         this._boardIdentChange = new BehaviorSubject<TBoardIdent | undefined>(undefined);
         this.columns = [
             {
@@ -68,18 +71,6 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
         ];
         this.scores = new Array<TScores>();
         this.loading = false;
-    }
-
-    ngOnInit(): void {
-        this.addSub(
-            this._boardIdentChange.pipe(
-                tap(() => {
-                    this.scores = [];
-                    this.loadScoresLazy({ first: 0, rows: 20 });
-                    this._cdr.detectChanges();
-                })
-            )
-        );
     }
 
     loadScoresLazy(event: LazyLoadEvent): void {
@@ -114,7 +105,25 @@ export class LeaderboardComponent extends UnsubscribeComponent implements OnInit
                             }
                             this.scores = [...this.scores, ...scores];
                             this._cdr.detectChanges();
+                        }),
+                        catchError(() => {
+                            this.scores = [];
+                            return of(null);
+                        }),
+                        finalize(() => {
                             this.loading = false;
+                            if (!this._isInit) {
+                                this._isInit = true;
+                                this.addSub(
+                                    this._boardIdentChange.pipe(
+                                        tap(() => {
+                                            this.scores = [];
+                                            this.loadScoresLazy({ first: 0, rows: 20 });
+                                            this._cdr.detectChanges();
+                                        })
+                                    )
+                                );
+                            }
                         })
                     )
             );
