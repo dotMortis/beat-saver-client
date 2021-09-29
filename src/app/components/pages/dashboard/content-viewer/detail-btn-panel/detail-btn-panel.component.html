@@ -13,7 +13,11 @@
                 <div pRipple class="detail-btn-content">
                     <div>{{details.mapDetail.metadata.songName }}</div>
                 </div>
-                <div (click)="onCloseDetailTab(details.mapDetail)" pRipple class="detail-btn-close">
+                <div
+                    (click)="onCloseDetailTab({id: details.mapDetail.id, type: 'map'})"
+                    pRipple
+                    class="detail-btn-close"
+                >
                     <fa-icon [icon]="['fas', 'ban']"></fa-icon>
                 </div>
             </div>

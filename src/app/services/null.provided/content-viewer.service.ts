@@ -37,8 +37,8 @@ export class ContentViewerService {
         }
     }
 
-    delSongDetailView(mapDetail: TMapDetail): void {
-        if (this._songDetailViews.has(mapDetail.id)) this._songDetailViews.delete(mapDetail.id);
+    delSongDetailView(id: TSongId): void {
+        if (this._songDetailViews.has(id)) this._songDetailViews.delete(id);
     }
 
     clearSongDetailViews(): void {

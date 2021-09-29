@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TMapDetail } from '../../../../../../models/api/api.models';
 import { TOpenId } from '../../../../../../models/openEvent.model';
 import { ContentViewerService } from '../../../../../services/null.provided/content-viewer.service';
 
@@ -27,7 +26,18 @@ export class DetailBtnPanelComponent {
         this.openNext = new EventEmitter<TOpenId>();
     }
 
-    onCloseDetailTab(mapDetail: TMapDetail): void {
-        this.cvService.delSongDetailView(mapDetail);
+    onCloseDetailTab(id: TOpenId): void {
+        switch (id.type) {
+            case 'map': {
+                this.cvService.delSongDetailView(id.id);
+                break;
+            }
+            case 'mapper': {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
 }
