@@ -2,11 +2,11 @@
     <div class="row mx-2 no-gutters detail-btn-sub-panel">
         <div
             class="pr-1 detail-btn-item-wrap"
-            [ngClass]="{active: activeId === details.mapDetail.id}"
+            [ngClass]="{active: activeId?.id === details.mapDetail.id && activeId?.type === 'map'}"
             *ngFor="let details of cvService.songDetailViewArr"
         >
             <div
-                (click)="openNext.next(details.mapDetail.id)"
+                (click)="openNext.next({id: details.mapDetail.id, type: 'map'})"
                 class="detail-btn-item"
                 style="background-image: url({{details.latestVersion.coverURL}})"
             >
