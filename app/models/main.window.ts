@@ -4,7 +4,6 @@ import { resolve } from 'path';
 import { EventEmitter } from 'stream';
 import { Logger } from 'winston';
 import { TSendClose, TSendReady, TSendReadyClose } from '../../src/models/electron/send.channels';
-import { DownloadSender } from '../senders/download.sender';
 import { IpcHelerps } from './helpers/ipc-main.helpers';
 import { WindowStorage } from './windowStorage.model';
 
@@ -13,7 +12,6 @@ export class MainWindow extends EventEmitter {
     private _windowStorage: WindowStorage;
     private _serve: boolean;
     private _debug: boolean;
-    private _downloadSender?: DownloadSender;
     private _isReadyToClose: boolean;
 
     get window(): BrowserWindow | null {
@@ -36,6 +34,10 @@ export class MainWindow extends EventEmitter {
         return super.on('ready', cb);
     }
 
+    onceReady(cb: () => void): this {
+        return super.once('ready', cb);
+    }
+
     show(): void {
         this._window?.show();
         setTimeout(() => {
@@ -49,7 +51,6 @@ export class MainWindow extends EventEmitter {
 
     public async init(): Promise<void> {
         this._window = this._generateWindow();
-        this._downloadSender = new DownloadSender(this._window);
         this._initOnNewWindow(this._window);
         this._initOnReady(this._window);
         this._initOnClose(this._window);
