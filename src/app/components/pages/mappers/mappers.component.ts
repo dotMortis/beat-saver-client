@@ -3,7 +3,9 @@ import { LazyLoadEvent } from 'primeng/api';
 import { finalize, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TMapperListResult } from '../../../../models/api/api.models';
+import { TSendEmitDownload } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { ElectronService } from '../../../services/root.provided/electron.service';
 import { TMapperColumn } from './mapper-column.model';
 
 @Component({
@@ -25,7 +27,11 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
     loading: boolean;
     currentPage: number;
 
-    constructor(private _apiService: ApiService, private _cdr: ChangeDetectorRef) {
+    constructor(
+        private _apiService: ApiService,
+        private _cdr: ChangeDetectorRef,
+        private _eleService: ElectronService
+    ) {
         super();
         this.totalRecords = Infinity;
         this.columns = [
@@ -47,16 +53,21 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 type: 'avatar',
                 field: 'avatar',
                 header: 'Avatar',
-                'min-width': '50px',
-                'max-width': '50px',
-                resizable: false
+                'min-width': '45px',
+                'max-width': '45px',
+                resizable: false,
+                class: 'text-center'
             },
             {
                 rank: 3,
                 type: 'string',
                 field: 'name',
                 header: 'Mapper',
-                resizable: true
+                resizable: true,
+                class: 'text-center',
+                hrefClick: (val: TMapperListResult) => {
+                    console.log(val);
+                }
             },
             {
                 rank: 4,
@@ -64,8 +75,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 iconType: 'fa',
                 type: 'number',
                 field: 'stats.avgBpm',
-                header: 'Score',
-                resizable: true
+                header: 'Avg BPM',
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 5,
@@ -73,12 +85,13 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 iconType: 'fa',
                 type: 'date',
                 field: '',
-                header: 'Dura',
+                header: 'Avg Duration',
                 transformer: (val: TMapperListResult) => {
                     return val.stats.avgDuration * 1000;
                 },
                 pipeFormat: 'mm:ss',
-                resizable: true
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 6,
@@ -86,8 +99,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 headerIcon: ['fas', 'thumbs-up'],
                 iconType: 'fa',
                 field: 'stats.totalUpvotes',
-                header: 'TUP',
-                resizable: true
+                header: 'Total Upvotes',
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 7,
@@ -95,8 +109,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 iconType: 'fa',
                 type: 'number',
                 field: 'stats.totalDownvotes',
-                header: 'TDOWN',
-                resizable: true
+                header: 'Total Downvotes',
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 8,
@@ -111,7 +126,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                         val.stats.totalUpvotes
                     );
                 },
-                resizable: true
+                resizable: true,
+                postfix: '%',
+                class: 'text-center'
             },
             {
                 rank: 9,
@@ -119,8 +136,9 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 iconType: 'fa',
                 type: 'number',
                 field: 'stats.totalMaps',
-                header: 'TotalMaps',
-                resizable: true
+                header: 'Total Maps',
+                resizable: true,
+                class: 'text-center'
             },
             {
                 headerIcon: ['fas', 'star'],
@@ -128,22 +146,42 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
                 rank: 10,
                 type: 'number',
                 field: 'stats.rankedMaps',
-                header: 'RankedMaps',
-                resizable: true
+                header: 'Ranked Maps',
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 11,
                 type: 'date',
                 field: 'stats.firstUpload',
                 header: 'First',
-                resizable: true
+                resizable: true,
+                class: 'text-center'
             },
             {
                 rank: 12,
                 type: 'date',
                 field: 'stats.lastUpload',
                 header: 'Last',
-                resizable: true
+                resizable: true,
+                class: 'text-center'
+            },
+            {
+                rank: 13,
+                type: 'btn',
+                field: '',
+                header: 'Playlist',
+                resizable: false,
+                'min-width': '45px',
+                'max-width': '45px',
+                class: 'text-center',
+                btnIcon: 'pi pi-list',
+                btnHrefClick: (val: TMapperListResult) => {
+                    this._eleService.send<TSendEmitDownload>(
+                        'EMIT_DOWNLOAD',
+                        `https://beatsaver.com/api/users/id/${val.id}/playlist`
+                    );
+                }
             }
         ];
         this._selectedColumns = [...this.columns];
@@ -157,7 +195,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
     }
 
     loadScoresLazy(event: LazyLoadEvent): void {
-        console.log(event);
         this.currentPage = event.first ? event.first / 20 : 0;
         this.loading = true;
         this._cdr.detectChanges();
@@ -165,7 +202,6 @@ export class MappersComponent extends UnsubscribeComponent implements OnInit {
             this._apiService.getMapppersList(this.currentPage).pipe(
                 tap((mappers: TMapperListResult[]) => {
                     this.mappers = [...mappers];
-                    console.log(this.mappers);
                 }),
                 finalize(() => (this.loading = false))
             )

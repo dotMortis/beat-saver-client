@@ -2,4 +2,36 @@
     .p-paginator-last {
         display: none !important;
     }
+
+    p-table {
+        td {
+            padding: 0.5rem 0.25rem !important;
+        }
+        th {
+            padding: 0.5rem 0.25rem !important;
+        }
+    }
+
+    p-multiselect {
+        .p-multiselect-label {
+            padding: 0.5rem;
+        }
+
+        .p-multiselect-close {
+            margin-left: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .p-multiselect-filter {
+            &.p-inputtext {
+                padding: 0.5rem 1rem;
+                padding-right: 2rem;
+            }
+        }
+
+        .p-multiselect-item {
+            padding: 0.5rem 1rem;
+        }
+    }
 }

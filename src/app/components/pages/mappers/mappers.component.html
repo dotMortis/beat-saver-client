@@ -20,14 +20,27 @@
             [autoLayout]="true"
         >
             <ng-template pTemplate="caption">
-                <p-multiSelect
-                    [options]="columns"
-                    [(ngModel)]="selectedColumns"
-                    optionLabel="header"
-                    selectedItemsLabel="{0} columns selected"
-                    [style]="{minWidth: '200px'}"
-                    placeholder="Choose Columns"
-                ></p-multiSelect>
+                <div class="d-flex">
+                    <p-multiSelect
+                        [options]="columns"
+                        [(ngModel)]="selectedColumns"
+                        optionLabel="header"
+                        selectedItemsLabel="{0} columns selected"
+                        [style]="{minWidth: '200px'}"
+                        placeholder="Choose Columns"
+                    ></p-multiSelect>
+                    <div class="ml-auto">
+                        <button
+                            pRipple
+                            type="button"
+                            pButton
+                            pTooltip="Refresh"
+                            icon="pi-refresh pi"
+                            class="p-button-sm"
+                            (click)="onRefresh()"
+                        ></button>
+                    </div>
+                </div>
             </ng-template>
             <ng-template pTemplate="colgroup" let-columns>
                 <colgroup>
@@ -75,41 +88,97 @@
                     <ng-template ngFor let-col [ngForOf]="columns">
                         <ng-container [ngSwitch]="col.type">
                             <td *ngSwitchCase="'index'" [pTooltip]="col.header" [class]="col.class">
-                                {{ rowIndex + 1 }}
+                                {{ col.prefix }}{{ rowIndex + 1 }}{{ col.postfix }}
                             </td>
                             <td
                                 *ngSwitchCase="'avatar'"
                                 [pTooltip]="col.header"
                                 [class]="col.class"
                             >
-                                <p-avatar
-                                    shape="circle"
-                                    [image]="getCellValue(col.field, rowData,
-                                col.default)"
-                                ></p-avatar>
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}<p-avatar
+                                        shape="circle"
+                                        [image]="getCellValue(col.field, rowData, col.default)"
+                                    ></p-avatar
+                                    >{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}<p-avatar
+                                            shape="circle"
+                                            [image]="getCellValue(col.field, rowData, col.default)"
+                                        ></p-avatar
+                                        >{{ col.postfix }}
+                                    </a>
+                                </ng-template>
                             </td>
                             <td
                                 *ngSwitchCase="'string'"
                                 [pTooltip]="col.header"
                                 [class]="col.class"
                             >
-                                {{col.rowIndex ? rowIndex + 1 : col.transformer ?
-                                col.transformer(rowData) : getCellValue(col.field, rowData,
-                                col.default)}}
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{col.rowIndex ? rowIndex + 1 : col.transformer
+                                    ? col.transformer(rowData) : getCellValue(col.field, rowData,
+                                    col.default)}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{col.rowIndex ? rowIndex + 1 :
+                                        col.transformer ? col.transformer(rowData) :
+                                        getCellValue(col.field, rowData, col.default)}}{{
+                                        col.postfix }}
+                                    </a>
+                                </ng-template>
                             </td>
                             <td *ngSwitchCase="'date'" [pTooltip]="col.header" [class]="col.class">
-                                {{(col.transformer ? col.transformer(rowData) :
-                                getCellValue(col.field, rowData, col.default)) |
-                                date:col.pipeFormat}}
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{(col.transformer ? col.transformer(rowData) :
+                                    getCellValue(col.field, rowData, col.default)) |
+                                    date:col.pipeFormat}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{(col.transformer ?
+                                        col.transformer(rowData) : getCellValue(col.field, rowData,
+                                        col.default)) | date:col.pipeFormat}}{{ col.postfix }}
+                                    </a>
+                                </ng-template>
                             </td>
                             <td
                                 *ngSwitchCase="'number'"
                                 [pTooltip]="col.header"
                                 [class]="col.class"
                             >
-                                {{(col.transformer ? col.transformer(rowData) :
-                                getCellValue(col.field, rowData, col.default)) |
-                                number:col.pipeFormat}}
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{(col.transformer ? col.transformer(rowData) :
+                                    getCellValue(col.field, rowData, col.default)) |
+                                    number:col.pipeFormat}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{(col.transformer ?
+                                        col.transformer(rowData) : getCellValue(col.field, rowData,
+                                        col.default)) | number:col.pipeFormat}}{{ col.postfix }}
+                                    </a>
+                                </ng-template>
+                            </td>
+                            <td *ngSwitchCase="'btn'" [pTooltip]="col.header" [class]="col.class">
+                                <a
+                                    *ngIf="col.btnHrefClick; else btn"
+                                    [routerLink]=""
+                                    (click)="col.btnHrefClick(rowData)"
+                                >
+                                    <i [class]="'pi ' + col.btnIcon"></i>
+                                </a>
+                                <ng-template #btn>
+                                    <button
+                                        pButton
+                                        class="p-button-sm"
+                                        (click)="col.btnClick(rowData)"
+                                        [icon]="col.btnIcon"
+                                    ></button>
+                                </ng-template>
                             </td>
                         </ng-container>
                     </ng-template>
