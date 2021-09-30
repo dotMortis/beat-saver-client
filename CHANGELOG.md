@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.4-beta] - Soon
+## [0.8.4-beta] - 30.09.2021
 
 ### Updated
 - #42 performance on update installed songs cache
