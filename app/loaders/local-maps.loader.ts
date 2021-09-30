@@ -209,6 +209,7 @@ class LocalMaps extends CommonLoader {
             rmSync(join(this._filePath, folderName), { recursive: true, force: true });
             this._deleteMapInfo(id);
         }
+        this._mapIds.delete(id);
         IpcHelerps.webContentsSend<TSendMapInstallChange>(
             this.browserWindow,
             'MAP_INSTALL_CHANGED',
@@ -240,6 +241,7 @@ class LocalMaps extends CommonLoader {
         }
         const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
         this._insertMapInfos([mapInfo]);
+        this._mapIds.add(mapInfo.id);
         IpcHelerps.webContentsSend<TSendMapInstallChange>(
             this.browserWindow,
             'MAP_INSTALL_CHANGED',
