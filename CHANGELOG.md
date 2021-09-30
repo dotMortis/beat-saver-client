@@ -3,10 +3,10 @@
 ## [0.8.4-beta] - Soon
 
 ### Updated
-- performance on update installed songs cache
+- #42 performance on update installed songs cache
 
 ### Fixed
-- hash computing for installed songs change detection
+- #42 hash computing for installed songs change detection
 
 ## [0.8.3-beta] - 25.09.2021
 
