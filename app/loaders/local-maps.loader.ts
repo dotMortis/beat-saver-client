@@ -27,7 +27,11 @@ import {
     TInvokeLoadInstalledSongs,
     TInvokeMapsCount
 } from '../../src/models/electron/invoke.channels';
-import { TSendMapsCount, TSendMapSyncStatus } from '../../src/models/electron/send.channels';
+import {
+    TSendMapInstallChange,
+    TSendMapsCount,
+    TSendMapSyncStatus
+} from '../../src/models/electron/send.channels';
 import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/maps/localMapInfo.model';
 import { TSongId } from '../../src/models/maps/map-ids.model';
 import { CommonLoader } from '../models/CommonLoader.model';
@@ -205,6 +209,11 @@ class LocalMaps extends CommonLoader {
             rmSync(join(this._filePath, folderName), { recursive: true, force: true });
             this._deleteMapInfo(id);
         }
+        IpcHelerps.webContentsSend<TSendMapInstallChange>(
+            this.browserWindow,
+            'MAP_INSTALL_CHANGED',
+            { songId: id, installed: false }
+        );
         return true;
     }
 
@@ -231,6 +240,11 @@ class LocalMaps extends CommonLoader {
         }
         const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
         this._insertMapInfos([mapInfo]);
+        IpcHelerps.webContentsSend<TSendMapInstallChange>(
+            this.browserWindow,
+            'MAP_INSTALL_CHANGED',
+            { songId: mapInfo.id, installed: true }
+        );
         return { result: true };
     }
 
