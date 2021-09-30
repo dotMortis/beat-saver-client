@@ -197,6 +197,7 @@ class LocalMaps extends CommonLoader {
             }
             this._insertMapInfos(maps);
         }
+        this._pushLocalSongsCount();
         IpcHelerps.webContentsSend<TSendMapSyncStatus>(this.browserWindow, 'MAP_SYNC_STATUS', {
             status: 'FINISH',
             currentCount: z,
@@ -225,6 +226,7 @@ class LocalMaps extends CommonLoader {
             this._deleteMapInfo(id);
         }
         this._mapIds.delete(id);
+        this._pushLocalSongsCount(this._mapIds.size);
         IpcHelerps.webContentsSend<TSendMapInstallChange>(
             this.browserWindow,
             'MAP_INSTALL_CHANGED',
@@ -258,6 +260,7 @@ class LocalMaps extends CommonLoader {
         const mapInfo = MapHelpers.getLocalMapInfo(id, this._filePath, subFolder);
         this._insertMapInfos([mapInfo]);
         this._mapIds.add(mapInfo.id);
+        this._pushLocalSongsCount(this._mapIds.size);
         IpcHelerps.webContentsSend<TSendMapInstallChange>(
             this.browserWindow,
             'MAP_INSTALL_CHANGED',
@@ -420,18 +423,15 @@ class LocalMaps extends CommonLoader {
             for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
         });
         insertMany(mapInfos);
-        this._pushLocalSongsCount();
     }
 
     private _deleteMapInfo(id: TSongId): void {
         this._db.prepare('DELETE FROM maps WHERE id = :id').run({ id });
-        this._pushLocalSongsCount();
     }
 
     private _deleteRemovedIds(removedIds: string[]): void {
         const params = '?,'.repeat(removedIds.length).slice(0, -1);
         this._db.prepare(`DELETE FROM maps WHERE id IN (${params})`).run(removedIds);
-        this._pushLocalSongsCount();
     }
 
     private async _handleLoadInstalledSongs<RESULT = never>(
@@ -494,8 +494,8 @@ class LocalMaps extends CommonLoader {
         return hash.digest('hex');
     }
 
-    private _pushLocalSongsCount(): void {
-        const count = this.getCurrentMapsCount();
+    private _pushLocalSongsCount(count?: number): void {
+        if (count == null) count = this.getCurrentMapsCount();
         IpcHelerps.webContentsSend<TSendMapsCount>(this.browserWindow, 'MAPS_COUNT', count);
     }
 }
