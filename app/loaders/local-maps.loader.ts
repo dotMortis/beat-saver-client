@@ -453,7 +453,12 @@ class LocalMaps extends CommonLoader {
     }
 
     private _computeIdsHash(ids: string[]): string {
-        return createHash('sha1').update(ids.join(',')).digest('hex');
+        ids.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+        const hash = createHash('sha1');
+        for (const id of ids) {
+            hash.update(id);
+        }
+        return hash.digest('hex');
     }
 
     private _pushLocalSongsCount(): void {
