@@ -153,39 +153,54 @@ class LocalMaps extends CommonLoader {
     }
 
     syncInstalledSongs(localIds: string[], dbIds: string[]): void {
-        this._deleteRemovedIds(localIds);
-        const idsCount = localIds.length;
+        const idsToDelete = new Array<string>();
+        for (const dbId of dbIds) {
+            if (!localIds.includes(dbId)) idsToDelete.push(dbId);
+        }
+        if (idsToDelete.length) this._deleteRemovedIds(idsToDelete);
         if (!this._filePath) return;
-        const files = readdirSync(this._filePath, { withFileTypes: true });
-        const maps = new Array<LocalMapInfo>();
+        const idsToAdd = new Array<string>();
+        for (const localId of localIds) {
+            if (!dbIds.includes(localId)) idsToAdd.push(localId);
+        }
         let z = 0;
-        for (const file of files) {
-            if (file.isDirectory()) {
-                IpcHelerps.webContentsSend<TSendMapSyncStatus>(
-                    this.browserWindow,
-                    'MAP_SYNC_STATUS',
-                    {
-                        status: 'SYNCING',
-                        currentCount: ++z,
-                        sum: idsCount
+        if (idsToAdd.length) {
+            const files = readdirSync(this._filePath, { withFileTypes: true });
+            const maps = new Array<LocalMapInfo>();
+            for (const file of files) {
+                if (file.isDirectory()) {
+                    try {
+                        const id = MapHelpers.getMapIdFromFolder(file.name);
+                        if (!idsToAdd.includes(id)) continue;
+                        IpcHelerps.webContentsSend<TSendMapSyncStatus>(
+                            this.browserWindow,
+                            'MAP_SYNC_STATUS',
+                            {
+                                status: 'SYNCING',
+                                currentCount: ++z,
+                                sum: idsToAdd.length
+                            }
+                        );
+                        const localMapInfo = MapHelpers.getLocalMapInfo(
+                            id,
+                            this._filePath,
+                            file.name
+                        );
+                        maps.push(localMapInfo);
+                    } catch (error: any) {
+                        logger.error(error, { customSongFolderName: file.name });
+                        const id = file.name.split(' ')[0];
+                        const dummyLocalMapInfo = LocalMapInfo.getDummyData(id, file.name);
+                        maps.push(dummyLocalMapInfo);
                     }
-                );
-                try {
-                    const localMapInfo = MapHelpers.getLocalMapInfo(this._filePath, file.name);
-                    maps.push(localMapInfo);
-                } catch (error: any) {
-                    logger.error(error, { customSongFolderName: file.name });
-                    const id = file.name.split(' ')[0];
-                    const dummyLocalMapInfo = LocalMapInfo.getDummyData(id, file.name);
-                    maps.push(dummyLocalMapInfo);
                 }
             }
+            this._insertMapInfos(maps);
         }
-        this._insertMapInfos(maps);
         IpcHelerps.webContentsSend<TSendMapSyncStatus>(this.browserWindow, 'MAP_SYNC_STATUS', {
             status: 'FINISH',
             currentCount: z,
-            sum: idsCount
+            sum: idsToAdd.length
         });
     }
 
@@ -239,7 +254,8 @@ class LocalMaps extends CommonLoader {
                 this._saveFile(subFolder, file.name, content);
             }
         }
-        const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
+        const id = MapHelpers.getMapIdFromFolder(subFolder);
+        const mapInfo = MapHelpers.getLocalMapInfo(id, this._filePath, subFolder);
         this._insertMapInfos([mapInfo]);
         this._mapIds.add(mapInfo.id);
         IpcHelerps.webContentsSend<TSendMapInstallChange>(
@@ -412,8 +428,9 @@ class LocalMaps extends CommonLoader {
         this._pushLocalSongsCount();
     }
 
-    private _deleteRemovedIds(availableIds: string[]): void {
-        this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
+    private _deleteRemovedIds(removedIds: string[]): void {
+        const params = '?,'.repeat(removedIds.length).slice(0, -1);
+        this._db.prepare(`DELETE FROM maps WHERE id IN (${params})`).run(removedIds);
         this._pushLocalSongsCount();
     }
 
