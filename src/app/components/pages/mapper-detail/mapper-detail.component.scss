@@ -2,8 +2,16 @@
     .p-paginator {
         background-color: var(--surface-f);
         padding: 0;
+        .p-link {
+            font-size: 0.95rem;
+            height: 2rem;
+            min-width: 2rem;
+        }
     }
     .p-button-xs {
+        padding: 0.25rem 0.5rem;
+    }
+    .p-inputtext-xs {
         padding: 0.25rem 0.5rem;
     }
     .paginator-goto {

@@ -150,7 +150,7 @@
                     type="button"
                     icon="pi pi-refresh"
                     pButton
-                    class="p-button-sm"
+                    class="p-button-xs"
                     pTooltip="GoTo page"
                     (click)="onSearch({page: 0})"
                 ></button>
@@ -170,14 +170,14 @@
                         [(ngModel)]="goToPage"
                         pInputText
                         placeholder="Page"
-                        class="p-inputtext-sm"
+                        class="p-inputtext-xs"
                     />
                     <button
                         type="button"
                         pButton
                         pRipple
                         label="Go!"
-                        class="p-button-sm"
+                        class="p-button-xs"
                         (click)="onGoToPage()"
                     ></button>
                 </div>
