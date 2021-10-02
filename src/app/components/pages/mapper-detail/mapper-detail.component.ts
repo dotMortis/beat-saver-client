@@ -3,13 +3,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
-import { TSendError } from '../../../../models/electron/send.channels';
+import { TMapDetail, TMapperResult, TMapSearchResult } from '../../../../models/api/api.models';
+import { TSendEmitDownload, TSendError } from '../../../../models/electron/send.channels';
 import { TSettings } from '../../../../models/settings.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
-import { TourService } from '../../../services/root.provided/tour.service';
 import { SongCardService } from '../../modules/song-card/song-card.service';
 
 @Component({
@@ -18,55 +18,86 @@ import { SongCardService } from '../../modules/song-card/song-card.service';
     styleUrls: ['./mapper-detail.component.scss']
 })
 export class MapperDetailComponent extends UnsubscribeComponent implements OnInit {
-    private _mapperId!: number;
+    private _mapper!: TMapperResult;
     @Input()
-    get mapperId(): number {
-        return this._mapperId;
+    get mapper(): TMapperResult {
+        return this._mapper;
     }
-    set mapperId(val: number) {
-        if (val !== this._mapperId) {
-            this._mapperId = val;
+    set mapper(val: TMapperResult) {
+        if (val.id !== this._mapper?.id) {
+            this._mapper = val;
         }
     }
 
+    get totalRecords(): number {
+        return this.mapper?.stats.totalMaps || Infinity;
+    }
+
+    first: number;
+
+    mapDetails: TMapDetail[];
+
+    goToPage?: number;
+
     constructor(
-        public apiService: ApiService,
         public dlService: DlService,
+        private _apiService: ApiService,
         private _eleService: ElectronService,
         private _settingsService: SettingsService,
-        private _songCardService: SongCardService,
-        private _tourService: TourService
+        private _songCardService: SongCardService
     ) {
         super();
+        this.first = 0;
+        this.mapDetails = new Array<TMapDetail>();
     }
 
     ngOnInit(): void {
+        this._setCardSettings(this._settingsService.settings);
         this.addSub(
             this._settingsService.settingsChange.pipe(
                 tap((settings: TSettings) => this._setCardSettings(settings))
             )
         );
-        this.addSub(
-            this.apiService.tMapSearchResultChange.pipe(
-                tap(r => {
-                    if (r?.docs.length) this._tourService.startCardTour(r.docs[0].id);
-                })
-            )
-        );
-        this._setCardSettings(this._settingsService.settings);
-        if (!this.apiService.tMapSearchResult) this.onSearch();
+        this.onSearch({ page: 0 });
     }
 
-    onSearch(more: boolean = false): void {
-        this.apiService
-            .getMapList(more)
+    onSearch(event: { page: number }): void {
+        this.first = event.page * 20;
+        this._apiService
+            .getPaginatedMapListByMapper(this.mapper.id, event.page)
             .pipe(
+                tap((result: TMapSearchResult) => {
+                    this.mapDetails = result.docs;
+                }),
                 catchError((error: HttpErrorResponse) => {
                     this._eleService.send<TSendError>('ERROR', error);
                     return EMPTY;
                 })
             )
             .subscribe();
+    }
+
+    onDownloadPlaylist(): void {
+        if (this.mapper)
+            this._eleService.send<TSendEmitDownload>(
+                'EMIT_DOWNLOAD',
+                `https://beatsaver.com/api/users/id/${this.mapper.id}/playlist`
+            );
+    }
+
+    onGoToPage(): void {
+        if (this.goToPage != null) {
+            const maxPage = Math.ceil(this.mapper.stats.totalMaps / 20);
+            if (this.goToPage > maxPage) {
+                this.onSearch({ page: maxPage - 1 });
+            } else if (this.goToPage < 1) {
+                this.onSearch({ page: 0 });
+            } else {
+                this.onSearch({ page: this.goToPage - 1 });
+            }
+        } else {
+            this.onSearch({ page: 0 });
+        }
     }
 
     private _setCardSettings(settings: TSettings | undefined) {

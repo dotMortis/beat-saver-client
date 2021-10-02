@@ -1,0 +1,85 @@
+:host ::ng-deep {
+    .p-paginator {
+        background-color: var(--surface-f);
+        padding: 0;
+    }
+    .p-button-xs {
+        padding: 0.25rem 0.5rem;
+    }
+    .paginator-goto {
+        .p-button {
+            padding: 0.25rem;
+            min-width: 2rem;
+        }
+    }
+}
+
+.mapper-info-container {
+    .mapper-cover-container {
+        height: 100%;
+        background-color: var(--surface-f);
+        border-radius: 0.25rem;
+        text-align: center;
+        padding: 0.5rem;
+        transition: box-shadow 200ms ease-in;
+
+        &:hover {
+            box-shadow: 0 0 5px 0 white;
+        }
+
+        .mapper-avatar {
+            border-radius: 50%;
+            height: 150px;
+            margin-bottom: 0.5rem;
+        }
+    }
+    .mapper-stats-container {
+        background-color: var(--surface-f);
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        display: flex;
+        transition: box-shadow 200ms ease-in;
+
+        &:hover {
+            box-shadow: 0 0 5px 0 white;
+        }
+
+        .list-group-item {
+            background-color: var(--surface-a);
+            padding: 0.25rem 0.75rem;
+            height: 100%;
+
+            .badge-primary {
+                background-color: var(--primary-color);
+                color: var(--primary-color-text);
+            }
+        }
+    }
+}
+
+.paginator-container {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--surface-f);
+    transition: box-shadow 200ms ease-in;
+
+    &:hover {
+        box-shadow: 0 0 5px 0 white;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .paginator-refresh,
+    .paginator-goto {
+        max-width: 8rem;
+    }
+}

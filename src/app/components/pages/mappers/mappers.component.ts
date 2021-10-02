@@ -236,6 +236,6 @@ export class MappersComponent extends UnsubscribeComponent {
     }
 
     onOpenDetail(mapper: TMapperListResult) {
-        this._cvService.addMapperDetailView(mapper);
+        this._cvService.addMapperDetailView({ id: mapper.id });
     }
 }

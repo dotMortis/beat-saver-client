@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UnsubscribeComponent } from '../../../../../../models/angular/unsubscribe.model';
 import { TMapDetail, TMapVersion } from '../../../../../../models/api/api.models';
+import { ContentViewerService } from '../../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../../services/null.provided/dl.service';
 import { SongPreviewService } from '../../song-preview/song-preview.service';
 
@@ -11,7 +12,7 @@ import { SongPreviewService } from '../../song-preview/song-preview.service';
 })
 export class DlSongCardComponent extends UnsubscribeComponent implements OnInit {
     @Input() tMapDetail?: TMapDetail;
-    @Input() lastVersion?: TMapVersion;
+    @Input() latestVersion?: TMapVersion;
     @Input() installed: false | 'INSTALLED' | 'INSTALLING';
     @Input() download: number;
     @Input() installError?: Error;
@@ -32,7 +33,11 @@ export class DlSongCardComponent extends UnsubscribeComponent implements OnInit 
 
     public uploadTimeInfo?: string | Date;
 
-    constructor(public songPreviewService: SongPreviewService, public dlService: DlService) {
+    constructor(
+        public songPreviewService: SongPreviewService,
+        public dlService: DlService,
+        private _cvService: ContentViewerService
+    ) {
         super();
         this.installed = false;
         this.download = 0;
@@ -40,21 +45,29 @@ export class DlSongCardComponent extends UnsubscribeComponent implements OnInit 
     }
 
     ngOnInit(): void {
-        if (this.lastVersion != null) {
-            this._setUploadTimeInfo(this.lastVersion.createdAt);
+        if (this.latestVersion != null) {
+            this._setUploadTimeInfo(this.latestVersion.createdAt);
         }
     }
 
     onPlayPreview(): void {
-        this.songPreviewService.showPreview = this.lastVersion?.downloadURL;
+        this.songPreviewService.showPreview = this.latestVersion?.downloadURL;
     }
 
-    onTitleClick(event: MouseEvent): void {}
-
     onRemove(): void {
-        if (this.lastVersion) {
-            this.dlService.remove(this.lastVersion);
+        if (this.latestVersion) {
+            this.dlService.remove(this.latestVersion);
         }
+    }
+
+    onOpenDetail() {
+        if (this.tMapDetail && this.latestVersion)
+            this._cvService.addSongDetailView(this.tMapDetail, this.latestVersion);
+    }
+
+    onOpenMapper() {
+        if (this.tMapDetail)
+            this._cvService.addMapperDetailView({ id: this.tMapDetail.uploader.id });
     }
 
     private _setUploadTimeInfo(isoString: string): void {

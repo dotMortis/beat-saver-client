@@ -13,7 +13,7 @@
             <div
                 class="rounded float-start song-cover"
                 [style.background-image]="
-                    'url(' + lastVersion?.coverURL || 'assets/bs-default.jpeg' + ')'
+                    'url(' + latestVersion?.coverURL || 'assets/bs-default.jpeg' + ')'
                 "
             ></div>
             <div (click)="onPlayPreview()" pRipple class="song-cover-hover">
@@ -22,9 +22,9 @@
         </div>
     </div>
     <div class="mb-2 col">
-        <a [routerLink]="[tMapDetail?.id]" [title]="songName"> {{ songNameShort }}</a>
+        <a [routerLink]="" (click)="onOpenDetail()" [title]="songName"> {{ songNameShort }}</a>
         <br />
-        <a [routerLink]=""> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
+        <a [routerLink]="" (click)="onOpenMapper()"> {{ tMapDetail?.uploader?.name || 'N/A' }} </a>
         <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
     </div>
     <div *ngIf="download < 100 && download > 1" class="col-12 mb-2">

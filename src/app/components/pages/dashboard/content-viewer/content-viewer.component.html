@@ -156,7 +156,7 @@
         *ngFor="let details of cvService.mapperDetailViewArr"
     >
         <ng-template appViewTemplate>
-            <app-mapper-detail [mapperId]="details.mapperDetail.id"></app-mapper-detail>
+            <app-mapper-detail [mapper]="details.mapperDetail"></app-mapper-detail>
         </ng-template>
     </app-view-content>
 </div>

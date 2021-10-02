@@ -11,6 +11,7 @@ import {
     TLeaderboard,
     TMapDetail,
     TMapperListResult,
+    TMapperResult,
     TMapSearchResult
 } from '../../../models/api/api.models';
 import { TSongHash } from '../../../models/maps/map-ids.model';
@@ -140,6 +141,15 @@ export class ApiService {
                     }
                 })
             );
+    }
+
+    public getPaginatedMapListByMapper(
+        mapperId: number,
+        page: number
+    ): Observable<TMapSearchResult> {
+        return this._http.get<TMapSearchResult>(
+            this._computePath(['maps', 'uploader', mapperId, page])
+        );
     }
 
     public getMapppersList(moreOrPage: boolean | number): Observable<TMapperListResult[]> {
@@ -526,6 +536,10 @@ export class ApiService {
                     }
                 })
             );
+    }
+
+    public getMappperById(mapperId: number): Observable<TMapperResult> {
+        return this._http.get<TMapperResult>(this._computePath(['users', 'id', mapperId]));
     }
 
     public getLeaderboard(

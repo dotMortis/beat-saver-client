@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { TMapDetail, TMapperListResult, TMapVersion } from '../../../models/api/api.models';
+import { tap } from 'rxjs/operators';
+import { TMapDetail, TMapperResult, TMapVersion } from '../../../models/api/api.models';
 import { TSongId } from '../../../models/maps/map-ids.model';
 import { TOpenId, TOpenIdType } from '../../../models/openEvent.model';
+import { ApiService } from './api.service';
 
 @Injectable({
     providedIn: null
@@ -19,11 +21,11 @@ export class ContentViewerService {
     //#endregion
 
     //#region MapperDetailView
-    private _mapperDetailViews: Map<number, { mapperDetail: TMapperListResult }>;
-    get mapperDetailViews(): Map<number, { mapperDetail: TMapperListResult }> {
+    private _mapperDetailViews: Map<number, { mapperDetail: TMapperResult }>;
+    get mapperDetailViews(): Map<number, { mapperDetail: TMapperResult }> {
         return this._mapperDetailViews;
     }
-    get mapperDetailViewArr(): Array<{ mapperDetail: TMapperListResult }> {
+    get mapperDetailViewArr(): Array<{ mapperDetail: TMapperResult }> {
         return Array.from(this._mapperDetailViews.values());
     }
     //#endregion
@@ -31,12 +33,12 @@ export class ContentViewerService {
     public openNext?: TOpenId;
     public onOpen: Subject<TOpenId>;
 
-    constructor() {
+    constructor(private _apiService: ApiService) {
         this._songDetailViews = new Map<
             TSongId,
             { mapDetail: TMapDetail; latestVersion: TMapVersion }
         >();
-        this._mapperDetailViews = new Map<number, { mapperDetail: TMapperListResult }>();
+        this._mapperDetailViews = new Map<number, { mapperDetail: TMapperResult }>();
         this.onOpen = new Subject<TOpenId>();
     }
 
@@ -49,13 +51,16 @@ export class ContentViewerService {
         }
     }
 
-    addMapperDetailView(mapperDetail: TMapperListResult): void {
-        if (!this._mapperDetailViews.has(mapperDetail.id)) {
-            this._mapperDetailViews.set(mapperDetail.id, { mapperDetail });
-            this.openNext = { type: 'mapper', id: mapperDetail.id };
-        } else {
-            this.onOpen.next({ type: 'mapper', id: mapperDetail.id });
-        }
+    addMapperDetailView(mapperInfo: { id: number }): void;
+    addMapperDetailView(mapperInfo: { mapperResult: TMapperResult }): void;
+    addMapperDetailView(mapperInfo: { mapperResult?: TMapperResult; id?: number }): void {
+        const { id, mapperResult } = mapperInfo;
+        if (id) {
+            this._apiService
+                .getMappperById(id)
+                .pipe(tap((mapper: TMapperResult) => this._addMapperDetailView(mapper)))
+                .subscribe();
+        } else if (mapperResult) this._addMapperDetailView(mapperResult);
     }
 
     delDetailView(id: TOpenId): void {
@@ -89,6 +94,15 @@ export class ContentViewerService {
                     break;
                 }
             }
+        }
+    }
+
+    private _addMapperDetailView(mapperDetail: TMapperResult): void {
+        if (!this._mapperDetailViews.has(mapperDetail.id)) {
+            this._mapperDetailViews.set(mapperDetail.id, { mapperDetail });
+            this.openNext = { type: 'mapper', id: mapperDetail.id };
+        } else {
+            this.onOpen.next({ type: 'mapper', id: mapperDetail.id });
         }
     }
 }

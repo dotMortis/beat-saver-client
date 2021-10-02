@@ -202,6 +202,11 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             this._cvService.addSongDetailView(this.tMapDetail, this.latestVersion);
     }
 
+    onOpenMapper() {
+        if (this.tMapDetail)
+            this._cvService.addMapperDetailView({ id: this.tMapDetail.uploader.id });
+    }
+
     async onDownloadSingle() {
         try {
             if (this.tMapDetail && this.latestVersion) {

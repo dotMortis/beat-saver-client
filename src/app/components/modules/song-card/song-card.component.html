@@ -178,7 +178,7 @@
                 </ng-template>
 
                 <div *ngIf="!loading; else mapperNameSkeleton" class="pb-2">
-                    <a [routerLink]=""> {{ mapperName }} </a>
+                    <a [routerLink]="" (click)="onOpenMapper()"> {{ mapperName }} </a>
                     <span class="song-upload-date pl-2"> {{ uploadTimeInfo }} </span>
                 </div>
                 <ng-template #mapperNameSkeleton>
