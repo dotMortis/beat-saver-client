@@ -8,26 +8,65 @@
             left: 0;
             z-index: 2;
             background-color: var(--surface-b);
+            height: 3.575rem;
 
             .navigation-bar-content {
-                padding: 0.25rem 0;
-                border-radius: 0 0 0.25rem 0.25rem;
+                padding: 0.5rem 0;
                 position: relative;
                 background-color: var(--surface-b);
 
-                .nav-item-l {
-                    padding: 0.25rem 0.5rem 0.25rem 0;
+                .nav-bar-l {
+                    .nav-item {
+                        &:not(:last-child) {
+                            padding-right: 0.25rem;
+                        }
+                    }
 
-                    .active-route {
-                        background-color: darken(#9fa8da, 15);
+                    button {
+                        background-color: rgba(255, 255, 255, 0.04);
+                        color: var(--primary-color);
+
+                        &.active-route {
+                            background-color: var(--primary-color);
+                            color: var(--primary-color-text);
+
+                            &:hover {
+                                background-color: rgba(159, 168, 218, 0.75);
+                            }
+                        }
+
+                        &:hover {
+                            background-color: rgba(255, 255, 255, 0.08);
+                        }
+                    }
+
+                    p-button {
+                        overflow: hidden;
+
+                        > button {
+                            overflow: visible;
+
+                            .p-badge {
+                                position: absolute;
+                                bottom: -0.15rem;
+                                right: 0;
+                                border-radius: 0.5rem 0 0 0.5rem;
+                                margin: 0;
+                            }
+                        }
                     }
                 }
 
-                > .nav-item-r {
-                    padding: 0.25rem 0 0.25rem 0.5rem;
+                .nav-bar-r {
+                    margin-left: auto;
+                    .nav-item {
+                        &:not(:last-child) {
+                            padding-right: 0.25rem;
+                        }
+                    }
                 }
 
-                > .dl-list-btn {
+                .dl-list-btn {
                     transition-property: box-shadow, left;
                     overflow: visible;
                     transition-duration: 0.5s; /* delays for 1 second */
@@ -56,9 +95,5 @@
                 }
             }
         }
-    }
-
-    .p-button-icon-only {
-        width: auto;
     }
 }

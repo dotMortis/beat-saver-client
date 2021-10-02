@@ -6,108 +6,119 @@
         ></app-detail-btn-panel>
         <div class="container">
             <div class="row navigation-bar-content no-gutters">
-                <div class="col-auto nav-item-l">
-                    <button
-                        joyrideStep="beatSaverBtn"
-                        text="Browse all BeatSaver maps"
-                        pButton
-                        pRipple
-                        type="button"
-                        class="p-button-sm"
-                        [ngClass]="{'active-route': songs.selected}"
-                        pTooltip="Home"
-                        icon="pi pi-home"
-                        (click)="onOpen(songs)"
-                    ></button>
+                <div class="col-auto d-flex nav-bar-l">
+                    <div class="nav-item">
+                        <button
+                            joyrideStep="beatSaverBtn"
+                            text="Browse all BeatSaver maps"
+                            pButton
+                            pRipple
+                            type="button"
+                            class="p-button-sm"
+                            [ngClass]="{'active-route': songs.selected}"
+                            pTooltip="Home"
+                            icon="pi pi-home"
+                            (click)="onOpen(songs)"
+                            label="Home"
+                        ></button>
+                    </div>
+                    <div class="nav-item">
+                        <p-button
+                            class="d-block"
+                            joyrideStep="mappersBtn"
+                            text="Browse mappers"
+                            styleClass="p-button-sm {{mappers.selected ? 'active-route' : ''}}"
+                            pTooltip="Mappers"
+                            iconPos="left"
+                            icon="pi pi-users"
+                            (onClick)="onOpen(mappers)"
+                            label="Mappers"
+                        ></p-button>
+                    </div>
+                    <div class="nav-item">
+                        <p-button
+                            class="d-block"
+                            joyrideStep="localMapsBtn"
+                            text="Browse all installed maps"
+                            styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
+                            pTooltip="Installed maps"
+                            icon="pi pi-save"
+                            iconPos="left"
+                            (onClick)="onOpen(locals)"
+                            badge="{{installedCount}}"
+                            label="Installed"
+                        ></p-button>
+                    </div>
+                    <div class="nav-item">
+                        <p-button
+                            joyrideStep="searchSongId"
+                            pTooltip="Find by song id"
+                            class="d-block"
+                            (onClick)="searchById.toggle($event)"
+                            text="Find a map by its ID"
+                            styleClass="p-button-sm button-icon-only"
+                        >
+                            <ng-template pTemplate="content">
+                                <div class="button-content">
+                                    <fa-icon class="pr-2" [icon]="['fas', 'binoculars']"></fa-icon>
+                                    Song ID
+                                </div>
+                            </ng-template>
+                        </p-button>
+                    </div>
+                    <div class="nav-item">
+                        <button
+                            pButton
+                            pRipple
+                            class="p-button-sm"
+                            label="Community"
+                            type="button"
+                            [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
+                            (click)="communityMenu.toggle($event)"
+                        ></button>
+                        <p-tieredMenu
+                            #communityMenu
+                            appendTo="body"
+                            [model]="communityMenuItems"
+                            [popup]="true"
+                        ></p-tieredMenu>
+                    </div>
                 </div>
-                <div class="col-auto nav-item-l">
-                    <p-button
-                        joyrideStep="searchSongId"
-                        pTooltip="Find by song id"
-                        class="d-block"
-                        (onClick)="searchById.toggle($event)"
-                        text="Find a map by its ID"
-                        styleClass="p-button-sm button-icon-only"
-                    >
-                        <ng-template pTemplate="content">
-                            <fa-icon [icon]="['fas', 'binoculars']"></fa-icon>
-                        </ng-template>
-                    </p-button>
+                <div class="col-auto d-flex nav-bar-r">
+                    <div class="nav-item">
+                        <button
+                            joyrideStep="reloadUserData"
+                            text="Reload user stats and sync installed songs"
+                            pButton
+                            pRipple
+                            pTooltip="Reload user data"
+                            class="p-button-sm"
+                            icon="pi pi-refresh"
+                            (click)="onReload()"
+                        ></button>
+                    </div>
+                    <div class="nav-item">
+                        <button
+                            pButton
+                            pRipple
+                            pTooltip="Settings"
+                            class="p-button-sm"
+                            icon="pi pi-cog"
+                            (click)="optService.visible = !optService.visible"
+                        ></button>
+                    </div>
+                    <div class="nav-item">
+                        <button
+                            pButton
+                            pRipple
+                            pTooltip="About"
+                            class="p-button-sm coffee-btn"
+                            icon="pi pi-heart"
+                            (click)="showCoffee()"
+                        ></button>
+                    </div>
                 </div>
-                <div class="col-auto nav-item-l">
-                    <p-button
-                        class="d-block"
-                        joyrideStep="mappersBtn"
-                        text="Browse mappers"
-                        styleClass="p-button-sm {{mappers.selected ? 'active-route' : ''}}"
-                        pTooltip="Mappers"
-                        iconPos="left"
-                        icon="pi pi-users"
-                        (onClick)="onOpen(mappers)"
-                    ></p-button>
-                </div>
-                <div class="col-auto nav-item-l">
-                    <p-button
-                        class="d-block"
-                        joyrideStep="localMapsBtn"
-                        text="Browse all installed maps"
-                        styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
-                        pTooltip="Installed maps"
-                        icon="pi pi-save"
-                        iconPos="left"
-                        (onClick)="onOpen(locals)"
-                        badge="{{installedCount}}"
-                    ></p-button>
-                </div>
-                <div class="col-auto nav-item-l">
-                    <button
-                        pButton
-                        pRipple
-                        class="p-button-sm"
-                        label="Community"
-                        type="button"
-                        [icon]="communityMenu.visible ?'pi pi-times' : 'pi pi-bars'"
-                        (click)="communityMenu.toggle($event)"
-                    ></button>
-                    <p-tieredMenu
-                        #communityMenu
-                        appendTo="body"
-                        [model]="communityMenuItems"
-                        [popup]="true"
-                    ></p-tieredMenu>
-                </div>
-                <div *ngIf="electronService.isElectron" class="col-auto ml-auto nav-item-r">
-                    <button
-                        joyrideStep="reloadUserData"
-                        text="Reload user stats and sync installed songs"
-                        pButton
-                        pRipple
-                        pTooltip="Reload user data"
-                        class="p-button-sm"
-                        icon="pi pi-refresh"
-                        (click)="onReload()"
-                    ></button>
-                </div>
-                <div *ngIf="electronService.isElectron" class="col-auto nav-item-r">
-                    <button
-                        pButton
-                        pRipple
-                        pTooltip="Settings"
-                        class="p-button-sm"
-                        icon="pi pi-cog"
-                        (click)="optService.visible = !optService.visible"
-                    ></button>
-                </div>
-                <div class="col-auto nav-item-r">
-                    <button
-                        pButton
-                        pRipple
-                        pTooltip="About"
-                        class="p-button-sm coffee-btn"
-                        icon="pi pi-heart"
-                        (click)="showCoffee()"
-                    ></button>
-                </div>
+
                 <button
                     joyrideStep="dlQueue1"
                     text="Open the download queue"
@@ -127,17 +138,17 @@
             </div>
         </div>
     </div>
-    <app-view-content #songs>
+    <app-view-content #songs [id]="{ type: 'custom', id: 'bscSongs' }">
         <ng-template appViewTemplate>
             <app-songs></app-songs>
         </ng-template>
     </app-view-content>
-    <app-view-content #locals>
+    <app-view-content #locals [id]="{ type: 'custom', id: 'bscLocals' }">
         <ng-template appViewTemplate>
             <app-local-maps></app-local-maps>
         </ng-template>
     </app-view-content>
-    <app-view-content #mappers [scrollPanel]="false">
+    <app-view-content #mappers [id]="{ type: 'custom', id: 'bscMappers' }" [scrollPanel]="false">
         <ng-template appViewTemplate>
             <app-mappers></app-mappers>
         </ng-template>

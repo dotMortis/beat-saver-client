@@ -4,11 +4,11 @@
         <div class="view-content-inner">
             <p-scrollPanel
                 #mainScroll
-                [style]="{ width: '100vw', height: 'calc(100vh - 5.5rem)' }"
+                [style]="{ width: '100vw', height: 'calc(100vh - 3.575rem)' }"
                 styleClass="custombar1 custombar1-center "
                 *ngIf="scrollPanel; else plane"
             >
-                <div class="container pt-1 pb-5">
+                <div class="container default-p-top pb-5">
                     <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
                 </div>
                 <p-scrollTop target="parent" class="scrolltop" [threshold]="200"> </p-scrollTop>

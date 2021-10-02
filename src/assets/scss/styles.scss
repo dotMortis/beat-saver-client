@@ -118,3 +118,29 @@ hr {
 .p-datatable-scrollable-header-box {
     padding-right: 0 !important;
 }
+
+.p-button-xs {
+    padding: 0.25rem 0.5rem;
+
+    &.p-button-icon-only {
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+.p-inputtext-xs {
+    padding: 0.25rem 0.5rem;
+}
+
+.p-button-icon-only {
+    width: auto !important;
+}
+
+p-button {
+    .button-content {
+        white-space: nowrap;
+    }
+}
+
+.default-p-top {
+    padding-top: 1.75rem;
+}
