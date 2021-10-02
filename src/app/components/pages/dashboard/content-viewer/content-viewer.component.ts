@@ -2,8 +2,12 @@ import {
     AfterViewInit,
     ChangeDetectorRef,
     Component,
+    ElementRef,
+    HostListener,
     OnInit,
     QueryList,
+    Renderer2,
+    ViewChild,
     ViewChildren
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -16,6 +20,7 @@ import { TInvokeMapsCount } from '../../../../../models/electron/invoke.channels
 import { TSendError, TSendMapsCount } from '../../../../../models/electron/send.channels';
 import { TSongId } from '../../../../../models/maps/map-ids.model';
 import { MapsHelpers } from '../../../../../models/maps/maps.helpers';
+import { TOpenId } from '../../../../../models/openEvent.model';
 import { ApiService } from '../../../../services/null.provided/api.service';
 import { ContentViewerService } from '../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../services/null.provided/dl.service';
@@ -36,6 +41,25 @@ import { ViewContentComponent } from './view-content/view-content.component';
 })
 export class ContentViewerComponent extends UnsubscribeComponent implements AfterViewInit, OnInit {
     @ViewChildren(ViewContentComponent) viewContents!: QueryList<ViewContentComponent>;
+    @ViewChild('navToggleButton') navToggleButton!: ElementRef;
+    @ViewChild('nav') nav!: ElementRef;
+
+    private _innerWidth: number;
+    set innerWidth(val: number) {
+        this._innerWidth = val;
+        if (this.isNavOpen === false && this._innerWidth >= 992) {
+            this.isNavOpen = true;
+        } else if (this.isNavOpen === true && this._innerWidth < 992) {
+            this.isNavOpen = false;
+        }
+    }
+    get innerWidth(): number {
+        return this._innerWidth;
+    }
+    @HostListener('window:resize', ['$event'])
+    onResize(event: any) {
+        this.innerWidth = event.target.innerWidth;
+    }
 
     contents: ViewContentComponent[];
 
@@ -46,23 +70,21 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     get communityMenuItems(): MenuItem[] {
         return this._communityMenuItems;
     }
-
-    private _selectedDetail?: string;
-    get selectedDetail(): string | undefined {
+    private _selectedDetail?: TOpenId;
+    get selectedDetail(): TOpenId | undefined {
         return this._selectedDetail;
     }
-    set selectedDetail(val: string | undefined) {
-        if (val !== this._selectedDetail) {
+    set selectedDetail(val: TOpenId | undefined) {
+        if (val?.id !== this._selectedDetail?.id || val?.type !== this._selectedDetail?.type) {
             this._selectedDetail = val;
             if (val) this.onOpen(val);
         }
     }
 
-    activeId?: string;
-
+    activeId?: TOpenId;
     installedCount: number;
-
     songIdSearch: string;
+    isNavOpen: boolean;
 
     constructor(
         public optService: SettingsService,
@@ -74,9 +96,10 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         private _playerStatsService: PlayerStatsService,
         private _dialogService: DialogService,
         private _notify: NotifyService,
-        private _apiService: ApiService
+        private _apiService: ApiService,
+        private _renderer: Renderer2
     ) {
-        super();
+        super(_notify);
         this.contents = [];
         this._communityMenuItems = [
             {
@@ -147,6 +170,16 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         ];
         this.installedCount = 0;
         this.songIdSearch = '';
+        this.isNavOpen = false;
+        this.innerWidth = this._innerWidth = window.innerWidth;
+        this._renderer.listen('window', 'click', (e: Event) => {
+            if (
+                this.innerWidth < 992 &&
+                this.isNavOpen === true &&
+                e.target !== this.navToggleButton.nativeElement
+            )
+                this.isNavOpen = false;
+        });
     }
 
     ngOnInit(): void {
@@ -167,7 +200,7 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     ngAfterViewInit(): void {
         this._initContents();
         this.addSub(this.viewContents.changes.pipe(tap(() => this._initContents())));
-        this.addSub(this.cvService.onOpen.pipe(tap((next: TSongId) => this.onOpen(next))));
+        this.addSub(this.cvService.onOpen.pipe(tap((next: TOpenId) => this.onOpen(next))));
     }
 
     async onReload(): Promise<void> {
@@ -211,7 +244,7 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         });
     }
 
-    onOpen(content: ViewContentComponent | string): void {
+    onOpen(content: ViewContentComponent | TOpenId): void {
         this.activeId = undefined;
         const selectedContent = this._findSelectedContent();
         if (selectedContent) selectedContent.selected = false;
@@ -267,10 +300,13 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         return;
     }
 
-    private _findContentIndex(content: ViewContentComponent | string): number {
+    private _findContentIndex(content: ViewContentComponent | TOpenId): number {
         for (let i = 0; i < this.contents.length; i++) {
-            if (typeof content === 'string') {
-                if (this.contents[i].id === content) {
+            if (!(content instanceof ViewContentComponent)) {
+                if (
+                    this.contents[i].id?.id === content.id &&
+                    this.contents[i].id?.type === content.type
+                ) {
                     return i;
                 }
             } else if (this.contents[i] == content) {

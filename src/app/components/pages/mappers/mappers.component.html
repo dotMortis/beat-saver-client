@@ -1,0 +1,199 @@
+<p-scrollPanel
+    #scrollPanel
+    [style]="{ width: '100vw', height: 'calc(100vh - 3.575rem)' }"
+    styleClass="custombar1 hide-x custombar1-center"
+>
+    <div class="container default-p-top pb-1">
+        <p-table
+            [value]="mappers"
+            [columns]="selectedColumns"
+            [lazy]="true"
+            (onLazyLoad)="loadScoresLazy($event); scrollPanel.scrollTop(0)"
+            [rows]="20"
+            [paginator]="true"
+            [totalRecords]="totalRecords"
+            [loading]="loading"
+            [resizableColumns]="true"
+            styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+            columnResizeMode="expand"
+            [rowHover]="true"
+            [autoLayout]="true"
+        >
+            <ng-template pTemplate="caption">
+                <div class="d-flex">
+                    <p-multiSelect
+                        [options]="columns"
+                        [(ngModel)]="selectedColumns"
+                        optionLabel="header"
+                        selectedItemsLabel="{0} columns selected"
+                        [style]="{minWidth: '200px'}"
+                        placeholder="Choose Columns"
+                    ></p-multiSelect>
+                    <div class="ml-auto">
+                        <button
+                            pRipple
+                            type="button"
+                            pButton
+                            pTooltip="Refresh"
+                            icon="pi-refresh pi"
+                            class="p-button-sm"
+                            (click)="onRefresh()"
+                        ></button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                    <col
+                        *ngFor="let col of columns"
+                        [style]="{'width': col.width, display: 'block', 'min-width': col['min-width'] || 0}"
+                    />
+                </colgroup>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <ng-container *ngFor="let col of columns">
+                        <th
+                            pResizableColumn
+                            *ngIf="col.resizable;else notResizable"
+                            [style]="{'width': col['max-width'] || 'auto', 'min-width': col['min-width'] || 0}"
+                            [class]="col.headerClass"
+                            class="text-center"
+                        >
+                            <ng-container
+                                [ngTemplateOutlet]="col.iconType === 'pi' ? headerIconPi  : col.iconType === 'fa' ? headerIconFa : headerText"
+                                [ngTemplateOutletContext]="{col:col}"
+                            >
+                            </ng-container>
+                        </th>
+                        <ng-template #notResizable>
+                            <th
+                                [class]="col.headerClass"
+                                [style]="{'width': col['max-width'] || 'auto', 'min-width': col['min-width'] || 0}"
+                                class="text-center"
+                            >
+                                <ng-container
+                                    [ngTemplateOutlet]="col.iconType === 'pi' ? headerIconPi  : col.iconType === 'fa' ? headerIconFa : headerText"
+                                    [ngTemplateOutletContext]="{col:col}"
+                                >
+                                </ng-container>
+                            </th>
+                        </ng-template>
+                    </ng-container>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                <tr>
+                    <ng-template ngFor let-col [ngForOf]="columns">
+                        <ng-container [ngSwitch]="col.type">
+                            <td *ngSwitchCase="'index'" [pTooltip]="col.header" [class]="col.class">
+                                {{ col.prefix }}{{ rowIndex + 1 }}{{ col.postfix }}
+                            </td>
+                            <td
+                                *ngSwitchCase="'avatar'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}<p-avatar
+                                        shape="circle"
+                                        [image]="getCellValue(col.field, rowData, col.default)"
+                                    ></p-avatar
+                                    >{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}<p-avatar
+                                            shape="circle"
+                                            [image]="getCellValue(col.field, rowData, col.default)"
+                                        ></p-avatar
+                                        >{{ col.postfix }}
+                                    </a>
+                                </ng-template>
+                            </td>
+                            <td
+                                *ngSwitchCase="'string'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{col.rowIndex ? rowIndex + 1 : col.transformer
+                                    ? col.transformer(rowData) : getCellValue(col.field, rowData,
+                                    col.default)}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{col.rowIndex ? rowIndex + 1 :
+                                        col.transformer ? col.transformer(rowData) :
+                                        getCellValue(col.field, rowData, col.default)}}{{
+                                        col.postfix }}
+                                    </a>
+                                </ng-template>
+                            </td>
+                            <td *ngSwitchCase="'date'" [pTooltip]="col.header" [class]="col.class">
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{(col.transformer ? col.transformer(rowData) :
+                                    getCellValue(col.field, rowData, col.default)) |
+                                    date:col.pipeFormat}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{(col.transformer ?
+                                        col.transformer(rowData) : getCellValue(col.field, rowData,
+                                        col.default)) | date:col.pipeFormat}}{{ col.postfix }}
+                                    </a>
+                                </ng-template>
+                            </td>
+                            <td
+                                *ngSwitchCase="'number'"
+                                [pTooltip]="col.header"
+                                [class]="col.class"
+                            >
+                                <span *ngIf="!col.hrefClick; else link">
+                                    {{ col.prefix }}{{(col.transformer ? col.transformer(rowData) :
+                                    getCellValue(col.field, rowData, col.default)) |
+                                    number:col.pipeFormat}}{{ col.postfix }}
+                                </span>
+                                <ng-template #link>
+                                    <a [routerLink]="" (click)="col.hrefClick(rowData)">
+                                        {{ col.prefix }}{{(col.transformer ?
+                                        col.transformer(rowData) : getCellValue(col.field, rowData,
+                                        col.default)) | number:col.pipeFormat}}{{ col.postfix }}
+                                    </a>
+                                </ng-template>
+                            </td>
+                            <td *ngSwitchCase="'btn'" [pTooltip]="col.header" [class]="col.class">
+                                <a
+                                    *ngIf="col.btnHrefClick; else btn"
+                                    [routerLink]=""
+                                    (click)="col.btnHrefClick(rowData)"
+                                >
+                                    <i [class]="'pi ' + col.btnIcon"></i>
+                                </a>
+                                <ng-template #btn>
+                                    <button
+                                        pButton
+                                        class="p-button-sm"
+                                        (click)="col.btnClick(rowData)"
+                                        [icon]="col.btnIcon"
+                                    ></button>
+                                </ng-template>
+                            </td>
+                        </ng-container>
+                    </ng-template>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-scrollTop target="parent" class="scrolltop" [threshold]="200"> </p-scrollTop>
+</p-scrollPanel>
+<ng-template #headerText let-col="col">
+    <span>{{col.header}}</span>
+</ng-template>
+<ng-template #headerIconPi let-col="col">
+    <i [pTooltip]="col.header" [class]="'pi ' + col.headerIcon"></i>
+</ng-template>
+<ng-template #headerIconFa let-col="col">
+    <fa-icon [icon]="col.headerIcon" [pTooltip]="col.header"></fa-icon>
+</ng-template>

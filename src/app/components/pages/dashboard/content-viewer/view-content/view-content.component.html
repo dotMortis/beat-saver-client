@@ -1,15 +1,21 @@
 <div class="view-content" [hidden]="!selected">
     <ng-content></ng-content>
     <ng-container *ngIf="contentTemplate && loaded">
-        <p-scrollPanel
-            #mainScroll
-            [style]="{ width: '100vw', height: '100vh' }"
-            styleClass="custombar1 custombar1-center"
-        >
-            <div class="container pb-5 view-content-inner">
+        <div class="view-content-inner">
+            <p-scrollPanel
+                #mainScroll
+                [style]="{ width: '100vw', height: 'calc(100vh - 3.575rem)' }"
+                styleClass="custombar1 hide-x custombar1-center "
+                *ngIf="scrollPanel; else plane"
+            >
+                <div class="container default-p-top pb-5">
+                    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+                </div>
+                <p-scrollTop target="parent" class="scrolltop" [threshold]="200"> </p-scrollTop>
+            </p-scrollPanel>
+            <ng-template #plane>
                 <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
-            </div>
-            <p-scrollTop target="parent" class="scrolltop" [threshold]="200"> </p-scrollTop>
-        </p-scrollPanel>
+            </ng-template>
+        </div>
     </ng-container>
 </div>

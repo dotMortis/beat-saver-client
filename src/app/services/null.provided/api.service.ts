@@ -10,7 +10,9 @@ import {
     ListOptions,
     TLeaderboard,
     TMapDetail,
-    TSearchResult
+    TMapperListResult,
+    TMapperResult,
+    TMapSearchResult
 } from '../../../models/api/api.models';
 import { TSongHash } from '../../../models/maps/map-ids.model';
 import { MapsHelpers } from '../../../models/maps/maps.helpers';
@@ -20,27 +22,28 @@ import { MapsHelpers } from '../../../models/maps/maps.helpers';
 })
 export class ApiService {
     private readonly _basePath: string;
+    //#region Maps properties
     private readonly _filter: ListOptions;
     private _latestFilter?: HttpParams;
-    private _page: number;
+    private _mapsPage: number;
 
     get filter(): ListOptions {
         return this._filter;
     }
 
-    private _tSearchResult?: TSearchResult;
-    get tSearchResult(): TSearchResult | undefined {
-        return this._tSearchResult;
+    private _tMapSearchResult?: TMapSearchResult;
+    get tMapSearchResult(): TMapSearchResult | undefined {
+        return this._tMapSearchResult;
     }
-    set tSearchResult(val: TSearchResult | undefined) {
-        this._tSearchResult = val;
-        this.tSearchResultChange.next(this._tSearchResult);
+    set tMapSearchResult(val: TMapSearchResult | undefined) {
+        this._tMapSearchResult = val;
+        this.tMapSearchResultChange.next(this._tMapSearchResult);
     }
-    tSearchResultChange: Subject<TSearchResult | undefined>;
+    tMapSearchResultChange: Subject<TMapSearchResult | undefined>;
 
-    private _canLoadMore: boolean;
-    get canLoadMore(): boolean {
-        return this._canLoadMore;
+    private _canLoadMoreMaps: boolean;
+    get canLoadMoreMaps(): boolean {
+        return this._canLoadMoreMaps;
     }
 
     private _npsRange = [0, 16];
@@ -81,13 +84,31 @@ export class ApiService {
     get dateRange(): Date[] | undefined {
         return this._dateRange;
     }
+    //#endregion
 
+    //#region Mappers properties
+    private _mappersPage: number;
+
+    private _tMappersSearchResult?: TMapperListResult[];
+    get tMappersSearchResult(): TMapperListResult[] | undefined {
+        return this._tMappersSearchResult;
+    }
+    set tMappersSearchResult(val: TMapperListResult[] | undefined) {
+        this._tMappersSearchResult = val;
+    }
+
+    private _canLoadMoreMappers: boolean;
+    get canLoadMoreMappers(): boolean {
+        return this._canLoadMoreMappers;
+    }
+
+    //#endregion
     constructor(private _http: HttpClient) {
         this._basePath = 'https://beatsaver.com/api';
         this._filter = new ListOptions({});
-        this._page = 0;
-        this._canLoadMore = true;
-        this.tSearchResultChange = new Subject<TSearchResult | undefined>();
+        this._mappersPage = this._mapsPage = 0;
+        this._canLoadMoreMappers = this._canLoadMoreMaps = true;
+        this.tMapSearchResultChange = new Subject<TMapSearchResult | undefined>();
     }
 
     public setboolFilter(key: keyof IListOptions, value: boolean | undefined): boolean | undefined {
@@ -99,27 +120,62 @@ export class ApiService {
         return undefined;
     }
 
-    public getList(more: boolean): Observable<TSearchResult> {
+    public getMapList(more: boolean): Observable<TMapSearchResult> {
         if (more) {
-            this._page++;
+            this._mapsPage++;
         } else {
-            this._page = 0;
+            this._mapsPage = 0;
             this._latestFilter = this._filter.getQueryParams();
         }
         return this._http
-            .get<TSearchResult>(this._computePath(['search', 'text', this._page]), {
+            .get<TMapSearchResult>(this._computePath(['search', 'text', this._mapsPage]), {
                 params: this._latestFilter
             })
             .pipe(
-                tap((tSearchResult: TSearchResult) => {
-                    this._canLoadMore = tSearchResult?.docs.length > 0;
-                    if (more && this.tSearchResult?.docs.length) {
-                        this.tSearchResult.docs.push(...tSearchResult.docs);
+                tap((tSearchResult: TMapSearchResult) => {
+                    this._canLoadMoreMaps = tSearchResult?.docs.length > 0;
+                    if (more && this.tMapSearchResult?.docs.length) {
+                        this.tMapSearchResult.docs.push(...tSearchResult.docs);
                     } else {
-                        this.tSearchResult = tSearchResult;
+                        this.tMapSearchResult = tSearchResult;
                     }
                 })
             );
+    }
+
+    public getPaginatedMapListByMapper(
+        mapperId: number,
+        page: number
+    ): Observable<TMapSearchResult> {
+        return this._http.get<TMapSearchResult>(
+            this._computePath(['maps', 'uploader', mapperId, page])
+        );
+    }
+
+    public getMapppersList(moreOrPage: boolean | number): Observable<TMapperListResult[]> {
+        if (typeof moreOrPage === 'boolean' && moreOrPage === true) {
+            this._mappersPage++;
+        } else if (typeof moreOrPage === 'number') {
+            this._mappersPage = moreOrPage;
+        } else {
+            this._mappersPage = 0;
+        }
+        return this._http
+            .get<TMapperListResult[]>(this._computePath(['users', 'list', this._mappersPage]))
+            .pipe(
+                tap((tSearchResults: TMapperListResult[]) => {
+                    this._canLoadMoreMappers = tSearchResults.length > 0;
+                    if (moreOrPage && this.tMappersSearchResult?.length) {
+                        this.tMappersSearchResult.push(...tSearchResults);
+                    } else {
+                        this.tMappersSearchResult = tSearchResults;
+                    }
+                })
+            );
+    }
+
+    public getMappperById(mapperId: number): Observable<TMapperResult> {
+        return this._http.get<TMapperResult>(this._computePath(['users', 'id', mapperId]));
     }
 
     public getLeaderboard(

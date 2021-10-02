@@ -10,15 +10,21 @@ import {
     faCheckCircle,
     faChevronDown,
     faChevronUp,
+    faClock,
     faCloudDownloadAlt,
     faDownload,
     faFileArchive,
     faGraduationCap,
     faHeart,
     faLink,
+    faMapMarked,
+    faPercent,
     faPlay,
     faPlayCircle,
     faStar,
+    faTachometerAlt,
+    faThumbsDown,
+    faThumbsUp,
     faTrash,
     faTrophy
 } from '@fortawesome/free-solid-svg-icons';
@@ -66,7 +72,13 @@ export class AppModule {
             faTrash,
             faPlay,
             faBan,
-            faBinoculars
+            faBinoculars,
+            faTachometerAlt,
+            faClock,
+            faThumbsUp,
+            faThumbsDown,
+            faPercent,
+            faMapMarked
         );
     }
 }

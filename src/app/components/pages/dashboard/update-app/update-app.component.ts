@@ -3,6 +3,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
 import { UpdateService } from '../../../../services/null.provided/update.service';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 import { InstallPanelComponent } from './install-panel/install-panel.component';
 
 @Component({
@@ -35,8 +36,12 @@ export class UpdateAppComponent extends UnsubscribeComponent implements OnInit {
         return this._statusLabel;
     }
 
-    constructor(public updateService: UpdateService, private _dialogService: DialogService) {
-        super();
+    constructor(
+        public updateService: UpdateService,
+        private _dialogService: DialogService,
+        private _notify: NotifyService
+    ) {
+        super(_notify);
         this._nextVisible = this._visible = false;
     }
 

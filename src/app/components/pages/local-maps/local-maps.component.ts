@@ -3,6 +3,7 @@ import { tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { TSettings } from '../../../../models/settings.model';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
 import { SongCardService } from '../../modules/song-card/song-card.service';
 
@@ -15,9 +16,10 @@ export class LocalMapsComponent extends UnsubscribeComponent implements OnInit {
     constructor(
         public localMapsService: LocalMapsService,
         private _settingsService: SettingsService,
-        private _songCardService: SongCardService
+        private _songCardService: SongCardService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
     }
 
     ngOnInit(): void {

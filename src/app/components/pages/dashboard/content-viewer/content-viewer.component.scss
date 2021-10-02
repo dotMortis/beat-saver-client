@@ -8,32 +8,157 @@
             left: 0;
             z-index: 2;
             background-color: var(--surface-b);
+            height: 3.575rem;
 
             .navigation-bar-content {
-                padding: 0.25rem 0;
-                border-radius: 0 0 0.25rem 0.25rem;
+                padding: 0.5rem 0;
                 position: relative;
                 background-color: var(--surface-b);
 
-                .nav-item-l {
-                    padding: 0.25rem 0.5rem 0.25rem 0;
+                .nav-toggle-btn {
+                    display: block;
+                    padding-right: 0.25rem;
+                }
 
-                    .active-route {
-                        background-color: darken(#9fa8da, 15);
+                .nav-bar-l {
+                    .nav-item {
+                        padding-right: 0.25rem;
+                    }
+
+                    button {
+                        background-color: var(--surface-f);
+                        color: var(--primary-color);
+
+                        &.active-route {
+                            background-color: var(--primary-color);
+                            color: var(--primary-color-text);
+
+                            &:hover {
+                                background-color: rgba(159, 168, 218, 0.9);
+                            }
+                        }
+
+                        &:hover {
+                            background-color: rgba(255, 255, 255, 0.12);
+                        }
+                    }
+
+                    p-button {
+                        overflow: hidden;
+
+                        > button {
+                            overflow: visible;
+
+                            .p-badge {
+                                position: absolute;
+                                bottom: -0.15rem;
+                                right: 0;
+                                border-radius: 0.5rem 0 0 0.5rem;
+                                margin: 0;
+                            }
+                        }
                     }
                 }
 
-                > .nav-item-r {
-                    padding: 0.25rem 0 0.25rem 0.5rem;
+                .nav-bar-m {
+                    .nav-item {
+                        padding-right: 0.25rem;
+                    }
+
+                    button {
+                        background-color: var(--surface-f);
+                        color: var(--primary-color);
+
+                        &.active-route {
+                            background-color: var(--primary-color);
+                            color: var(--primary-color-text);
+
+                            &:hover {
+                                background-color: rgba(159, 168, 218, 0.9);
+                            }
+                        }
+
+                        &:hover {
+                            background-color: rgba(255, 255, 255, 0.12);
+                        }
+                    }
+
+                    p-button {
+                        overflow: hidden;
+
+                        > button {
+                            overflow: visible;
+
+                            .p-badge {
+                                position: absolute;
+                                bottom: -0.15rem;
+                                right: 0;
+                                border-radius: 0.5rem 0 0 0.5rem;
+                                margin: 0;
+                            }
+                        }
+                    }
                 }
 
-                > .dl-list-btn {
+                @media (min-width: 992px) {
+                    .nav-toggle-btn {
+                        display: none;
+                    }
+                }
+
+                @media (max-width: 991.98px) {
+                    .nav-bar-l {
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        flex-direction: column;
+                        width: 50%;
+                        border-radius: 0.3rem;
+                        box-shadow: 0 0 8px 5px black;
+                        background-color: var(--surface-b);
+
+                        .nav-item {
+                            width: 100%;
+                            padding-right: 0 !important;
+
+                            &:not(:last-child) {
+                                padding-bottom: 0.25rem;
+                            }
+
+                            button {
+                                width: 100%;
+                            }
+                        }
+                        p-button {
+                            > button {
+                                .p-badge {
+                                    position: absolute;
+                                    bottom: 0.15rem;
+                                    right: 0.15rem;
+                                    border-radius: 0.5rem;
+                                    margin: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .nav-bar-r {
+                    margin-left: auto;
+                    .nav-item {
+                        &:not(:last-child) {
+                            padding-right: 0.25rem;
+                        }
+                    }
+                }
+
+                .dl-list-btn {
                     transition-property: box-shadow, left;
                     overflow: visible;
                     transition-duration: 0.5s; /* delays for 1 second */
                     -webkit-transition-duration: 0.5s; /* for Safari & Chrome */
                     position: fixed;
-                    left: -2rem;
+                    left: -1.75rem;
                     top: 25%;
                     z-index: 1;
                     box-shadow: 0 0 4px -1px white;

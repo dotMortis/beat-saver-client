@@ -1,6 +1,6 @@
 {
     "name": "beat-saver-client",
-    "version": "0.8.4-beta",
+    "version": "0.9.0-beta",
     "main": "dist/app/index.js",
     "description": "A BeatSaver desktop client",
     "author": {
@@ -16,7 +16,7 @@
     "scripts": {
         "prestart": "yarn clean",
         "start:dev": "concurrently -k \"yarn ng:serve:dev\" \"yarn electron:serve\"",
-        "ng:serve:dev": "ng serve -c development",
+        "ng:serve:dev": "ng serve -c development --ssl --ssl-key certificates/localhost.key --ssl-cert certificates/localhost.crt",
         "electron:tsc": "tsc -p tsconfig.electron.json",
         "electron:serve": "yarn clean && yarn copy && wait-on tcp:4200 && yarn electron:tsc && npx electron . --serve --debug",
         "electron:serve:nf": "yarn clean && yarn copy && yarn electron:tsc && npx electron . --serve --debug",

@@ -35,7 +35,7 @@ export class DownloadListComponent extends UnsubscribeComponent {
         private _notify: NotifyService,
         private _electronService: ElectronService
     ) {
-        super();
+        super(_notify);
     }
 
     async onDownload() {

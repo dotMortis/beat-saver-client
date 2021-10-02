@@ -12,7 +12,11 @@ import {
 } from '../../../../models/api/api.models';
 import { TInstalled } from '../../../../models/electron/download.model';
 import { TInvokeGetLocalCover } from '../../../../models/electron/invoke.channels';
-import { TSendDebug, TSendError } from '../../../../models/electron/send.channels';
+import {
+    TSendDebug,
+    TSendEmitDownload,
+    TSendError
+} from '../../../../models/electron/send.channels';
 import { ILocalMapInfo } from '../../../../models/maps/localMapInfo.model';
 import { TSongHash, TSongId } from '../../../../models/maps/map-ids.model';
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
@@ -133,7 +137,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         private _confirmService: ConfirmationService,
         private _cvService: ContentViewerService
     ) {
-        super();
+        super(_notify);
         this.mapDeleted = new EventEmitter<boolean>();
         this._isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
@@ -198,6 +202,11 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
             this._cvService.addSongDetailView(this.tMapDetail, this.latestVersion);
     }
 
+    onOpenMapper() {
+        if (this.tMapDetail)
+            this._cvService.addMapperDetailView({ id: this.tMapDetail.uploader.id });
+    }
+
     async onDownloadSingle() {
         try {
             if (this.tMapDetail && this.latestVersion) {
@@ -208,6 +217,18 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
                 );
                 await this.dlService.installSingle(dlInfo);
             }
+        } catch (error: any) {
+            this._notify.error(error);
+        }
+    }
+
+    onDownloadZip() {
+        try {
+            if (this.latestVersion)
+                this._eleService.send<TSendEmitDownload>(
+                    'EMIT_DOWNLOAD',
+                    this.latestVersion.downloadURL
+                );
         } catch (error: any) {
             this._notify.error(error);
         }

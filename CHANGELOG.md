@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0-beta] - 02.10.2021
+
+### Added
+- mappers paginated table
+- mapper detail view (paginated song cards!)
+- mapper playlist download
+- mapper tabs to navigation bar
+
+### Updated
+- navigation bar (responsive update)
+- mapper detail view opens on mapper name click
+- download sequence
+
 ## [0.8.4-beta] - 30.09.2021
 
 ### Updated

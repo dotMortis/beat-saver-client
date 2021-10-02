@@ -1,0 +1,187 @@
+<div *ngIf="mapper" class="mapper-info-container pb-3">
+    <div class="row mx-n2 align-items-stretch">
+        <div class="col-12 col-lg-4 pb-3 pb-lg-0 px-2">
+            <div class="mapper-cover-container">
+                <img class="mapper-avatar" [src]="mapper.avatar" alt="{{mapper.name}} avatar" />
+                <div class="mapper-name">{{mapper.name}}</div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-8 px-2">
+            <div class="mapper-stats-container align-items-stretch">
+                <ul class="list-group flex-fill pr-2">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Maps
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.totalMaps }}</span
+                        >
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Upvotes
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.totalUpvotes }}</span
+                        >
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Downvotes
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.totalDownvotes }}</span
+                        >
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Average BPM
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.avgBpm }}</span
+                        >
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Average Score
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.avgScore }}%</span
+                        >
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Average Duration
+                        <span class="badge badge-primary badge-pill"
+                            >{{ mapper.stats.avgDuration * 1000 | date:'mm:ss'}}</span
+                        >
+                    </li>
+                </ul>
+                <div class="flex-fill">
+                    <button
+                        type="button"
+                        pButton
+                        pTooltip="Download playlist"
+                        label="Playist"
+                        class="p-button-xs"
+                        icon="pi pi-list"
+                        (click)="onDownloadPlaylist()"
+                    ></button>
+
+                    <ul class="list-group pt-1">
+                        <li
+                            class="
+                                list-group-item
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                            "
+                        >
+                            Easy
+                            <span class="badge badge-primary badge-pill"
+                                >{{ mapper.stats.diffStats.easy }}</span
+                            >
+                        </li>
+                        <li
+                            class="
+                                list-group-item
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                            "
+                        >
+                            Normal
+                            <span class="badge badge-primary badge-pill"
+                                >{{ mapper.stats.diffStats.normal }}</span
+                            >
+                        </li>
+                        <li
+                            class="
+                                list-group-item
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                            "
+                        >
+                            Hard
+                            <span class="badge badge-primary badge-pill"
+                                >{{ mapper.stats.diffStats.hard }}</span
+                            >
+                        </li>
+                        <li
+                            class="
+                                list-group-item
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                            "
+                        >
+                            Expert
+                            <span class="badge badge-primary badge-pill"
+                                >{{ mapper.stats.diffStats.expert }}</span
+                            >
+                        </li>
+                        <li
+                            class="
+                                list-group-item
+                                d-flex
+                                justify-content-between
+                                align-items-center
+                            "
+                        >
+                            Expert+
+                            <span class="badge badge-primary badge-pill"
+                                >{{ mapper.stats.diffStats.expertPlus }}</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="mapper" class="mapper-maps-container">
+    <ng-container *ngTemplateOutlet="paginator">></ng-container>
+    <div class="row pt-3 mx-n2">
+        <app-song-card
+            #card
+            *ngFor="let doc of mapDetails;"
+            class="col-12 col-lg-6 px-2 mb-3"
+            [tMapDetail]="doc"
+            [localMode]="false"
+        ></app-song-card>
+    </div>
+    <ng-container *ngTemplateOutlet="paginator">></ng-container>
+</div>
+<ng-template #paginator>
+    <div class="paginator-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="paginator-refresh px-0 text-left">
+                <button
+                    type="button"
+                    icon="pi pi-refresh"
+                    pButton
+                    class="p-button-xs"
+                    pTooltip="GoTo page"
+                    (click)="onSearch({page: 0})"
+                ></button>
+            </div>
+            <div class="flex-fill">
+                <p-paginator
+                    [first]="first"
+                    [rows]="20"
+                    [totalRecords]="totalRecords"
+                    (onPageChange)="onSearch($event)"
+                ></p-paginator>
+            </div>
+            <div class="paginator-goto px-0 text-right">
+                <div class="p-inputgroup">
+                    <input
+                        type="number"
+                        [(ngModel)]="goToPage"
+                        pInputText
+                        placeholder="Page"
+                        class="p-inputtext-xs"
+                    />
+                    <button
+                        type="button"
+                        pButton
+                        pRipple
+                        label="Go!"
+                        class="p-button-xs"
+                        (click)="onGoToPage()"
+                    ></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

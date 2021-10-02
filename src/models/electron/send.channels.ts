@@ -13,6 +13,7 @@ export type TSendError = TSend<'ERROR', string | Error>;
 //#endregion
 
 //#region BrowserDownload
+export type TSendEmitDownload = TSend<'EMIT_DOWNLOAD', string>;
 export type TSendBrowserDownload = TSend<'DOWNLOAD', TDownloadItemInfo>;
 export type TSendBrowserDownloadAction = TSend<'DOWNLOAD_ACTION', TDownloadActionInfo>;
 

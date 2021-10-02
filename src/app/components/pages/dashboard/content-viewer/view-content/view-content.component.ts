@@ -11,6 +11,8 @@ import {
 import { interval, of, Subject } from 'rxjs';
 import { switchMap, take, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../../models/angular/unsubscribe.model';
+import { TOpenId } from '../../../../../../models/openEvent.model';
+import { NotifyService } from '../../../../../services/root.provided/notify.service';
 import { ViewTemplateDirective } from '../view-template/view-template.directive';
 
 @Component({
@@ -63,14 +65,18 @@ export class ViewContentComponent
     }
 
     @Input()
-    id?: string;
+    id?: TOpenId;
 
-    constructor() {
-        super();
+    @Input()
+    scrollPanel: boolean;
+
+    constructor(private _notify: NotifyService) {
+        super(_notify);
         this._loaded = false;
         this._selected = false;
         this._selectedChange = new Subject<boolean>();
         this._livetime = -1;
+        this.scrollPanel = true;
     }
 
     ngOnInit(): void {

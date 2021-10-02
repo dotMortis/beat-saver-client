@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TMapDetail } from '../../../../../../models/api/api.models';
-import { TSongId } from '../../../../../../models/maps/map-ids.model';
+import { TOpenId } from '../../../../../../models/openEvent.model';
 import { ContentViewerService } from '../../../../../services/null.provided/content-viewer.service';
 
 @Component({
@@ -9,25 +8,25 @@ import { ContentViewerService } from '../../../../../services/null.provided/cont
     styleUrls: ['./detail-btn-panel.component.scss']
 })
 export class DetailBtnPanelComponent {
-    private _activeId?: TSongId;
+    private _activeId?: TOpenId;
     @Input()
-    get activeId(): TSongId | undefined {
+    get activeId(): TOpenId | undefined {
         return this._activeId;
     }
-    set activeId(val: TSongId | undefined) {
+    set activeId(val: TOpenId | undefined) {
         if (val !== this._activeId) {
             this._activeId = val;
         }
     }
 
     @Output()
-    public openNext: EventEmitter<TSongId>;
+    public openNext: EventEmitter<TOpenId>;
 
     constructor(public cvService: ContentViewerService) {
-        this.openNext = new EventEmitter<TSongId>();
+        this.openNext = new EventEmitter<TOpenId>();
     }
 
-    onCloseDetailTab(mapDetail: TMapDetail): void {
-        this.cvService.delSongDetailView(mapDetail);
+    onCloseDetailTab(id: TOpenId): void {
+        this.cvService.delDetailView(id);
     }
 }

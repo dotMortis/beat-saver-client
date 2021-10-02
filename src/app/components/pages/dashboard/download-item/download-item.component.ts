@@ -6,6 +6,7 @@ import {
     TSendBrowserDownload
 } from '../../../../../models/electron/send.channels';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 
 @Component({
     selector: 'app-download-item',
@@ -20,8 +21,8 @@ export class DownloadItemComponent extends UnsubscribeComponent implements OnIni
         return this._downloadsArr;
     }
 
-    constructor(private _eleService: ElectronService) {
-        super();
+    constructor(private _eleService: ElectronService, private _notify: NotifyService) {
+        super(_notify);
         this._downloads = new Map<string, TDownloadItemInfo>();
     }
 
