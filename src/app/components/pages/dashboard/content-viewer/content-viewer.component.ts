@@ -2,8 +2,12 @@ import {
     AfterViewInit,
     ChangeDetectorRef,
     Component,
+    ElementRef,
+    HostListener,
     OnInit,
     QueryList,
+    Renderer2,
+    ViewChild,
     ViewChildren
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -37,6 +41,19 @@ import { ViewContentComponent } from './view-content/view-content.component';
 })
 export class ContentViewerComponent extends UnsubscribeComponent implements AfterViewInit, OnInit {
     @ViewChildren(ViewContentComponent) viewContents!: QueryList<ViewContentComponent>;
+    @ViewChild('navToggleButton') navToggleButton!: ElementRef;
+    @ViewChild('nav') nav!: ElementRef;
+
+    private _innerWidth: number;
+    @HostListener('window:resize', ['$event'])
+    onResize(event: any) {
+        this._innerWidth = event.target.innerWidth;
+        if (this.isNavOpen === false && this._innerWidth >= 992) {
+            this.isNavOpen = true;
+        } else if (this.isNavOpen === true && this._innerWidth < 992) {
+            this.isNavOpen = false;
+        }
+    }
 
     contents: ViewContentComponent[];
 
@@ -47,7 +64,6 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     get communityMenuItems(): MenuItem[] {
         return this._communityMenuItems;
     }
-
     private _selectedDetail?: TOpenId;
     get selectedDetail(): TOpenId | undefined {
         return this._selectedDetail;
@@ -60,10 +76,9 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     }
 
     activeId?: TOpenId;
-
     installedCount: number;
-
     songIdSearch: string;
+    isNavOpen: boolean;
 
     constructor(
         public optService: SettingsService,
@@ -75,7 +90,8 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         private _playerStatsService: PlayerStatsService,
         private _dialogService: DialogService,
         private _notify: NotifyService,
-        private _apiService: ApiService
+        private _apiService: ApiService,
+        private _renderer: Renderer2
     ) {
         super();
         this.contents = [];
@@ -148,6 +164,16 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         ];
         this.installedCount = 0;
         this.songIdSearch = '';
+        this.isNavOpen = false;
+        this._innerWidth = window.innerWidth;
+        this._renderer.listen('window', 'click', (e: Event) => {
+            if (
+                this._innerWidth < 992 &&
+                this.isNavOpen === true &&
+                e.target !== this.navToggleButton.nativeElement
+            )
+                this.isNavOpen = false;
+        });
     }
 
     ngOnInit(): void {

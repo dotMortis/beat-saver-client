@@ -6,7 +6,21 @@
         ></app-detail-btn-panel>
         <div class="container">
             <div class="row navigation-bar-content no-gutters">
-                <div class="col-auto d-flex nav-bar-l">
+                <div class="col-auto nav-toggle-btn">
+                    <div class="nav-item">
+                        <button
+                            #navToggleButton
+                            pButton
+                            pRipple
+                            type="button"
+                            class="p-button-sm"
+                            [ngClass]="{'active-route': songs.selected}"
+                            [icon]="isNavOpen ? 'pi pi-times' : 'pi pi-bars'"
+                            (click)="isNavOpen = !isNavOpen"
+                        ></button>
+                    </div>
+                </div>
+                <div #nav *ngIf="isNavOpen" class="col-auto d-flex nav-bar-l">
                     <div class="nav-item">
                         <button
                             joyrideStep="beatSaverBtn"
@@ -16,7 +30,6 @@
                             type="button"
                             class="p-button-sm"
                             [ngClass]="{'active-route': songs.selected}"
-                            pTooltip="Home"
                             icon="pi pi-home"
                             (click)="onOpen(songs)"
                             label="Home"
@@ -28,7 +41,6 @@
                             joyrideStep="mappersBtn"
                             text="Browse mappers"
                             styleClass="p-button-sm {{mappers.selected ? 'active-route' : ''}}"
-                            pTooltip="Mappers"
                             iconPos="left"
                             icon="pi pi-users"
                             (onClick)="onOpen(mappers)"
@@ -41,7 +53,6 @@
                             joyrideStep="localMapsBtn"
                             text="Browse all installed maps"
                             styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
-                            pTooltip="Installed maps"
                             icon="pi pi-save"
                             iconPos="left"
                             (onClick)="onOpen(locals)"
@@ -49,10 +60,11 @@
                             label="Installed"
                         ></p-button>
                     </div>
+                </div>
+                <div class="col-auto d-flex nav-bar-m">
                     <div class="nav-item">
                         <p-button
                             joyrideStep="searchSongId"
-                            pTooltip="Find by song id"
                             class="d-block"
                             (onClick)="searchById.toggle($event)"
                             text="Find a map by its ID"
@@ -118,7 +130,6 @@
                         ></button>
                     </div>
                 </div>
-
                 <button
                     joyrideStep="dlQueue1"
                     text="Open the download queue"
