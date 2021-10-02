@@ -45,14 +45,19 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
     @ViewChild('nav') nav!: ElementRef;
 
     private _innerWidth: number;
-    @HostListener('window:resize', ['$event'])
-    onResize(event: any) {
-        this._innerWidth = event.target.innerWidth;
+    set innerWidth(val: number) {
         if (this.isNavOpen === false && this._innerWidth >= 992) {
             this.isNavOpen = true;
         } else if (this.isNavOpen === true && this._innerWidth < 992) {
             this.isNavOpen = false;
         }
+    }
+    get innerWidth(): number {
+        return this._innerWidth;
+    }
+    @HostListener('window:resize', ['$event'])
+    onResize(event: any) {
+        this.innerWidth = event.target.innerWidth;
     }
 
     contents: ViewContentComponent[];
@@ -165,10 +170,10 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         this.installedCount = 0;
         this.songIdSearch = '';
         this.isNavOpen = false;
-        this._innerWidth = window.innerWidth;
+        this.innerWidth = this._innerWidth = window.innerWidth;
         this._renderer.listen('window', 'click', (e: Event) => {
             if (
-                this._innerWidth < 992 &&
+                this.innerWidth < 992 &&
                 this.isNavOpen === true &&
                 e.target !== this.navToggleButton.nativeElement
             )
