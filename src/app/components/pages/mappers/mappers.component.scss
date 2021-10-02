@@ -1,15 +1,21 @@
 :host ::ng-deep .p-datatable {
+    border-radius: 0.25rem;
+    transition: box-shadow 200ms ease-in;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: 0 0 5px 0 white !important;
+    }
+
     .p-paginator-last {
         display: none !important;
     }
 
-    p-table {
-        td {
-            padding: 0.5rem 0.25rem !important;
-        }
-        th {
-            padding: 0.5rem 0.25rem !important;
-        }
+    td {
+        padding: 0.5rem 0.25rem !important;
+    }
+    th {
+        padding: 0.5rem 0.25rem !important;
     }
 
     p-multiselect {
