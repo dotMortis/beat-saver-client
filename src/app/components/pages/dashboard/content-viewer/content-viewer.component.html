@@ -23,8 +23,6 @@
                 <div #nav *ngIf="isNavOpen" class="col-auto d-flex nav-bar-l">
                     <div class="nav-item">
                         <button
-                            joyrideStep="beatSaverBtn"
-                            text="Browse all BeatSaver maps"
                             pButton
                             pRipple
                             type="button"
@@ -38,8 +36,6 @@
                     <div class="nav-item">
                         <p-button
                             class="d-block"
-                            joyrideStep="mappersBtn"
-                            text="Browse mappers"
                             styleClass="p-button-sm {{mappers.selected ? 'active-route' : ''}}"
                             iconPos="left"
                             icon="pi pi-users"
@@ -50,8 +46,6 @@
                     <div class="nav-item">
                         <p-button
                             class="d-block"
-                            joyrideStep="localMapsBtn"
-                            text="Browse all installed maps"
                             styleClass="p-button-sm {{locals.selected ? 'active-route' : ''}}"
                             icon="pi pi-save"
                             iconPos="left"
