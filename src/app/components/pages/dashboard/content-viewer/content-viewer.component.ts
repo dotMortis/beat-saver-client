@@ -46,6 +46,7 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
 
     private _innerWidth: number;
     set innerWidth(val: number) {
+        this._innerWidth = val;
         if (this.isNavOpen === false && this._innerWidth >= 992) {
             this.isNavOpen = true;
         } else if (this.isNavOpen === true && this._innerWidth < 992) {
