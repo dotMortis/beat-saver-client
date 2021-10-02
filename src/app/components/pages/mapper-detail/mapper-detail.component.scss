@@ -61,6 +61,8 @@
     padding: 0.25rem 0.5rem;
     background-color: var(--surface-f);
     transition: box-shadow 200ms ease-in;
+    border-radius: 0.25rem;
+    overflow: hidden;
 
     &:hover {
         box-shadow: 0 0 5px 0 white;
