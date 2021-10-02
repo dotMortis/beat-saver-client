@@ -9,6 +9,7 @@ import { TSettings } from '../../../../models/settings.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
 import { SongCardService } from '../../modules/song-card/song-card.service';
 
@@ -44,9 +45,10 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
         private _apiService: ApiService,
         private _eleService: ElectronService,
         private _settingsService: SettingsService,
-        private _songCardService: SongCardService
+        private _songCardService: SongCardService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
         this.first = 0;
         this.mapDetails = new Array<TMapDetail>();
     }

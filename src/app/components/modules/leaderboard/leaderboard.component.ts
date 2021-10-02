@@ -7,6 +7,7 @@ import { TLeaderboard, TScores } from '../../../../models/api/api.models';
 import { TBoardIdent } from '../../../../models/api/leaderboard.model';
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 
 @Component({
     selector: 'app-leaderboard',
@@ -51,8 +52,12 @@ export class LeaderboardComponent extends UnsubscribeComponent {
     }[];
     loading: boolean;
 
-    constructor(private _apiService: ApiService, private _cdr: ChangeDetectorRef) {
-        super();
+    constructor(
+        private _apiService: ApiService,
+        private _cdr: ChangeDetectorRef,
+        private _notify: NotifyService
+    ) {
+        super(_notify);
         this._isInit = false;
         this._boardIdentChange = new BehaviorSubject<TBoardIdent | undefined>(undefined);
         this.columns = [

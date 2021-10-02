@@ -7,6 +7,7 @@ import { TSendEmitDownload } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { ContentViewerService } from '../../../services/null.provided/content-viewer.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 import { TMapperColumn } from './mapper-column.model';
 
 @Component({
@@ -32,9 +33,10 @@ export class MappersComponent extends UnsubscribeComponent {
         private _apiService: ApiService,
         private _cdr: ChangeDetectorRef,
         private _eleService: ElectronService,
-        private _cvService: ContentViewerService
+        private _cvService: ContentViewerService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
         this.totalRecords = Infinity;
         this.columns = [
             {

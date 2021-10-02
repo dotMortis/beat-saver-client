@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 
 @Component({
     selector: 'app-local-song-filter',
@@ -8,8 +9,8 @@ import { LocalMapsService } from '../../../services/null.provided/local-maps.ser
     styleUrls: ['./local-song-filter.component.scss']
 })
 export class LocalSongFilterComponent extends UnsubscribeComponent {
-    constructor(public localMapsService: LocalMapsService) {
-        super();
+    constructor(public localMapsService: LocalMapsService, private _notify: NotifyService) {
+        super(_notify);
     }
 
     onSearch(): void {

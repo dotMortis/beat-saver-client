@@ -3,6 +3,7 @@ import { UnsubscribeComponent } from '../../../../../../models/angular/unsubscri
 import { TMapDetail, TMapVersion } from '../../../../../../models/api/api.models';
 import { ContentViewerService } from '../../../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../../../services/null.provided/dl.service';
+import { NotifyService } from '../../../../../services/root.provided/notify.service';
 import { SongPreviewService } from '../../song-preview/song-preview.service';
 
 @Component({
@@ -36,9 +37,10 @@ export class DlSongCardComponent extends UnsubscribeComponent implements OnInit 
     constructor(
         public songPreviewService: SongPreviewService,
         public dlService: DlService,
-        private _cvService: ContentViewerService
+        private _cvService: ContentViewerService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
         this.installed = false;
         this.download = 0;
         this._songNameShort = 'N/A';

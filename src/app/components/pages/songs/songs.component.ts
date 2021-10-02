@@ -8,6 +8,7 @@ import { TSettings } from '../../../../models/settings.model';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../services/root.provided/notify.service';
 import { SettingsService } from '../../../services/root.provided/settings.service';
 import { TourService } from '../../../services/root.provided/tour.service';
 import { SongCardService } from '../../modules/song-card/song-card.service';
@@ -24,9 +25,10 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
         private _eleService: ElectronService,
         private _settingsService: SettingsService,
         private _songCardService: SongCardService,
-        private _tourService: TourService
+        private _tourService: TourService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
     }
 
     ngOnInit(): void {

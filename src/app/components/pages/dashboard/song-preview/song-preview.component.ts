@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { delay, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../../models/angular/unsubscribe.model';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 import { SongPreviewService } from './song-preview.service';
 
 @Component({
@@ -24,8 +25,8 @@ export class SongPreviewComponent extends UnsubscribeComponent implements OnInit
     }
     @Output() showIframeChange: EventEmitter<boolean>;
 
-    constructor(public songPreviewService: SongPreviewService) {
-        super();
+    constructor(public songPreviewService: SongPreviewService, private _notify: NotifyService) {
+        super(_notify);
         this._showIframe = false;
         this.showIframeChange = new EventEmitter<boolean>();
     }

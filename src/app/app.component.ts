@@ -6,6 +6,7 @@ import { filter, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../models/angular/unsubscribe.model';
 import { TSendError } from '../models/electron/send.channels';
 import { ElectronService } from './services/root.provided/electron.service';
+import { NotifyService } from './services/root.provided/notify.service';
 import { ScrollService } from './services/root.provided/scroll.service';
 import { SettingsService } from './services/root.provided/settings.service';
 @Component({
@@ -21,9 +22,10 @@ export class AppComponent extends UnsubscribeComponent implements OnInit {
         private _optService: SettingsService,
         private _eleService: ElectronService,
         private _scrollService: ScrollService,
-        private _router: Router
+        private _router: Router,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
     }
 
     ngOnInit() {

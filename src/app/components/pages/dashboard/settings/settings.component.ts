@@ -7,6 +7,7 @@ import { TSettings } from '../../../../../models/settings.model';
 import { LocalMapsService } from '../../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../../services/null.provided/player-stats.service';
 import { ElectronService } from '../../../../services/root.provided/electron.service';
+import { NotifyService } from '../../../../services/root.provided/notify.service';
 import { SettingsService } from '../../../../services/root.provided/settings.service';
 import { TourService } from '../../../../services/root.provided/tour.service';
 
@@ -96,9 +97,10 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         public installedSongsService: LocalMapsService,
         public playerStatsService: PlayerStatsService,
         private _eleService: ElectronService,
-        private _tourService: TourService
+        private _tourService: TourService,
+        private _notify: NotifyService
     ) {
-        super();
+        super(_notify);
         this._showTour = !this._tourService.isShown;
         this._selectablePlayerNames = new Array<{ name: string }>();
         this._isInit = false;

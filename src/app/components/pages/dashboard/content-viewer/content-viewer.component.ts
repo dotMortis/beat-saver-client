@@ -93,7 +93,7 @@ export class ContentViewerComponent extends UnsubscribeComponent implements Afte
         private _apiService: ApiService,
         private _renderer: Renderer2
     ) {
-        super();
+        super(_notify);
         this.contents = [];
         this._communityMenuItems = [
             {

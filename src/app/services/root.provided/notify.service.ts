@@ -6,13 +6,13 @@ import { TFileLoaded } from '../../../models/electron/file-loaded.model';
     providedIn: 'root'
 })
 export class NotifyService {
-    constructor(private messageService: MessageService) {}
+    constructor(private _messageService: MessageService) {}
 
     error(v: { title: string; error: Error | string }): void {
-        return this.messageService.add({
+        return this._messageService.add({
             severity: 'error',
             summary: v.title,
-            detail: v.error instanceof Error ? v.error.message : v.error
+            detail: v.error instanceof Error ? v.error.message : JSON.stringify(v.error)
         });
     }
 
@@ -32,7 +32,7 @@ export class NotifyService {
     }
 
     warning(v: { title: string; message: string }): void {
-        return this.messageService.add({
+        return this._messageService.add({
             severity: 'warning',
             summary: v.title,
             detail: v.message
@@ -40,7 +40,7 @@ export class NotifyService {
     }
 
     success(v: { title: string; message: string }): void {
-        return this.messageService.add({
+        return this._messageService.add({
             severity: 'success',
             summary: v.title,
             detail: v.message

@@ -137,7 +137,7 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         private _confirmService: ConfirmationService,
         private _cvService: ContentViewerService
     ) {
-        super();
+        super(_notify);
         this.mapDeleted = new EventEmitter<boolean>();
         this._isInstalledSong = { status: false };
         this._songNameShort = 'N/A';
