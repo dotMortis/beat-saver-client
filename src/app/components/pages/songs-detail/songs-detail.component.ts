@@ -20,6 +20,7 @@ import {
 import { MapsHelpers } from '../../../../models/maps/maps.helpers';
 import { TLevelStatsData } from '../../../../models/player/player-data.model';
 import { ApiService } from '../../../services/null.provided/api.service';
+import { ContentViewerService } from '../../../services/null.provided/content-viewer.service';
 import { DlService } from '../../../services/null.provided/dl.service';
 import { LocalMapsService } from '../../../services/null.provided/local-maps.service';
 import { PlayerStatsService } from '../../../services/null.provided/player-stats.service';
@@ -114,7 +115,8 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         private _eleService: ElectronService,
         private _notify: NotifyService,
         private _clipboard: Clipboard,
-        private _confirmService: ConfirmationService
+        private _confirmService: ConfirmationService,
+        private _cvService: ContentViewerService
     ) {
         super();
         this.boardIdent = new BehaviorSubject<TBoardIdent | undefined>(undefined);
@@ -248,6 +250,11 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
         } else {
             this.boardIdent.next(undefined);
         }
+    }
+
+    onOpenMapper(): void {
+        if (this.tMapDetail)
+            this._cvService.addMapperDetailView({ id: this.tMapDetail.uploader.id });
     }
 
     private async _loadPlayerSongStats(): Promise<void> {

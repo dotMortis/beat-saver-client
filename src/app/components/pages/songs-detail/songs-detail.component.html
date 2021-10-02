@@ -114,7 +114,7 @@
                         <div class="mapper-stats">
                             <div class="d-flex justify-content-between">
                                 <div>Mapper</div>
-                                <a class="trim" [routerLink]="">
+                                <a class="trim" [routerLink]="" (click)="onOpenMapper()">
                                     {{ tMapDetail?.uploader?.name || 'N/A' }}
                                     ({{tMapDetail?.metadata?.levelAuthorName}})
                                 </a>
