@@ -5,13 +5,20 @@ import { LocalMapInfo } from '../../../src/models/maps/localMapInfo.model';
 import { TRawMapInfo } from '../../../src/models/maps/rawMapInfo.model';
 
 export default class MapHelpers {
-    public static getLocalMapInfo(mapsFolderPath: string, mapFolderName: string): LocalMapInfo {
+    public static getLocalMapInfo(
+        id: string,
+        mapsFolderPath: string,
+        mapFolderName: string
+    ): LocalMapInfo {
         const infoDatPath = join(mapsFolderPath, mapFolderName, 'info.dat');
         const infoDatStr = readFileSync(infoDatPath).toString();
         const infoDat: TRawMapInfo = JSON.parse(infoDatStr);
         const hash = MapHelpers.computeHash(infoDatStr, infoDat, mapsFolderPath, mapFolderName);
-        const id = mapFolderName.split(' ')[0];
         return LocalMapInfo.fromRawMapInfo(infoDat, hash, id, mapFolderName);
+    }
+
+    public static getMapIdFromFolder(mapFolderName: string): string {
+        return mapFolderName.split(' ')[0];
     }
 
     public static computeHash(

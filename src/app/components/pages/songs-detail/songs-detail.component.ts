@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, Input, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { BehaviorSubject } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { filter, mergeMap, tap } from 'rxjs/operators';
 import { UnsubscribeComponent } from '../../../../models/angular/unsubscribe.model';
 import {
     ECharacteristic,
@@ -233,21 +233,9 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
                     );
                 });
 
-            this._initIsInstalledSong()
-                .catch(error => this._eleService.send<TSendError>('ERROR', error))
-                .finally(() => {
-                    this.addSub(
-                        this.installedSongsService.installedSongsReloaded.pipe(
-                            mergeMap(async () => {
-                                try {
-                                    await this._initIsInstalledSong();
-                                } catch (error: any) {
-                                    this._eleService.send<TSendError>('ERROR', error);
-                                }
-                            })
-                        )
-                    );
-                });
+            this._initIsInstalledSong().catch(error =>
+                this._eleService.send<TSendError>('ERROR', error)
+            );
         }
     }
 
@@ -288,6 +276,17 @@ export class SongsDetailComponent extends UnsubscribeComponent implements OnInit
 
     private async _initIsInstalledSong(): Promise<void> {
         if (this.tMapDetail) {
+            this.addSub(
+                this.installedSongsService.songInstallChange.pipe(
+                    filter(data => data.songId === this.tMapDetail?.id),
+                    tap(
+                        data =>
+                            (this._isInstalledSong = {
+                                status: data.installed ? 'INSTALLED' : false
+                            })
+                    )
+                )
+            );
             const result = await this.installedSongsService
                 .songIsInstalled(this.tMapDetail?.id)
                 .catch(error => {

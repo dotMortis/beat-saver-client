@@ -8,7 +8,7 @@ const consoleLogFormat = winston.format.printf(info => {
     const ts = new Date(info.metadata.timestamp)?.toLocaleString();
     delete info.metadata.timestamp;
     return `[${ts}] [${info.level}] [${info.message}] [${
-        info.metadata ? JSON.stringify(info.metadata, null, 2) : ''
+        info.metadata ? JSON.stringify(info.metadata) : ''
     }]`;
 });
 

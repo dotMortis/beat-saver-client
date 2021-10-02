@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subject, Subscriber } from 'rxjs';
 import { TMapDetail } from '../../../models/api/api.models';
 import { TFileLoaded } from '../../../models/electron/file-loaded.model';
@@ -7,7 +7,7 @@ import {
     TInvokeIsInstalled,
     TInvokeLoadInstalledSongs
 } from '../../../models/electron/invoke.channels';
-import { TSendDebug } from '../../../models/electron/send.channels';
+import { TSendDebug, TSendMapInstallChange } from '../../../models/electron/send.channels';
 import { LocalMapsFilter } from '../../../models/maps/local-maps-filter.model';
 import { ILocalMapInfo } from '../../../models/maps/localMapInfo.model';
 import { TSongId } from '../../../models/maps/map-ids.model';
@@ -18,7 +18,7 @@ import { NotifyService } from '../root.provided/notify.service';
     providedIn: null
 })
 export class LocalMapsService {
-    public installedSongsReloaded: EventEmitter<void>;
+    public songInstallChange: Observable<{ songId: TSongId; installed: boolean }>;
     private readonly _filter: LocalMapsFilter;
     private _latestFilter?: LocalMapsFilter;
     private _page: number;
@@ -51,7 +51,7 @@ export class LocalMapsService {
     }
 
     constructor(private _eleService: ElectronService, private _notify: NotifyService) {
-        this.installedSongsReloaded = new EventEmitter<void>();
+        this.songInstallChange = this._eleService.on<TSendMapInstallChange>('MAP_INSTALL_CHANGED');
         this._filter = new LocalMapsFilter({});
         this._page = 0;
         this._canLoadMore = true;
@@ -87,7 +87,6 @@ export class LocalMapsService {
             throw result;
         }
         this._notify.errorFileHandle(result, 'BS Installation');
-        this.installedSongsReloaded.next();
         return result;
     }
 

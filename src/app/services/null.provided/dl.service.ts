@@ -122,19 +122,11 @@ export class DlService {
         );
     }
 
-    async deleteSingle(id: TSongId): Promise<boolean | Error> {
-        return this._eleService
-            .invoke<TInvokeDeleteSong>('DELETE_SONG', { id })
-            .finally(async () => {
-                try {
-                    await this._installedSongsService.loadInstalledSongs();
-                } catch (error: any) {
-                    this._eleService.send<TSendError>('ERROR', error);
-                }
-            });
+    deleteSingle(id: TSongId): Promise<boolean | Error> {
+        return this._eleService.invoke<TInvokeDeleteSong>('DELETE_SONG', { id });
     }
 
-    async installSingle(info: TSongDownloadInfo): Promise<void> {
+    installSingle(info: TSongDownloadInfo): Promise<void> {
         return new Promise<void>(async (res, rej) => {
             try {
                 this._resetErrors();
@@ -164,16 +156,10 @@ export class DlService {
             } catch (error) {
                 rej(error);
             }
-        }).finally(async () => {
-            try {
-                await this._installedSongsService.loadInstalledSongs();
-            } catch (error: any) {
-                this._eleService.send<TSendError>('ERROR', error);
-            }
         });
     }
 
-    async installAll(): Promise<void> {
+    installAll(): Promise<void> {
         this._activeInstallations = 0;
         let hasMore = true;
         return new Promise<void>(async (res, rej) => {
@@ -219,12 +205,6 @@ export class DlService {
                 downloadMore();
             } catch (error) {
                 rej(error);
-            }
-        }).finally(async () => {
-            try {
-                await this._installedSongsService.loadInstalledSongs();
-            } catch (error: any) {
-                this._eleService.send<TSendError>('ERROR', error);
             }
         });
     }

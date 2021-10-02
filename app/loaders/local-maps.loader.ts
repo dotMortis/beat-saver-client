@@ -27,7 +27,11 @@ import {
     TInvokeLoadInstalledSongs,
     TInvokeMapsCount
 } from '../../src/models/electron/invoke.channels';
-import { TSendMapsCount, TSendMapSyncStatus } from '../../src/models/electron/send.channels';
+import {
+    TSendMapInstallChange,
+    TSendMapsCount,
+    TSendMapSyncStatus
+} from '../../src/models/electron/send.channels';
 import { LocalMapInfo, TDBLocalMapInfo } from '../../src/models/maps/localMapInfo.model';
 import { TSongId } from '../../src/models/maps/map-ids.model';
 import { CommonLoader } from '../models/CommonLoader.model';
@@ -149,39 +153,55 @@ class LocalMaps extends CommonLoader {
     }
 
     syncInstalledSongs(localIds: string[], dbIds: string[]): void {
-        this._deleteRemovedIds(localIds);
-        const idsCount = localIds.length;
+        const idsToDelete = new Array<string>();
+        for (const dbId of dbIds) {
+            if (!localIds.includes(dbId)) idsToDelete.push(dbId);
+        }
+        if (idsToDelete.length) this._deleteRemovedIds(idsToDelete);
         if (!this._filePath) return;
-        const files = readdirSync(this._filePath, { withFileTypes: true });
-        const maps = new Array<LocalMapInfo>();
+        const idsToAdd = new Array<string>();
+        for (const localId of localIds) {
+            if (!dbIds.includes(localId)) idsToAdd.push(localId);
+        }
         let z = 0;
-        for (const file of files) {
-            if (file.isDirectory()) {
-                IpcHelerps.webContentsSend<TSendMapSyncStatus>(
-                    this.browserWindow,
-                    'MAP_SYNC_STATUS',
-                    {
-                        status: 'SYNCING',
-                        currentCount: ++z,
-                        sum: idsCount
+        if (idsToAdd.length) {
+            const files = readdirSync(this._filePath, { withFileTypes: true });
+            const maps = new Array<LocalMapInfo>();
+            for (const file of files) {
+                if (file.isDirectory()) {
+                    try {
+                        const id = MapHelpers.getMapIdFromFolder(file.name);
+                        if (!idsToAdd.includes(id)) continue;
+                        IpcHelerps.webContentsSend<TSendMapSyncStatus>(
+                            this.browserWindow,
+                            'MAP_SYNC_STATUS',
+                            {
+                                status: 'SYNCING',
+                                currentCount: ++z,
+                                sum: idsToAdd.length
+                            }
+                        );
+                        const localMapInfo = MapHelpers.getLocalMapInfo(
+                            id,
+                            this._filePath,
+                            file.name
+                        );
+                        maps.push(localMapInfo);
+                    } catch (error: any) {
+                        logger.error(error, { customSongFolderName: file.name });
+                        const id = file.name.split(' ')[0];
+                        const dummyLocalMapInfo = LocalMapInfo.getDummyData(id, file.name);
+                        maps.push(dummyLocalMapInfo);
                     }
-                );
-                try {
-                    const localMapInfo = MapHelpers.getLocalMapInfo(this._filePath, file.name);
-                    maps.push(localMapInfo);
-                } catch (error: any) {
-                    logger.error(error, { customSongFolderName: file.name });
-                    const id = file.name.split(' ')[0];
-                    const dummyLocalMapInfo = LocalMapInfo.getDummyData(id, file.name);
-                    maps.push(dummyLocalMapInfo);
                 }
             }
+            this._insertMapInfos(maps);
         }
-        this._insertMapInfos(maps);
+        this._pushLocalSongsCount();
         IpcHelerps.webContentsSend<TSendMapSyncStatus>(this.browserWindow, 'MAP_SYNC_STATUS', {
             status: 'FINISH',
             currentCount: z,
-            sum: idsCount
+            sum: idsToAdd.length
         });
     }
 
@@ -205,6 +225,13 @@ class LocalMaps extends CommonLoader {
             rmSync(join(this._filePath, folderName), { recursive: true, force: true });
             this._deleteMapInfo(id);
         }
+        this._mapIds.delete(id);
+        this._pushLocalSongsCount(this._mapIds.size);
+        IpcHelerps.webContentsSend<TSendMapInstallChange>(
+            this.browserWindow,
+            'MAP_INSTALL_CHANGED',
+            { songId: id, installed: false }
+        );
         return true;
     }
 
@@ -229,8 +256,16 @@ class LocalMaps extends CommonLoader {
                 this._saveFile(subFolder, file.name, content);
             }
         }
-        const mapInfo = MapHelpers.getLocalMapInfo(this._filePath, subFolder);
+        const id = MapHelpers.getMapIdFromFolder(subFolder);
+        const mapInfo = MapHelpers.getLocalMapInfo(id, this._filePath, subFolder);
         this._insertMapInfos([mapInfo]);
+        this._mapIds.add(mapInfo.id);
+        this._pushLocalSongsCount(this._mapIds.size);
+        IpcHelerps.webContentsSend<TSendMapInstallChange>(
+            this.browserWindow,
+            'MAP_INSTALL_CHANGED',
+            { songId: mapInfo.id, installed: true }
+        );
         return { result: true };
     }
 
@@ -388,17 +423,15 @@ class LocalMaps extends CommonLoader {
             for (const mapInfo of mapInfos) insert.run(mapInfo.toStorage());
         });
         insertMany(mapInfos);
-        this._pushLocalSongsCount();
     }
 
     private _deleteMapInfo(id: TSongId): void {
         this._db.prepare('DELETE FROM maps WHERE id = :id').run({ id });
-        this._pushLocalSongsCount();
     }
 
-    private _deleteRemovedIds(availableIds: string[]): void {
-        this._db.prepare('DELETE FROM maps WHERE id NOT IN(?)').run(availableIds.join(','));
-        this._pushLocalSongsCount();
+    private _deleteRemovedIds(removedIds: string[]): void {
+        const params = '?,'.repeat(removedIds.length).slice(0, -1);
+        this._db.prepare(`DELETE FROM maps WHERE id IN (${params})`).run(removedIds);
     }
 
     private async _handleLoadInstalledSongs<RESULT = never>(
@@ -453,11 +486,16 @@ class LocalMaps extends CommonLoader {
     }
 
     private _computeIdsHash(ids: string[]): string {
-        return createHash('sha1').update(ids.join(',')).digest('hex');
+        ids.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+        const hash = createHash('sha1');
+        for (const id of ids) {
+            hash.update(id);
+        }
+        return hash.digest('hex');
     }
 
-    private _pushLocalSongsCount(): void {
-        const count = this.getCurrentMapsCount();
+    private _pushLocalSongsCount(count?: number): void {
+        if (count == null) count = this.getCurrentMapsCount();
         IpcHelerps.webContentsSend<TSendMapsCount>(this.browserWindow, 'MAPS_COUNT', count);
     }
 }

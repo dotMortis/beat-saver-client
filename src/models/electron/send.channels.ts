@@ -1,4 +1,5 @@
 import { ProgressInfo, UpdateInfo } from 'electron-updater';
+import { TSongId } from '../maps/map-ids.model';
 
 export type TSend<CHANNEL extends string, ARGS> = {
     channel: CHANNEL;
@@ -56,4 +57,8 @@ export type TMapSyncStatus = {
     sum: number;
 };
 export type TSendMapsCount = TSend<'MAPS_COUNT', number>;
+export type TSendMapInstallChange = TSend<
+    'MAP_INSTALL_CHANGED',
+    { songId: TSongId; installed: boolean }
+>;
 //#endregion
