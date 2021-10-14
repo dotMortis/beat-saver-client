@@ -29,7 +29,6 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
             this._mapper = val;
         }
     }
-
     get totalRecords(): number {
         return this.mapper?.stats.totalMaps || Infinity;
     }
@@ -37,8 +36,6 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
     first: number;
 
     mapDetails: TMapDetail[];
-
-    goToPage?: number;
 
     constructor(
         public dlService: DlService,
@@ -60,13 +57,12 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
                 tap((settings: TSettings) => this._setCardSettings(settings))
             )
         );
-        this.onSearch({ page: 0 });
+        this.onSearch(0);
     }
 
-    onSearch(event: { page: number }): void {
-        this.first = event.page * 20;
+    onSearch(page: number): void {
         this._apiService
-            .getPaginatedMapListByMapper(this.mapper.id, event.page)
+            .getPaginatedMapListByMapper(this.mapper.id, page)
             .pipe(
                 tap((result: TMapSearchResult) => {
                     this.mapDetails = result.docs;
@@ -85,21 +81,6 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
                 'EMIT_DOWNLOAD',
                 `https://beatsaver.com/api/users/id/${this.mapper.id}/playlist`
             );
-    }
-
-    onGoToPage(): void {
-        if (this.goToPage != null) {
-            const maxPage = Math.ceil(this.mapper.stats.totalMaps / 20);
-            if (this.goToPage > maxPage) {
-                this.onSearch({ page: maxPage - 1 });
-            } else if (this.goToPage < 1) {
-                this.onSearch({ page: 0 });
-            } else {
-                this.onSearch({ page: this.goToPage - 1 });
-            }
-        } else {
-            this.onSearch({ page: 0 });
-        }
     }
 
     private _setCardSettings(settings: TSettings | undefined) {
