@@ -63,8 +63,6 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
         this.addSub(
             this._settingsService.settingsChange.pipe(
                 tap((settings: TSettings | undefined) => {
-                    console.log(settings);
-
                     if (settings) {
                         if (this.paginated !== settings.mapperPaginated.value) {
                             this.paginated = settings.mapperPaginated.value;
