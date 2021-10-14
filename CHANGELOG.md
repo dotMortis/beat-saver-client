@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.0-beta] - 14.10.2021
+
+### Added
+- paginated/infinite switch to settings
+- paginated/infinite home
+- paginated/infinite installed songs
+- paginated/infinite mapper songs
+
+### Updated
+- settings rearranged
+
+### Fixed
+- isDeleted status for song cards
+
 ## [0.9.0-beta] - 02.10.2021
 
 ### Added

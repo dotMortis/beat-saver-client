@@ -1,0 +1,53 @@
+:host ::ng-deep {
+    .p-paginator {
+        background-color: var(--surface-f);
+        padding: 0;
+        .p-link {
+            font-size: 0.95rem;
+            height: 2rem;
+            min-width: 2rem;
+        }
+    }
+
+    .hide-last {
+        .p-paginator-last {
+            display: none;
+        }
+    }
+
+    .paginator-goto {
+        .p-button {
+            padding: 0.25rem;
+            min-width: 2rem;
+        }
+    }
+}
+
+.paginator-container {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--surface-f);
+    transition: box-shadow 200ms ease-in;
+    border-radius: 0.25rem;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: 0 0 5px 0 white;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .paginator-refresh,
+    .paginator-goto {
+        max-width: 8rem;
+    }
+}

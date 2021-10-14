@@ -130,7 +130,9 @@
     </div>
 </div>
 <div *ngIf="mapper" class="mapper-maps-container">
-    <ng-container *ngTemplateOutlet="paginator">></ng-container>
+    <ng-container *ngIf="paginated">
+        <ng-container *ngTemplateOutlet="paginator"></ng-container>
+    </ng-container>
     <div class="row pt-3 mx-n2">
         <app-song-card
             #card
@@ -140,48 +142,30 @@
             [localMode]="false"
         ></app-song-card>
     </div>
-    <ng-container *ngTemplateOutlet="paginator">></ng-container>
+    <ng-container *ngIf="paginated; else infinite">
+        <ng-container *ngTemplateOutlet="paginator"></ng-container>
+    </ng-container>
 </div>
 <ng-template #paginator>
-    <div class="paginator-container">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="paginator-refresh px-0 text-left">
-                <button
-                    type="button"
-                    icon="pi pi-refresh"
-                    pButton
-                    class="p-button-xs"
-                    pTooltip="GoTo page"
-                    (click)="onSearch({page: 0})"
-                ></button>
-            </div>
-            <div class="flex-fill">
-                <p-paginator
-                    [first]="first"
-                    [rows]="20"
-                    [totalRecords]="totalRecords"
-                    (onPageChange)="onSearch($event)"
-                ></p-paginator>
-            </div>
-            <div class="paginator-goto px-0 text-right">
-                <div class="p-inputgroup">
-                    <input
-                        type="number"
-                        [(ngModel)]="goToPage"
-                        pInputText
-                        placeholder="Page"
-                        class="p-inputtext-xs"
-                    />
-                    <button
-                        type="button"
-                        pButton
-                        pRipple
-                        label="Go!"
-                        class="p-button-xs"
-                        (click)="onGoToPage()"
-                    ></button>
-                </div>
-            </div>
-        </div>
+    <app-paginator
+        [rows]="20"
+        [(first)]="first"
+        [totalRecords]="totalRecords"
+        (paginate)="onSearch($event)"
+    ></app-paginator>
+</ng-template>
+<ng-template #infinite>
+    <div class="w-100">
+        <button
+            *ngIf="canLoadMore"
+            pButton
+            pRipple
+            pTooltip="Load more maps"
+            tooltipPosition="top"
+            type="button"
+            icon="pi pi-chevron-down"
+            class="w-100 p-button-sm"
+            (click)="onSearch(true)"
+        ></button>
     </div>
 </ng-template>

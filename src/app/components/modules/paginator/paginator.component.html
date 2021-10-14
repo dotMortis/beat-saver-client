@@ -1,0 +1,42 @@
+<div class="paginator-container">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="paginator-refresh px-0 text-left">
+            <button
+                type="button"
+                icon="pi pi-refresh"
+                pButton
+                class="p-button-xs"
+                pTooltip="GoTo page"
+                (click)="onSearch({page: 0})"
+            ></button>
+        </div>
+        <div class="flex-fill">
+            <p-paginator
+                [ngClass]="{'hide-last': totalRecords === infinity}"
+                [first]="first"
+                [rows]="20"
+                [totalRecords]="totalRecords"
+                (onPageChange)="onSearch($event)"
+            ></p-paginator>
+        </div>
+        <div class="paginator-goto px-0 text-right">
+            <div class="p-inputgroup">
+                <input
+                    type="number"
+                    [(ngModel)]="goToPage"
+                    pInputText
+                    placeholder="Page"
+                    class="p-inputtext-xs"
+                />
+                <button
+                    type="button"
+                    pButton
+                    pRipple
+                    label="Go!"
+                    class="p-button-xs"
+                    (click)="onGoToPage()"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

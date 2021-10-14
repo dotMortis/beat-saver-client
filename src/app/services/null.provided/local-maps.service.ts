@@ -99,15 +99,17 @@ export class LocalMapsService {
         return this._tMapDetailCache.get(id);
     }
 
-    public getList(more: boolean): Observable<false | ILocalMapInfo[]> {
+    public getListInfinite(
+        more: boolean
+    ): Observable<false | { count: number; data: ILocalMapInfo[] }> {
         if (more) {
             this._page++;
         } else {
             this._page = 0;
             this._latestFilter = Object.assign({}, this._filter);
         }
-        return new Observable<false | ILocalMapInfo[]>(
-            (sub: Subscriber<false | ILocalMapInfo[]>) => {
+        return new Observable<false | { count: number; data: ILocalMapInfo[] }>(
+            (sub: Subscriber<false | { count: number; data: ILocalMapInfo[] }>) => {
                 this._eleService
                     .invoke<TInvokeFilterLocalMaps>('FILTER_LOCAL_MAPS', {
                         q:
@@ -118,18 +120,51 @@ export class LocalMapsService {
                     })
                     .then(result => {
                         try {
-                            if (result instanceof Array) {
-                                this._canLoadMore = result.length > 0;
+                            if (result instanceof Error) throw result;
+                            else if (result !== false) {
                                 if (more && this.searchResult instanceof Array) {
-                                    this.searchResult = [...this.searchResult, ...result];
+                                    this.searchResult = [...this.searchResult, ...result.data];
                                 } else {
-                                    this.searchResult = result;
+                                    this.searchResult = result.data;
                                 }
-                            } else if (result instanceof Error) throw result;
-                            else {
+                                this._canLoadMore = this.searchResult.length < result.count - 1;
+                            } else {
                                 this.searchResult = false;
                             }
-                            sub.next(this.searchResult);
+                            sub.next(result);
+                            sub.complete();
+                        } catch (error) {
+                            sub.error(error);
+                        }
+                    })
+                    .catch(error => sub.error(error));
+            }
+        );
+    }
+
+    public getListPaginated(
+        page: number,
+        updateFilters: boolean
+    ): Observable<false | { count: number; data: ILocalMapInfo[] }> {
+        if (updateFilters) {
+            this._latestFilter = Object.assign({}, this._filter);
+        }
+        return new Observable<false | { count: number; data: ILocalMapInfo[] }>(
+            (sub: Subscriber<false | { count: number; data: ILocalMapInfo[] }>) => {
+                this._eleService
+                    .invoke<TInvokeFilterLocalMaps>('FILTER_LOCAL_MAPS', {
+                        q:
+                            this._latestFilter != null && this._latestFilter.q
+                                ? `%${this._latestFilter.q}%`
+                                : undefined,
+                        page
+                    })
+                    .then(result => {
+                        try {
+                            if (result instanceof Error) throw result;
+                            else if (result !== false) this.searchResult = result.data;
+                            else this.searchResult = false;
+                            sub.next(result);
                             sub.complete();
                         } catch (error) {
                             sub.error(error);

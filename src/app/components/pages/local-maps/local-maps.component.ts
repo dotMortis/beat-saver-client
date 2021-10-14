@@ -13,6 +13,10 @@ import { SongCardService } from '../../modules/song-card/song-card.service';
     styleUrls: ['./local-maps.component.scss']
 })
 export class LocalMapsComponent extends UnsubscribeComponent implements OnInit {
+    paginated: boolean;
+    first: number;
+    totalRecords: number;
+
     constructor(
         public localMapsService: LocalMapsService,
         private _settingsService: SettingsService,
@@ -20,32 +24,53 @@ export class LocalMapsComponent extends UnsubscribeComponent implements OnInit {
         private _notify: NotifyService
     ) {
         super(_notify);
+        this.paginated = true;
+        this.first = 0;
+        this.totalRecords = 0;
     }
 
     ngOnInit(): void {
         this.addSub(
             this._settingsService.settingsChange.pipe(
-                tap((settings: TSettings) => this._setCardSettings(settings))
+                tap((settings: TSettings | undefined) => {
+                    if (settings) {
+                        if (this.paginated !== settings.localsPaginated.value) {
+                            this.paginated = settings.localsPaginated.value;
+                            this.onSearch(false);
+                        }
+                        this._setCardSettings(settings);
+                    }
+                })
             )
         );
-        this._setCardSettings(this._settingsService.settings);
         if (!this.localMapsService.searchResult || this.localMapsService.searchResult.length === 0)
             this.onSearch(false);
     }
 
-    onSearch(more: boolean): void {
-        this.addSub(this.localMapsService.getList(more));
+    onSearch(more: boolean | number): void {
+        if (typeof more === 'number') {
+            this.addSub(
+                this.localMapsService
+                    .getListPaginated(more, false)
+                    .pipe(tap(result => (this.totalRecords = result !== false ? result.count : 0)))
+            );
+        } else {
+            this.first = 0;
+            this.addSub(
+                this.localMapsService
+                    .getListInfinite(more)
+                    .pipe(tap(result => (this.totalRecords = result !== false ? result.count : 0)))
+            );
+        }
     }
 
-    private _setCardSettings(settings: TSettings | undefined) {
-        if (settings) {
-            const { value, default: defaultValue } = settings.expandAllSongCards;
-            if (
-                (value != null && this._songCardService.expandAll !== value) ||
-                (value == null && defaultValue !== this._songCardService.expandAll)
-            ) {
-                this._songCardService.expandAll = value != null ? value : defaultValue;
-            }
+    private _setCardSettings(settings: TSettings) {
+        const { value, default: defaultValue } = settings.expandAllSongCards;
+        if (
+            (value != null && this._songCardService.expandAll !== value) ||
+            (value == null && defaultValue !== this._songCardService.expandAll)
+        ) {
+            this._songCardService.expandAll = value != null ? value : defaultValue;
         }
     }
 }

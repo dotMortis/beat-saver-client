@@ -29,16 +29,19 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
             this._mapper = val;
         }
     }
-
     get totalRecords(): number {
         return this.mapper?.stats.totalMaps || Infinity;
     }
+
+    paginated: boolean;
 
     first: number;
 
     mapDetails: TMapDetail[];
 
-    goToPage?: number;
+    canLoadMore: boolean;
+
+    latestPage: number;
 
     constructor(
         public dlService: DlService,
@@ -50,26 +53,50 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
     ) {
         super(_notify);
         this.first = 0;
+        this.latestPage = 0;
+        this.canLoadMore = true;
+        this.paginated = true;
         this.mapDetails = new Array<TMapDetail>();
     }
 
     ngOnInit(): void {
-        this._setCardSettings(this._settingsService.settings);
         this.addSub(
             this._settingsService.settingsChange.pipe(
-                tap((settings: TSettings) => this._setCardSettings(settings))
+                tap((settings: TSettings | undefined) => {
+                    console.log(settings);
+
+                    if (settings) {
+                        if (this.paginated !== settings.mapperPaginated.value) {
+                            this.paginated = settings.mapperPaginated.value;
+                            this.onSearch(false);
+                        }
+                        this._setCardSettings(settings);
+                    }
+                })
             )
         );
-        this.onSearch({ page: 0 });
+        this.onSearch(false);
     }
 
-    onSearch(event: { page: number }): void {
-        this.first = event.page * 20;
+    onSearch(page: number | boolean): void {
+        if (typeof page === 'number') {
+            this.latestPage = page;
+        } else if (page === true) {
+            this.latestPage++;
+        } else {
+            this.latestPage = 0;
+            this.first = 0;
+        }
         this._apiService
-            .getPaginatedMapListByMapper(this.mapper.id, event.page)
+            .getPaginatedMapListByMapper(this.mapper.id, this.latestPage)
             .pipe(
                 tap((result: TMapSearchResult) => {
-                    this.mapDetails = result.docs;
+                    if (result.docs.length) {
+                        this.canLoadMore = true;
+                        if (!this.paginated && page !== false) {
+                            this.mapDetails.push(...result.docs);
+                        } else this.mapDetails = result.docs;
+                    } else this.canLoadMore = false;
                 }),
                 catchError((error: HttpErrorResponse) => {
                     this._eleService.send<TSendError>('ERROR', error);
@@ -85,21 +112,6 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
                 'EMIT_DOWNLOAD',
                 `https://beatsaver.com/api/users/id/${this.mapper.id}/playlist`
             );
-    }
-
-    onGoToPage(): void {
-        if (this.goToPage != null) {
-            const maxPage = Math.ceil(this.mapper.stats.totalMaps / 20);
-            if (this.goToPage > maxPage) {
-                this.onSearch({ page: maxPage - 1 });
-            } else if (this.goToPage < 1) {
-                this.onSearch({ page: 0 });
-            } else {
-                this.onSearch({ page: this.goToPage - 1 });
-            }
-        } else {
-            this.onSearch({ page: 0 });
-        }
     }
 
     private _setCardSettings(settings: TSettings | undefined) {

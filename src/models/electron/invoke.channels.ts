@@ -41,7 +41,7 @@ export type TInvokeIsInstalled = TInvoke<
 export type TInvokeFilterLocalMaps = TInvoke<
     'FILTER_LOCAL_MAPS',
     { q: string | undefined; page: number },
-    ILocalMapInfo[]
+    { count: number; data: ILocalMapInfo[] }
 >;
 export type TInvokeDeleteSong = TInvoke<'DELETE_SONG', { id: TSongId }, true>;
 export type TInvokeGetLocalCover = TInvoke<'GET_LOCAL_COVER', { id: TSongId }, string>;

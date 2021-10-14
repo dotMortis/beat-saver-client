@@ -1,10 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Calendar } from 'primeng/calendar';
-import { EMPTY } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { EListSortOrder, IListOptions, ListOptions } from '../../../../models/api/api.models';
-import { TSendError } from '../../../../models/electron/send.channels';
 import { ApiService } from '../../../services/null.provided/api.service';
 import { ElectronService } from '../../../services/root.provided/electron.service';
 
@@ -43,8 +39,12 @@ export class SongFilterComponent {
         return this._currentDate.getUTCFullYear();
     }
 
+    @Output()
+    search: EventEmitter<void>;
+
     constructor(public apiService: ApiService, private _eleService: ElectronService) {
         this._currentDate = new Date();
+        this.search = new EventEmitter<void>();
         this.activeFilterItems = new Set<string>();
         this.filterItems = new Array<{
             label: { label: string; value: string };
@@ -90,15 +90,7 @@ export class SongFilterComponent {
     }
 
     onSearch(): void {
-        this.apiService
-            .getMapList(false)
-            .pipe(
-                catchError((error: HttpErrorResponse) => {
-                    this._eleService.send<TSendError>('ERROR', error);
-                    return EMPTY;
-                })
-            )
-            .subscribe();
+        this.search.next();
     }
 
     onDateRangeSelect() {

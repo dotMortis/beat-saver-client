@@ -3,6 +3,9 @@ export type TSettings = {
     bsAppDataPath: TSetting<string | undefined, 'FODLER', 'EXIST', true, undefined>;
     playerName: TSetting<string | undefined, 'ANY', 'NONE', true, undefined>;
     expandAllSongCards: TSetting<boolean, 'ANY', 'NONE', true, false>;
+    beatSaverPaginated: TSetting<boolean, 'ANY', 'NONE', true, true>;
+    localsPaginated: TSetting<boolean, 'ANY', 'NONE', true, true>;
+    mapperPaginated: TSetting<boolean, 'ANY', 'NONE', true, true>;
 };
 
 export type TSetting<

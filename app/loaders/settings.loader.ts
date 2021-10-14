@@ -79,6 +79,27 @@ class Settings extends CommonLoader {
                 type: 'ANY',
                 nullable: true,
                 default: false
+            },
+            beatSaverPaginated: {
+                value: true,
+                check: 'NONE',
+                type: 'ANY',
+                nullable: true,
+                default: true
+            },
+            localsPaginated: {
+                value: true,
+                check: 'NONE',
+                type: 'ANY',
+                nullable: true,
+                default: true
+            },
+            mapperPaginated: {
+                value: true,
+                check: 'NONE',
+                type: 'ANY',
+                nullable: true,
+                default: true
             }
         };
         this._settings = this._loadSettings(this._settings);
