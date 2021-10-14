@@ -337,12 +337,14 @@ export class SongCardComponent extends UnsubscribeComponent implements OnInit {
         this.addSub(
             this.installedSongsService.songInstallChange.pipe(
                 filter(data => data.songId === currentId),
-                tap(
-                    data =>
-                        (this._isInstalledSong = {
-                            status: data.installed ? 'INSTALLED' : false
-                        })
-                )
+                tap(data => {
+                    if (this._isInstalledSong.status === 'INSTALLED' && !data.installed) {
+                        this.isDeleted = true;
+                    }
+                    this._isInstalledSong = {
+                        status: data.installed ? 'INSTALLED' : false
+                    };
+                })
             )
         );
         const result = await this.installedSongsService.songIsInstalled(currentId).catch(error => {

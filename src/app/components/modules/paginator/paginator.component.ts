@@ -51,6 +51,8 @@ export class PaginatorComponent extends UnsubscribeComponent {
 
     goToPage?: number;
 
+    infinity = Infinity;
+
     constructor(private _notify: NotifyService) {
         super(_notify);
         this._first = 0;

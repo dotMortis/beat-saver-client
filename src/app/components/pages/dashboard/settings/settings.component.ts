@@ -81,6 +81,57 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
         else if (this.dirty.has('EXPSC')) this.dirty.delete('EXPSC');
     }
 
+    private _beatSaverPaginated: boolean | undefined;
+    get beatSaverPaginated(): boolean {
+        return this._beatSaverPaginated == null
+            ? this.optService.settings
+                ? this.optService.settings.beatSaverPaginated.default
+                : true
+            : this._beatSaverPaginated;
+    }
+    set beatSaverPaginated(val: boolean) {
+        if (this._beatSaverPaginated !== val) {
+            this._beatSaverPaginated = val;
+        }
+        if (this._isInit && val !== this.optService.settings?.beatSaverPaginated.value)
+            this.dirty.add('BSP');
+        else if (this.dirty.has('BSP')) this.dirty.delete('BSP');
+    }
+
+    private _localsPaginated: boolean | undefined;
+    get localsPaginated(): boolean {
+        return this._localsPaginated == null
+            ? this.optService.settings
+                ? this.optService.settings.localsPaginated.default
+                : true
+            : this._localsPaginated;
+    }
+    set localsPaginated(val: boolean) {
+        if (this._localsPaginated !== val) {
+            this._localsPaginated = val;
+        }
+        if (this._isInit && val !== this.optService.settings?.localsPaginated.value)
+            this.dirty.add('LP');
+        else if (this.dirty.has('LP')) this.dirty.delete('LP');
+    }
+
+    private _mapperPaginated: boolean | undefined;
+    get mapperPaginated(): boolean {
+        return this._mapperPaginated == null
+            ? this.optService.settings
+                ? this.optService.settings.mapperPaginated.default
+                : true
+            : this._mapperPaginated;
+    }
+    set mapperPaginated(val: boolean) {
+        if (this._mapperPaginated !== val) {
+            this._mapperPaginated = val;
+        }
+        if (this._isInit && val !== this.optService.settings?.mapperPaginated.value)
+            this.dirty.add('MP');
+        else if (this.dirty.has('MP')) this.dirty.delete('MP');
+    }
+
     private _showTour: boolean;
     get showTour(): boolean {
         return this._showTour;
@@ -136,7 +187,10 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
                 bsAppDataPath: this.bsAppDataPath,
                 bsInstallPath: this.bsInstallPath,
                 playerName: this.selectedPlayerName?.name,
-                expandAllSongCards: this.expandAllSongCards || false
+                expandAllSongCards: this.expandAllSongCards || false,
+                beatSaverPaginated: this.beatSaverPaginated,
+                localsPaginated: this.localsPaginated,
+                mapperPaginated: this.mapperPaginated
             });
             const saveResult = await this.optService.saveSettings().catch(error => {
                 this._eleService.send<TSendError>('ERROR', error);
@@ -186,7 +240,15 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
     }
 
     private _setValues(settings: TSettings): void {
-        const { bsAppDataPath, bsInstallPath, playerName, expandAllSongCards } = settings;
+        const {
+            bsAppDataPath,
+            bsInstallPath,
+            playerName,
+            expandAllSongCards,
+            beatSaverPaginated,
+            localsPaginated,
+            mapperPaginated
+        } = settings;
         this.bsAppDataPath =
             bsAppDataPath.value != null ? bsAppDataPath.value : bsAppDataPath.default;
         this.bsInstallPath =
@@ -195,6 +257,14 @@ export class SettingsComponent extends UnsubscribeComponent implements OnInit {
             expandAllSongCards.value != null
                 ? expandAllSongCards.value
                 : expandAllSongCards.default;
+        this.beatSaverPaginated =
+            beatSaverPaginated.value != null
+                ? beatSaverPaginated.value
+                : beatSaverPaginated.default;
+        this.localsPaginated =
+            localsPaginated.value != null ? localsPaginated.value : localsPaginated.default;
+        this.mapperPaginated =
+            mapperPaginated.value != null ? mapperPaginated.value : mapperPaginated.default;
         const tempPlayerName =
             playerName.value || playerName.default || this.selectablePlayerNames[0]?.name;
 

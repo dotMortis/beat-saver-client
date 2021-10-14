@@ -19,6 +19,9 @@ import { SongCardService } from '../../modules/song-card/song-card.service';
     styleUrls: ['./songs.component.scss']
 })
 export class SongsComponent extends UnsubscribeComponent implements OnInit {
+    first: number;
+    paginated: boolean;
+
     constructor(
         public apiService: ApiService,
         public dlService: DlService,
@@ -29,12 +32,22 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
         private _notify: NotifyService
     ) {
         super(_notify);
+        this.first = 0;
+        this.paginated = true;
     }
 
     ngOnInit(): void {
         this.addSub(
             this._settingsService.settingsChange.pipe(
-                tap((settings: TSettings) => this._setCardSettings(settings))
+                tap((settings: TSettings | undefined) => {
+                    if (settings) {
+                        if (this.paginated !== settings.beatSaverPaginated.value) {
+                            this.paginated = settings.beatSaverPaginated.value;
+                            this.onSearch(false);
+                        }
+                        this._setCardSettings(settings);
+                    }
+                })
             )
         );
         this.addSub(
@@ -44,20 +57,32 @@ export class SongsComponent extends UnsubscribeComponent implements OnInit {
                 })
             )
         );
-        this._setCardSettings(this._settingsService.settings);
         if (!this.apiService.tMapSearchResult) this.onSearch();
     }
 
-    onSearch(more: boolean = false): void {
-        this.apiService
-            .getMapList(more)
-            .pipe(
-                catchError((error: HttpErrorResponse) => {
-                    this._eleService.send<TSendError>('ERROR', error);
-                    return EMPTY;
-                })
-            )
-            .subscribe();
+    onSearch(more: boolean | number = false): void {
+        if (typeof more === 'number') {
+            this.apiService
+                .getMapListPaginated(more, false)
+                .pipe(
+                    catchError((error: HttpErrorResponse) => {
+                        this._eleService.send<TSendError>('ERROR', error);
+                        return EMPTY;
+                    })
+                )
+                .subscribe();
+        } else {
+            this.first = 0;
+            this.apiService
+                .getMapListInfinite(more)
+                .pipe(
+                    catchError((error: HttpErrorResponse) => {
+                        this._eleService.send<TSendError>('ERROR', error);
+                        return EMPTY;
+                    })
+                )
+                .subscribe();
+        }
     }
 
     private _setCardSettings(settings: TSettings | undefined) {

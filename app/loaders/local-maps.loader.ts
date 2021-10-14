@@ -205,17 +205,27 @@ class LocalMaps extends CommonLoader {
         });
     }
 
-    getFilteredLocalMaps(page: number, q: string | undefined): LocalMapInfo[] {
-        let query = 'SELECT * FROM maps';
+    getFilteredLocalMaps(
+        page: number,
+        q: string | undefined
+    ): { count: number; data: LocalMapInfo[] } {
+        let querySelect = 'SELECT * FROM maps';
+        let queryCount = 'SELECT COUNT(*) as count FROM maps';
         if (q) {
-            query +=
+            const where =
                 ' WHERE song_name LIKE :q OR id LIKE :q OR song_sub_name LIKE :q OR song_author_name LIKE :q OR level_author_name LIKE :q OR hash LIKE :q';
+            querySelect += where;
+            queryCount += where;
         }
-        query += ' ORDER BY song_name ASC LIMIT 20 OFFSET :skip';
-        const find = this._db.prepare(query);
-        return find
-            .all({ q, skip: page * 20 })
-            .map((info: TDBLocalMapInfo) => new LocalMapInfo(info));
+        querySelect += ' ORDER BY song_name ASC LIMIT 20 OFFSET :skip';
+        const findDB = this._db.prepare(querySelect);
+        const countDB = this._db.prepare(queryCount);
+        return {
+            count: countDB.get({ q })?.count,
+            data: findDB
+                .all({ q, skip: page * 20 })
+                .map((info: TDBLocalMapInfo) => new LocalMapInfo(info))
+        };
     }
 
     deleteSong(id: TSongId): true {

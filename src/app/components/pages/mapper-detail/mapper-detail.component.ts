@@ -33,9 +33,15 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
         return this.mapper?.stats.totalMaps || Infinity;
     }
 
+    paginated: boolean;
+
     first: number;
 
     mapDetails: TMapDetail[];
+
+    canLoadMore: boolean;
+
+    latestPage: number;
 
     constructor(
         public dlService: DlService,
@@ -47,25 +53,50 @@ export class MapperDetailComponent extends UnsubscribeComponent implements OnIni
     ) {
         super(_notify);
         this.first = 0;
+        this.latestPage = 0;
+        this.canLoadMore = true;
+        this.paginated = true;
         this.mapDetails = new Array<TMapDetail>();
     }
 
     ngOnInit(): void {
-        this._setCardSettings(this._settingsService.settings);
         this.addSub(
             this._settingsService.settingsChange.pipe(
-                tap((settings: TSettings) => this._setCardSettings(settings))
+                tap((settings: TSettings | undefined) => {
+                    console.log(settings);
+
+                    if (settings) {
+                        if (this.paginated !== settings.mapperPaginated.value) {
+                            this.paginated = settings.mapperPaginated.value;
+                            this.onSearch(false);
+                        }
+                        this._setCardSettings(settings);
+                    }
+                })
             )
         );
-        this.onSearch(0);
+        this.onSearch(false);
     }
 
-    onSearch(page: number): void {
+    onSearch(page: number | boolean): void {
+        if (typeof page === 'number') {
+            this.latestPage = page;
+        } else if (page === true) {
+            this.latestPage++;
+        } else {
+            this.latestPage = 0;
+            this.first = 0;
+        }
         this._apiService
-            .getPaginatedMapListByMapper(this.mapper.id, page)
+            .getPaginatedMapListByMapper(this.mapper.id, this.latestPage)
             .pipe(
                 tap((result: TMapSearchResult) => {
-                    this.mapDetails = result.docs;
+                    if (result.docs.length) {
+                        this.canLoadMore = true;
+                        if (!this.paginated && page !== false) {
+                            this.mapDetails.push(...result.docs);
+                        } else this.mapDetails = result.docs;
+                    } else this.canLoadMore = false;
                 }),
                 catchError((error: HttpErrorResponse) => {
                     this._eleService.send<TSendError>('ERROR', error);

@@ -9,6 +9,12 @@
         }
     }
 
+    .hide-last {
+        .p-paginator-last {
+            display: none;
+        }
+    }
+
     .paginator-goto {
         .p-button {
             padding: 0.25rem;

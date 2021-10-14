@@ -103,6 +103,7 @@ export class ApiService {
     }
 
     //#endregion
+
     constructor(private _http: HttpClient) {
         this._basePath = 'https://beatsaver.com/api';
         this._filter = new ListOptions({});
@@ -120,7 +121,7 @@ export class ApiService {
         return undefined;
     }
 
-    public getMapList(more: boolean): Observable<TMapSearchResult> {
+    public getMapListInfinite(more: boolean): Observable<TMapSearchResult> {
         if (more) {
             this._mapsPage++;
         } else {
@@ -140,6 +141,19 @@ export class ApiService {
                         this.tMapSearchResult = tSearchResult;
                     }
                 })
+            );
+    }
+
+    public getMapListPaginated(page: number, updateFilters: boolean): Observable<TMapSearchResult> {
+        if (updateFilters) {
+            this._latestFilter = this._filter.getQueryParams();
+        }
+        return this._http
+            .get<TMapSearchResult>(this._computePath(['search', 'text', page]), {
+                params: this._latestFilter
+            })
+            .pipe(
+                tap((tSearchResult: TMapSearchResult) => (this.tMapSearchResult = tSearchResult))
             );
     }
 

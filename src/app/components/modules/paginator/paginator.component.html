@@ -12,6 +12,7 @@
         </div>
         <div class="flex-fill">
             <p-paginator
+                [ngClass]="{'hide-last': totalRecords === infinity}"
                 [first]="first"
                 [rows]="20"
                 [totalRecords]="totalRecords"

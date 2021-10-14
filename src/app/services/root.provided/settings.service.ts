@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { TInvokeGetSettings, TInvokeSetSettings } from '../../../models/electron/invoke.channels';
 import { TSettings } from '../../../models/settings.model';
@@ -37,7 +37,7 @@ export class SettingsService {
     get settings(): TSettings | undefined {
         return this._settings;
     }
-    settingsChange: EventEmitter<TSettings>;
+    settingsChange: BehaviorSubject<TSettings | undefined>;
     //#endregion
 
     get settingsComplete(): boolean {
@@ -51,7 +51,7 @@ export class SettingsService {
     constructor(public eleService: ElectronService, private _notify: NotifyService) {
         this._visible = false;
         this.visibleChange = new BehaviorSubject<boolean>(false);
-        this.settingsChange = new EventEmitter<TSettings>();
+        this.settingsChange = new BehaviorSubject<TSettings | undefined>(undefined);
     }
 
     setOptUnsaved(vals: { [P in keyof TSettings]: TSettings[P]['value'] }): void {

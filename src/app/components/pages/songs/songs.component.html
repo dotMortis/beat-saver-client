@@ -1,5 +1,8 @@
-<app-song-filter></app-song-filter>
+<app-song-filter (search)="onSearch()"></app-song-filter>
 <div class="row mx-n2">
+    <ng-container *ngIf="paginated">
+        <ng-container *ngTemplateOutlet="paginator"></ng-container>
+    </ng-container>
     <app-song-card
         #card
         *ngFor="let doc of apiService.tMapSearchResult?.docs;"
@@ -7,8 +10,17 @@
         [tMapDetail]="doc"
         [localMode]="false"
     ></app-song-card>
-
-    <div class="col-12">
+    <ng-container *ngIf="paginated; else infinite">
+        <ng-container *ngTemplateOutlet="paginator"></ng-container>
+    </ng-container>
+</div>
+<ng-template #paginator>
+    <div class="col-12 px-2 pb-3">
+        <app-paginator [rows]="20" [(first)]="first" (paginate)="onSearch($event)"></app-paginator>
+    </div>
+</ng-template>
+<ng-template #infinite>
+    <div class="col-12 px-2">
         <button
             *ngIf="apiService.canLoadMoreMaps && apiService.tMapSearchResult?.docs?.length"
             pButton
@@ -21,4 +33,4 @@
             (click)="onSearch(true)"
         ></button>
     </div>
-</div>
+</ng-template>
