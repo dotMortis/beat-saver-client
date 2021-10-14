@@ -1,6 +1,6 @@
 {
     "name": "beat-saver-client",
-    "version": "0.9.0-beta",
+    "version": "0.10.0-beta",
     "main": "dist/app/index.js",
     "description": "A BeatSaver desktop client",
     "author": {
